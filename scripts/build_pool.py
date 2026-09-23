@@ -19,7 +19,8 @@ from casmi.config import ARTIFACT_DIR  # noqa: E402
 from casmi.chem.masses import formula_mass  # noqa: E402
 from casmi.pool.pool import SOURCE_BITS  # noqa: E402
 
-COCONUT_ZIP = Path("C:/Users/MONSTER/kaggle-data/external/coconut/coconut_csv_lite-09-2026.zip")
+import os  # noqa: E402
+COCONUT_ZIP = Path(os.environ.get("CASMI_COCONUT", "C:/Users/MONSTER/kaggle-data/external/coconut/coconut_csv_lite-09-2026.zip"))
 MASS_RANGE = (100.0, 1300.0)          # test monoisotopic masses span 157–1,159 Da
 ENVEDA180_BIT = 1                     # bit 0 in build_structures.LIBS
 

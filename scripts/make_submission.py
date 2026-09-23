@@ -91,6 +91,7 @@ def main():
     predictor = Predictor(engine, pool, keys, ranker, fp_models, device)
     sub = predictor.predict_file(test)
     validate_submission(sub, test)
+    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
     out = Path(OUTPUT_DIR) / "submission.csv"
     sub.to_csv(out, index=False)
     stage(f"wrote {out} ({len(sub)} molecules, {len(predictor.failures)} fell back)")

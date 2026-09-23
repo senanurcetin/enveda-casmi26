@@ -16,7 +16,8 @@ def _find_competition_data() -> Path:
 
 DATA_DIR = _find_competition_data()
 # Built artifacts (spectrum store, pool, models). Large, never committed.
+# /tmp on Kaggle: scratch disk, not saved as notebook output (which would slow every commit)
 ARTIFACT_DIR = Path(os.environ.get("CASMI_ARTIFACTS",
-                                   "/kaggle/working/artifacts" if ON_KAGGLE else str(DATA_DIR / "artifacts")))
+                                   "/tmp/casmi_artifacts" if ON_KAGGLE else str(DATA_DIR / "artifacts")))
 OUTPUT_DIR = Path("/kaggle/working") if ON_KAGGLE else PROJECT_ROOT / "runs"
 SEED = 42

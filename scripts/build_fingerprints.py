@@ -4,6 +4,7 @@ as the target of the spectrum → fingerprint model.
 
 Output: artifacts/pool_fp2048.npy  (uint8, shape [n_pool, 256]), zero rows where RDKit fails
 """
+import os
 import sys
 import time
 from concurrent.futures import ProcessPoolExecutor
@@ -42,7 +43,7 @@ def main():
     pool = pool.drop_duplicates("pool_key", keep="first").reset_index(drop=True)
     smiles = pool.smiles.tolist()
     chunks = [smiles[i:i + 5000] for i in range(0, len(smiles), 5000)]
-    with ProcessPoolExecutor(max_workers=6) as ex:
+    with ProcessPoolExecutor(max_workers=max(1, (os.cpu_count() or 2) - 1)) as ex:
         fps = np.concatenate(list(ex.map(_fp_chunk, chunks)))
     np.save(ARTIFACT_DIR / "pool_fp2048.npy", fps)
     pool[["pool_key"]].to_parquet(ARTIFACT_DIR / "pool_fp_keys.parquet", index=False)
