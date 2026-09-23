@@ -15,6 +15,11 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 2 | LambdaRank ranker over D1 + D2 + priors + list context | 0.667 | 0.663 | — | superseded by 3 |
 | 3 | ranker + D3 spectrum→fingerprint (out-of-fold) | 0.680 | 0.676 | +0.038 … +0.209 vs #1 | **ACCEPT** |
 | 3b | D3 alone (#2 → #3) | +0.014 | +0.013 | −0.005 … −0.001 | NOT PROVEN |
+| 4 | v2: Class-1 training groups with cross-library knockout | 0.590 | 0.719 | −0.025 … +0.001 vs #3 | NOT PROVEN |
+| 4b | v2, Class-2 weight ×2 | 0.516 | 0.724 | < 0 vs #4 | NOT PROVEN (worse point) |
+| 5 | v3: Class-1 groups from enveda-180 (timsTOF, cross-instrument) | 0.375 | 0.735 | −0.074 … −0.037 vs #4 | **REJECT** |
+| 6 | #3 data without membership priors | 0.718 | 0.682 | — | diagnostic |
+| 7 | **v13-clean**: C1 from both sources, no membership priors (incl. NaN-coded NP-likeness) | **0.839** | **0.662** | +0.085 … +0.225 vs #1; −0.006 … +0.028 vs #3 | **ACCEPT vs #1; chosen over #3 on robustness** |
 
 ## Findings that changed the design
 
@@ -37,6 +42,19 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
    (truth similarity median 0.912 vs 0.848 on V-in). The ranker learned to distrust direct
    matches and V-in C1 fell from 0.91 to 0.68. v2 removes the structure's whole query library and
    drops groups with no cross-library reference.
+
+6. **Membership priors are shortcuts (runs #4–#7).** Features such as "in the training library",
+   "in COCONUT", "only in enveda-180" or a spectrum count describe how the candidate pool was
+   *assembled*, and the ranker used them to recognise the simulated class instead of weighing
+   evidence. v3 made it visible: its Class-1 truths were drug-like enveda-180 structures (not in
+   COCONUT), so no training truth was ever "in train and in COCONUT" — exactly what V-in's Class-1
+   truths are — and V-in C1 fell to 0.375 although the similarity distribution now matched V-in
+   (truth median 0.832 vs 0.848). NP-likeness leaked the same information through NaN (it is only
+   defined for COCONUT rows). Dropping all of them lifted C1 to 0.839 with C2 at 0.662.
+   **Decision on #7 vs #3:** not a proven improvement under the rule (the lower CI bound touches
+   zero at the Class-2-heavy end), but #3 relies on features whose class-conditional distribution
+   is set by our simulation design and cannot be checked against the test. #7 is chosen as a
+   robustness decision, recorded as such.
 
 ## Engineering notes
 

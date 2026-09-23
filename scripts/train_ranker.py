@@ -52,6 +52,10 @@ def main():
     ap.add_argument("--train-files", default="rank_train_d3.parquet")
     ap.add_argument("--tag", default=None)
     ap.add_argument("--drop-d3", action="store_true", help="train without D3 columns on the same table")
+    ap.add_argument("--no-membership", action="store_true",
+                    help="drop features that encode how the pool was assembled (train/COCONUT/enveda-180 "
+                         "membership, spectrum counts): their class-conditional distribution is set by the "
+                         "simulation design, not by chemistry, and the ranker learns them as shortcuts")
     ap.add_argument("--c2-weight", type=float, default=1.0, help="relative weight of Class-2 groups")
     args = ap.parse_args()
     use_d3 = not args.no_d3
@@ -60,7 +64,11 @@ def main():
 
     train = pd.read_parquet(ARTIFACT_DIR / args.train_files) if use_d3 else load("train", False)
     vin = load("vin", use_d3)
-    cols = [c for c in feature_columns(train) if c != "fold" and not (args.drop_d3 and c.startswith("d3_"))]
+    # np_likeness / has_sugar are only populated for COCONUT structures: NaN itself encodes membership
+    MEMBERSHIP = {"prior_in_train", "prior_in_coconut", "prior_enveda180_only", "prior_log_spectra", "d1_nref",
+                  "prior_np_likeness", "prior_has_sugar"}
+    cols = [c for c in feature_columns(train) if c != "fold" and not (args.drop_d3 and c.startswith("d3_"))
+            and not (args.no_membership and c in MEMBERSHIP)]
     qids = train.qid.unique()
     rng = np.random.default_rng(SEED)
     es = set(rng.choice(qids, len(qids) // 5, replace=False))
@@ -82,7 +90,7 @@ def main():
     ranks["C3"] = [0] * len(order)
 
     report = {"tag": tag, "config": {"features": cols, "d3": use_d3, "seeds": list(ranker.cfg.seeds),
-                                     "c2_weight": args.c2_weight, "train_files": args.train_files, "drop_d3": args.drop_d3},
+                                     "c2_weight": args.c2_weight, "train_files": args.train_files, "drop_d3": args.drop_d3, "no_membership": args.no_membership},
               "n_queries": len(order), "classes": {}}
     for cls in ("C1", "C2", "C3"):
         s = summarize(ranks[cls])

@@ -77,9 +77,47 @@ def training_queries(store, key_of_row, pool, vin_skeletons, n, seed=0):
     return out
 
 
+def e180_class1_queries(store, key_of_row, pool, vin_skeletons, n, seed=0):
+    """Instrument-matched Class-1 queries: enveda-180 (timsTOF, the test instrument) structures that
+    also have reference spectra in another library — exactly V-in's situation, where a timsTOF query
+    must be matched to references acquired on other instruments."""
+    meta = store.meta
+    lib = meta.ingest_lib.astype(str).to_numpy()
+    ok = (meta.test_adduct.to_numpy() & (meta.n_peaks.to_numpy() >= 5) & (np.abs(meta.ppm.to_numpy()) <= 20))
+    keys = key_of_row
+    e180 = pd.DataFrame({"row": np.flatnonzero(ok & (lib == "enveda-180"))})
+    e180["key"] = keys[e180.row]
+    other = set(keys[np.flatnonzero(ok & (lib != "enveda-180") & (lib != "enveda-np-examples"))])
+    e180 = e180[e180.key.isin(other)]
+    mass = pool.table.set_index("pool_key").mass
+    e180 = e180[e180.key.map(mass).between(*TEST_MASS)]
+    rows_of = {k: g.to_numpy() for k, g in e180.groupby("key").row}
+    rng = np.random.default_rng(seed)
+    order = np.array(sorted(rows_of))
+    rng.shuffle(order)
+    out = []
+    for k in order:
+        skel = skeleton_key(pool.smiles_of(k))
+        if skel is None or skel in vin_skeletons:
+            continue
+        r = rows_of[k]
+        if len(r) > 5:
+            r = np.sort(rng.choice(r, 5, replace=False))
+        spectra = []
+        for i in r:
+            mz, it = store.peaks(i)
+            m = meta.iloc[i]
+            spectra.append(dict(mz=mz, it=it, precursor_mz=float(m.precursor_mz), adduct=str(m.adduct),
+                                ce_ev=float(m.ce_ev), mode=str(m.ionization_mode)))
+        out.append((Query(qid=f"enveda-180:{k}", pool_key=k, spectra=spectra, spectrum_rows=r), fold_of(skel)))
+        if len(out) == n:
+            break
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", choices=["train", "vin"], required=True)
+    ap.add_argument("--set", choices=["train", "vin", "e180"], required=True)
     ap.add_argument("--n", type=int, default=1500)
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--n-shards", type=int, default=1)
@@ -107,7 +145,8 @@ def main():
         items = [(q, -1) for q in vin]
     else:
         vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
-        items = training_queries(store, key_of_row, pool, vin_skel, args.n)
+        make = e180_class1_queries if args.set == "e180" else training_queries
+        items = make(store, key_of_row, pool, vin_skel, args.n)
     items = items[args.shard::args.n_shards]
     print(f"{args.set} shard {args.shard}: {len(items)} queries, loaded in {time.time() - t0:.0f}s", flush=True)
 
@@ -120,7 +159,7 @@ def main():
         truth, same = equivalent_keys(q.pool_key, mass, pool, keys, cfg.tol_ppm * 3)
         for cls in classes:
             ko = knockout_for(q, cls, library.rows_of, same)
-            if cls == "C1" and args.set == "train":
+            if cls == "C1" and args.set in ("train", "e180"):
                 # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
                 # reference). So remove every spectrum of the structure from the query's own library,
                 # and skip the query when no other library has one — then it is not Class 1 at all.
