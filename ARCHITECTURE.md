@@ -161,15 +161,56 @@ This is also our publishing angle: a leak-free validation setup with measured cl
 
 ---
 
-## 6. Compute plan
+## 6. Modeling plan and compute budget
 
-| Work | Where | Why |
+### 6.1 Hardware, measured and documented
+
+| | Local | Kaggle GPU session | Kaggle CPU session |
+|---|---|---|---|
+| Accelerator | RTX 3060 Laptop, 6 GB, ~10 TFLOPS FP32 | P100 16 GB (~9.3 TFLOPS) or 2× T4 | — |
+| CPU / RAM | 8 cores / 16 GB (often ~3 GB free) | 4 cores / 29 GB | 4 cores / 30 GB |
+| Limits | none | 12 h per session; weekly GPU quota shown in account settings | 12 h per session |
+| Submission run | — | ≤ 9 h, internet off | ≤ 9 h, internet off |
+
+The local GPU is in the same FP32 class as the P100, so **training runs locally by default** and costs no quota. The Kaggle quota is kept for what only Kaggle can do: parallel experiments, anything needing > 6 GB VRAM or > 16 GB RAM, and the submission itself. Planning assumes a conservative **15 GPU-hours/week** until the real quota is confirmed from settings.
+
+### 6.2 The spectrum → fingerprint model (D3)
+
+| Decision | Choice | Reason |
 |---|---|---|
-| Data profiling, spectrum store, pool build, validation runs | local (16 GB RAM, streaming by row group) | cheap, iterative |
-| Spectrum → fingerprint training | Kaggle GPU (weekly quota) or local RTX 3060 6 GB with streaming | 2.5M spectra |
-| Submission | Kaggle notebook, internet off | required |
+| Input | set of ≤ 64 cleaned peaks (m/z, √intensity, neutral-loss m/z) + precursor mass, adduct, CE, mode tokens | peaks are a set, not a sequence; neutral losses carry most of the structural signal |
+| Encoder | 4-layer set transformer, d = 256, no positional encoding | permutation-invariant, ~3 M parameters, fits 6 GB with batch 512 in FP16 |
+| Heads | 4,096-bit ECFP4 ‖ MACCS (sigmoid, focal loss) + formula-count auxiliary | the fingerprint is what candidates are scored against; the formula head regularises |
+| Molecule level | per-spectrum and merged-spectrum predictions averaged | the one effect publicly measured above noise (+0.019) |
+| Training data | ~2.1 M spectra with test adducts and \|ppm\| ≤ 20; timsTOF up-weighted | matches the test instrument without discarding cross-instrument chemistry |
+| Leakage control | **structure-level 2-fold split** (A/B halves by metric key, V-in structures always held out) | ranker features for training queries must be out-of-fold, or the ranker learns to trust an overfit channel |
 
-Local environment: a project-local `.venv` with pinned `rdkit==2026.3.3` (never the global interpreter). Offline wheels are shipped to Kaggle as a dataset, mirroring the official metric notebook.
+Cost per model version: three trainings (fold A, fold B, full) × ~20 epochs. At ~6 k spectra/s on either GPU class that is ~6 min/epoch → **~2 h per training, ~6 h per version**, i.e. 2–3 versions per week locally, or on Kaggle within a 15 h/week quota.
+
+### 6.3 The ranker (E)
+
+- **Queries:** Class-2/Class-1 knockout simulations on NP-like training structures (COCONUT members from non-enveda libraries, ~5 k), never the V-in structures.
+- **Features:** all channels (D1–D6), computed with the query's knockout applied, D3 from the out-of-fold model.
+- **Model:** LightGBM LambdaRank, group = molecule, early stopping on a structure-disjoint validation fold; monotone constraints on similarity features; 5 seeds bagged.
+- **Selection:** by the mixture score on V-in across the `f` grid, with paired CIs against the current best.
+
+### 6.4 Submission-run budget (≤ 9 h, target < 3 h)
+
+| Stage | Work for ~400 molecules | Estimate |
+|---|---|---|
+| Load store, pool, models | ~3 GB from input datasets | 5–10 min |
+| D1 direct match | ~60 candidates × ≤ 40 references × ~3 spectra | < 2 min |
+| D2 analog search | sparse binned prefilter → top 500 → modified entropy | 10–20 min |
+| D3 fingerprint model | ~1,500 spectra forward pass | < 1 min |
+| D4 fragments, ranker, output | per-candidate CPU work | 10–20 min |
+
+Timings are logged on every run of the public test file; any stage that grows past 3× its estimate blocks release.
+
+### 6.5 Leaderboard budget
+
+5 submissions/day × ~80 days ≈ 400 available; planned use ≤ 2/day. Each submission has a stated purpose in the run log: *calibration probe* (pins down the class mix), *confirmation* (a change that already won locally), or *final candidate*.
+
+Local environment: project `.venv` created with `--system-site-packages`, so the heavy global stack (PyTorch + CUDA, LightGBM) is shared while `rdkit==2026.3.3` is pinned per project. Offline wheels are shipped to Kaggle as a dataset, mirroring the official metric notebook.
 
 ---
 

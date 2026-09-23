@@ -40,8 +40,12 @@ def formula_counts(formula: str) -> dict:
 
 @lru_cache(maxsize=200_000)
 def formula_mass(formula: str) -> float:
-    """Monoisotopic neutral mass of a molecular formula."""
-    return sum(MONOISOTOPIC[e] * n for e, n in formula_counts(formula).items())
+    """Monoisotopic neutral mass of a molecular formula; NaN if it contains an element we do not
+    tabulate (organometallics such as Ir or Os, far outside this competition's chemistry)."""
+    counts = formula_counts(formula)
+    if any(e not in MONOISOTOPIC for e in counts):
+        return float("nan")
+    return sum(MONOISOTOPIC[e] * n for e, n in counts.items())
 
 
 # ----------------------------------------------------------------------------- adducts
@@ -71,10 +75,8 @@ def parse_adduct(adduct: str):
     charge = z if m.group(4) == "+" else -z
     shift = 0.0
     for sign, mult, part in _PART_RE.findall(m.group(2)):
-        part = _ALIASES.get(part, part)
-        try:
-            mass = formula_mass(part)
-        except KeyError:
+        mass = formula_mass(_ALIASES.get(part, part))
+        if np.isnan(mass):
             return None
         shift += (1 if sign == "+" else -1) * (int(mult) if mult else 1) * mass
     shift -= charge * ELECTRON          # a cation has lost electrons, an anion gained them
