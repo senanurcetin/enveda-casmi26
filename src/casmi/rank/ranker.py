@@ -31,12 +31,13 @@ class Ranker:
     def _groups(df):
         return df.groupby(["qid", "cls"], sort=False).size().to_numpy()
 
-    def fit(self, train: pd.DataFrame, valid: pd.DataFrame, columns):
+    def fit(self, train: pd.DataFrame, valid: pd.DataFrame, columns, class_weight=None):
         self.columns = list(columns)
         keep = lambda d: d[d.groupby(["qid", "cls"]).label.transform("max") > 0]
         train, valid = keep(train), keep(valid)
         mono = [1 if c in MONOTONE_UP else 0 for c in self.columns]
-        dtr = lgb.Dataset(train[self.columns], train.label, group=self._groups(train), free_raw_data=False)
+        w = train.cls.map(class_weight).to_numpy() if class_weight else None
+        dtr = lgb.Dataset(train[self.columns], train.label, group=self._groups(train), weight=w, free_raw_data=False)
         dva = lgb.Dataset(valid[self.columns], valid.label, group=self._groups(valid), reference=dtr)
         self.models, self.best_iters = [], []
         for seed in self.cfg.seeds:

@@ -49,14 +49,18 @@ def vin_ranks(tbl, scores, pool, keys, vin_order):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-d3", action="store_true")
+    ap.add_argument("--train-files", default="rank_train_d3.parquet")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--drop-d3", action="store_true", help="train without D3 columns on the same table")
+    ap.add_argument("--c2-weight", type=float, default=1.0, help="relative weight of Class-2 groups")
     args = ap.parse_args()
     use_d3 = not args.no_d3
     tag = args.tag or ("ranker-d1d2d3" if use_d3 else "ranker-d1d2")
     t0 = time.time()
 
-    train, vin = load("train", use_d3), load("vin", use_d3)
-    cols = [c for c in feature_columns(train) if c != "fold"]
+    train = pd.read_parquet(ARTIFACT_DIR / args.train_files) if use_d3 else load("train", False)
+    vin = load("vin", use_d3)
+    cols = [c for c in feature_columns(train) if c != "fold" and not (args.drop_d3 and c.startswith("d3_"))]
     qids = train.qid.unique()
     rng = np.random.default_rng(SEED)
     es = set(rng.choice(qids, len(qids) // 5, replace=False))
@@ -64,7 +68,7 @@ def main():
     print(f"train {tr.qid.nunique()} queries / {len(tr):,} rows | early-stop {va.qid.nunique()} queries | "
           f"{len(cols)} features", flush=True)
 
-    ranker = Ranker().fit(tr, va, cols)
+    ranker = Ranker().fit(tr, va, cols, class_weight={"C1": 1.0, "C2": args.c2_weight})
     print(f"best iterations per seed: {ranker.best_iters}")
     print("top features by gain:\n" + ranker.importance().head(12).round(0).to_string())
 
@@ -77,7 +81,8 @@ def main():
     keys.save()
     ranks["C3"] = [0] * len(order)
 
-    report = {"tag": tag, "config": {"features": cols, "d3": use_d3, "seeds": list(ranker.cfg.seeds)},
+    report = {"tag": tag, "config": {"features": cols, "d3": use_d3, "seeds": list(ranker.cfg.seeds),
+                                     "c2_weight": args.c2_weight, "train_files": args.train_files, "drop_d3": args.drop_d3},
               "n_queries": len(order), "classes": {}}
     for cls in ("C1", "C2", "C3"):
         s = summarize(ranks[cls])

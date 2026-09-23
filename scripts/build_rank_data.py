@@ -83,7 +83,10 @@ def main():
     ap.add_argument("--n", type=int, default=1500)
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--n-shards", type=int, default=1)
+    ap.add_argument("--classes", default="C1,C2")
+    ap.add_argument("--suffix", default="", help="output name suffix, e.g. _c1x")
     args = ap.parse_args()
+    classes = args.classes.split(",")
 
     t0 = time.time()
     cfg = EngineConfig()
@@ -108,13 +111,26 @@ def main():
     items = items[args.shard::args.n_shards]
     print(f"{args.set} shard {args.shard}: {len(items)} queries, loaded in {time.time() - t0:.0f}s", flush=True)
 
-    out_path = ARTIFACT_DIR / f"rank_{args.set}_{args.shard}.parquet"
+    out_path = ARTIFACT_DIR / f"rank_{args.set}{args.suffix}_{args.shard}.parquet"
+    lib_of_row = store.meta.ingest_lib.astype(str).to_numpy()
+    skipped_c1 = 0
     tables = []
     for qi, (q, fold) in enumerate(items):
         mass = molecule_mass(q.spectra, cfg.mass_offset_ppm)
         truth, same = equivalent_keys(q.pool_key, mass, pool, keys, cfg.tol_ppm * 3)
-        for cls in ("C1", "C2"):
+        for cls in classes:
             ko = knockout_for(q, cls, library.rows_of, same)
+            if cls == "C1" and args.set == "train":
+                # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
+                # reference). So remove every spectrum of the structure from the query's own library,
+                # and skip the query when no other library has one — then it is not Class 1 at all.
+                qlib = q.qid.split(":")[0]
+                own = [r for k in same for r in library.rows_of.get(k, []) if lib_of_row[r] == qlib]
+                ko.excluded_rows = np.union1d(ko.excluded_rows, np.asarray(own, np.int64))
+                refs = [r for k in same for r in library.rows_of.get(k, []) if lib_of_row[r] != qlib]
+                if not refs:
+                    skipped_c1 += 1
+                    continue
             f = engine.features([dict(s) for s in q.spectra], ko.excluded_rows, ko.excluded_keys)
             if f.empty:
                 continue
@@ -128,6 +144,7 @@ def main():
             print(f"  {qi + 1}/{len(items)} ({time.time() - t0:.0f}s)", flush=True)
     pd.concat(tables, ignore_index=True).to_parquet(out_path, index=False)
     keys.save()
+    print(f"C1 skipped (no cross-library reference): {skipped_c1}")
     print(f"wrote {out_path.name}: {sum(len(t) for t in tables):,} candidate rows ({time.time() - t0:.0f}s)")
 
 
