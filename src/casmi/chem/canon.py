@@ -48,3 +48,26 @@ def heavy_atom_key(smiles):
         if atom.GetSymbol() != "H":
             counts[atom.GetSymbol()] = counts.get(atom.GetSymbol(), 0) + 1
     return tuple(sorted(counts.items()))
+
+
+@lru_cache(maxsize=1_000_000)
+def skeleton_key(smiles):
+    """Heavy-atom connectivity only: bonds single, no aromaticity, charges, H or stereo.
+    Tautomers (and protomers) share it, so two structures can only have the same metric key if
+    they share this key. It costs ~0.2 ms against 10–300 ms for tautomer canonicalisation, so it
+    serves as an exact pre-filter before the expensive comparison."""
+    mol = Chem.MolFromSmiles(smiles) if isinstance(smiles, str) else None
+    if mol is None:
+        return None
+    rw = Chem.RWMol(Chem.RemoveHs(mol, sanitize=False))
+    for atom in rw.GetAtoms():
+        atom.SetFormalCharge(0)
+        atom.SetIsAromatic(False)
+        atom.SetNoImplicit(True)
+        atom.SetNumExplicitHs(0)
+        atom.SetChiralTag(Chem.ChiralType.CHI_UNSPECIFIED)
+    for bond in rw.GetBonds():
+        bond.SetBondType(Chem.BondType.SINGLE)
+        bond.SetIsAromatic(False)
+        bond.SetStereo(Chem.BondStereo.STEREONONE)
+    return Chem.MolToSmiles(rw, canonical=True)

@@ -33,26 +33,37 @@ class Knockout:
     excluded_keys: set = field(default_factory=set)   # structures hidden from the pool
 
 
-def build_queries(store, key_of_row, library="enveda-np-examples", max_queries=None, seed=0):
-    """Group the query library's spectra by structure into molecule-like queries."""
+def build_queries(store, key_of_row, library="enveda-np-examples", keys_subset=None,
+                  max_spectra=None, max_queries=None, seed=0):
+    """Group one library's test-adduct spectra by structure into molecule-like queries.
+    `keys_subset` restricts the structures; `max_spectra` subsamples each query (test median is 3)."""
     meta = store.meta
-    rows = np.flatnonzero((meta.ingest_lib == library).to_numpy() & meta.test_adduct.to_numpy())
+    rng = np.random.default_rng(seed)
+    rows = np.flatnonzero((meta.ingest_lib == library).to_numpy() & meta.test_adduct.to_numpy()
+                          & (meta.n_peaks.to_numpy() >= 3))
     keys = key_of_row[rows]
+    if keys_subset is not None:
+        m = np.isin(keys, list(keys_subset))
+        rows, keys = rows[m], keys[m]
+    order = np.argsort(keys.astype(str), kind="stable")
+    rows, keys = rows[order], keys[order]
+    starts = np.r_[0, np.flatnonzero(keys[1:] != keys[:-1]) + 1] if len(keys) else np.empty(0, np.int64)
+    ends = np.r_[starts[1:], len(keys)] if len(keys) else np.empty(0, np.int64)
+    groups = list(zip(starts, ends))
+    if max_queries and len(groups) > max_queries:
+        groups = [groups[i] for i in sorted(rng.choice(len(groups), max_queries, replace=False))]
     queries = []
-    for key in pd.unique(keys):
-        if key is None or (isinstance(key, float) and np.isnan(key)):
-            continue
-        r = rows[keys == key]
+    for s_, e_ in groups:
+        r = rows[s_:e_]
+        if max_spectra and len(r) > max_spectra:
+            r = np.sort(rng.choice(r, max_spectra, replace=False))
         spectra = []
         for i in r:
             mz, it = store.peaks(i)
             m = meta.iloc[i]
             spectra.append(dict(mz=mz, it=it, precursor_mz=float(m.precursor_mz), adduct=str(m.adduct),
                                 ce_ev=float(m.ce_ev), mode=str(m.ionization_mode)))
-        queries.append(Query(qid=f"{library}:{key}", pool_key=key, spectra=spectra, spectrum_rows=r))
-    if max_queries and len(queries) > max_queries:
-        rng = np.random.default_rng(seed)
-        queries = [queries[i] for i in sorted(rng.choice(len(queries), max_queries, replace=False))]
+        queries.append(Query(qid=f"{library}:{keys[s_]}", pool_key=keys[s_], spectra=spectra, spectrum_rows=r))
     return queries
 
 
@@ -64,6 +75,20 @@ def knockout_for(query: Query, cls: str, rows_of_key, equivalent_keys) -> Knocko
     rows = [rows_of_key.get(k, np.empty(0, np.int64)) for k in equivalent_keys]
     excluded = np.union1d(np.concatenate(rows) if rows else np.empty(0, np.int64), query.spectrum_rows)
     return Knockout(excluded, set(equivalent_keys) if cls == "C3" else set())
+
+
+def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0):
+    """Metric truth and every pool key in the mass window that is the same structure under the
+    metric (tautomer variants stored under another standard key). The skeleton key is an exact
+    necessary condition, so only skeleton matches pay for tautomer canonicalisation."""
+    from casmi.chem.canon import skeleton_key
+    truth_smiles = pool.smiles_of(query_key)
+    truth, skel = keys.get(query_key, truth_smiles), skeleton_key(truth_smiles)
+    same = {query_key}
+    for k in pool.key[pool.window(query_mass, window_ppm).idx]:
+        if k != query_key and skeleton_key(pool.smiles_of(k)) == skel and keys.get(k, pool.smiles_of(k)) == truth:
+            same.add(k)
+    return truth, same
 
 
 def mixture(mrr_by_class: dict, f1: float, f3: float) -> float:

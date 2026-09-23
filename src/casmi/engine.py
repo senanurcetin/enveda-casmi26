@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from casmi.channels.analog import AnalogConfig, propagate
 from casmi.channels.library import LibraryConfig, LibraryIndex
 from casmi.chem.masses import neutral_mass
 from casmi.spectra.clean import clean_peaks_fast
@@ -20,6 +21,7 @@ class EngineConfig:
     mass_offset_ppm: float = 0.0      # calibrated instrument offset (measured +1.5 ppm on np-examples)
     top_n: int = 25
     library: LibraryConfig = field(default_factory=LibraryConfig)
+    analog: AnalogConfig = field(default_factory=AnalogConfig)
 
 
 def molecule_mass(spectra, offset_ppm=0.0):
@@ -30,8 +32,10 @@ def molecule_mass(spectra, offset_ppm=0.0):
 
 
 class BaselineEngine:
-    def __init__(self, pool, library: LibraryIndex, cfg: EngineConfig = EngineConfig()):
+    def __init__(self, pool, library: LibraryIndex, cfg: EngineConfig = EngineConfig(), analog=None, fps=None):
+        """`analog` (AnalogIndex) and `fps` (packed pool fingerprints) enable the D2 channel."""
         self.pool, self.library, self.cfg = pool, library, cfg
+        self.analog, self.fps = analog, fps
 
     def features(self, spectra, excluded_rows=None, excluded_keys=None) -> pd.DataFrame:
         for s in spectra:   # clean once per query, with the library's cleaning settings
@@ -40,12 +44,23 @@ class BaselineEngine:
         win = self.pool.window(mass, self.cfg.tol_ppm, excluded_keys)
         keys = self.pool.key[win.idx]
         d1 = np.array([self.library.score(spectra, k, excluded_rows) for k in keys]).reshape(-1, 3)
-        return pd.DataFrame({"pool_key": keys, "ppm": win.ppm, "d1_max": d1[:, 0], "d1_mean": d1[:, 1],
-                             "d1_nref": d1[:, 2].astype(int), "n_cand": len(keys)})
+        f = pd.DataFrame({"pool_key": keys, "ppm": win.ppm, "d1_max": d1[:, 0], "d1_mean": d1[:, 1],
+                          "d1_nref": d1[:, 2].astype(int), "n_cand": len(keys)})
+        if self.analog is not None and len(keys):
+            analogs = self.analog.search(spectra, mass, excluded_rows)
+            for name, v in propagate(analogs, win.idx, self.pool.mass[win.idx], self.fps,
+                                     self.pool.row_of, self.cfg.analog.powers).items():
+                f[name] = v
+        return f
 
     def rank(self, feats: pd.DataFrame, depth=60):
         """Ranked pool keys (deeper than 25, so output deduplication can refill the list)."""
         if feats.empty:
             return []
-        order = np.lexsort((np.abs(feats.ppm.to_numpy()), -feats.d1_mean.to_numpy(), -feats.d1_max.to_numpy()))
+        primary = feats.d1_max.to_numpy()
+        secondary = feats.d1_mean.to_numpy()
+        if "an_p4" in feats:   # interim rule until the learned ranker: best of direct and propagated evidence
+            primary = np.maximum(primary, feats.an_p4.to_numpy())
+            secondary = feats.an_p2.to_numpy()
+        order = np.lexsort((np.abs(feats.ppm.to_numpy()), -secondary, -primary))
         return feats.pool_key.to_numpy()[order][:depth].tolist()

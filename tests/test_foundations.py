@@ -69,3 +69,12 @@ def test_key_level_rank_and_summary():
     assert rank_of_truth(["A"], "Z") == 0
     s = summarize([1, 2, 0, 4], n_boot=200)
     assert s.mrr == pytest.approx((1 + .5 + 0 + .25) / 4)
+
+
+def test_skeleton_key_is_a_valid_prefilter():
+    from casmi.chem.canon import skeleton_key
+    # tautomers share the skeleton (necessary condition for sharing a metric key)
+    assert skeleton_key("Oc1ccccn1") == skeleton_key("O=c1cccc[nH]1")
+    assert skeleton_key("CC(=O)C") == skeleton_key("CC(O)=C")
+    # constitutional isomers do not
+    assert skeleton_key("CCO") != skeleton_key("COC")
