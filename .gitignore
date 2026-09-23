@@ -1,0 +1,20 @@
+# Environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Competition data must never be committed (rules: no redistribution)
+data/
+*.parquet
+*.npy
+*.npz
+*.memmap
+*.bin
+submission*.csv
+
+# Large build artifacts
+artifacts/
+runs/*.json
+!runs/.gitkeep
