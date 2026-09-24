@@ -35,8 +35,11 @@ def load_coconut():
     cols = ["identifier", "canonical_smiles", "standard_inchi_key", "molecular_formula",
             "exact_molecular_weight", "formal_charge", "np_likeness", "np_classifier_pathway",
             "np_classifier_superclass", "contains_sugar"]
-    with zipfile.ZipFile(COCONUT_ZIP).open("coconut_csv_lite-09-2026.csv") as f:
-        c = pd.read_csv(f, usecols=cols, low_memory=False)
+    if COCONUT_ZIP.suffix == ".zip":
+        with zipfile.ZipFile(COCONUT_ZIP).open("coconut_csv_lite-09-2026.csv") as f:
+            c = pd.read_csv(f, usecols=cols, low_memory=False)
+    else:   # Kaggle extracts uploaded archives, so the dataset holds the CSV itself
+        c = pd.read_csv(COCONUT_ZIP, usecols=cols, low_memory=False)
     n0 = len(c)
     c = c[(c.formal_charge == 0) & c.canonical_smiles.notna() & c.standard_inchi_key.notna()].copy()
     multi = c.canonical_smiles.str.contains(".", regex=False)

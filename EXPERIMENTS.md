@@ -20,6 +20,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 5 | v3: Class-1 groups from enveda-180 (timsTOF, cross-instrument) | 0.375 | 0.735 | −0.074 … −0.037 vs #4 | **REJECT** |
 | 6 | #3 data without membership priors | 0.718 | 0.682 | — | diagnostic |
 | 7 | **v13-clean**: C1 from both sources, no membership priors (incl. NaN-coded NP-likeness) | **0.839** | **0.662** | +0.085 … +0.225 vs #1; −0.006 … +0.028 vs #3 | **ACCEPT vs #1; chosen over #3 on robustness** |
+| 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
 
@@ -55,6 +56,14 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
    zero at the Class-2-heavy end), but #3 relies on features whose class-conditional distribution
    is set by our simulation design and cannot be checked against the test. #7 is chosen as a
    robustness decision, recorded as such.
+
+7. **V-in's Class 1 is unusually easy for the simple rule (run #8).** On cross-fitted training
+   queries the ranker beats the direct-match rule on Class 1 (0.873 vs 0.790), while on V-in the
+   rule wins (0.908 vs 0.839). The hosts describe enveda-np-examples as *deliberately common*
+   natural products with references in many libraries. Tuning a fusion weight or gate on V-in
+   would have bought V-in-specific score; tuned on training OOF, every setting lost to the ranker
+   alone, so none was adopted. Real Class-1 test molecules are likelier to resemble the training
+   queries than V-in's showcase compounds.
 
 ## Engineering notes
 

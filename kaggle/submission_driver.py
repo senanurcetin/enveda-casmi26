@@ -37,7 +37,7 @@ ON_KAGGLE = Path("/kaggle/input").exists()
 if ON_KAGGLE:
     code_src = find("/kaggle/input/**/casmi_code_root.txt").parent
     models_src = find("/kaggle/input/**/fp_fold0.pt").parent
-    coconut = find("/kaggle/input/**/coconut_csv_lite-09-2026.zip")
+    coconut = find("/kaggle/input/**/coconut_csv_lite-09-2026.*")   # Kaggle extracts the zip to .csv
     work, artifacts = Path("/kaggle/working/casmi"), Path("/tmp/casmi_artifacts")
 else:
     code_src, models_src = Path(os.environ["CASMI_CODE"]), Path(os.environ["CASMI_MODELS"])
