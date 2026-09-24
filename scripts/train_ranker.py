@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR, PROJECT_ROOT, SEED  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE, PROJECT_ROOT, SEED  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
 from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.rank.features import feature_columns  # noqa: E402
@@ -80,7 +80,7 @@ def main():
     print(f"best iterations per seed: {ranker.best_iters}")
     print("top features by gain:\n" + ranker.importance().head(12).round(0).to_string())
 
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     # V-in query order must match run_validation's, so compare_runs pairs the same molecules
     base = json.loads(sorted((PROJECT_ROOT / "runs").glob("*_d1-d2-analog_*.json"))[-1].read_text())

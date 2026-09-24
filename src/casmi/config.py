@@ -21,3 +21,10 @@ ARTIFACT_DIR = Path(os.environ.get("CASMI_ARTIFACTS",
                                    "/tmp/casmi_artifacts" if ON_KAGGLE else str(DATA_DIR / "artifacts")))
 OUTPUT_DIR = Path("/kaggle/working") if ON_KAGGLE else PROJECT_ROOT / "runs"
 SEED = 42
+
+# Candidate-pool variant: "" = train ∪ COCONUT (default), "_pcl" = + PubChemLite. All pool-derived
+# artifacts carry the tag, so variants can live side by side and be compared on the same queries.
+POOL_TAG = os.environ.get("CASMI_POOL_TAG", "")
+POOL_FILE = f"pool{POOL_TAG}.parquet"
+POOL_FP_FILE = f"pool_fp2048{POOL_TAG}.npy"
+POOL_FP_KEYS_FILE = f"pool_fp_keys{POOL_TAG}.parquet"

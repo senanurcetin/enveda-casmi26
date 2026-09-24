@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 
 NBITS = 2048
 
@@ -38,15 +38,15 @@ def _fp_chunk(smiles_list):
 def main():
     t0 = time.time()
     # CandidatePool sorts by mass (stable) and drops duplicate keys: reproduce that order exactly
-    pool = pd.read_parquet(ARTIFACT_DIR / "pool.parquet", columns=["pool_key", "smiles", "mass"])
+    pool = pd.read_parquet(ARTIFACT_DIR / POOL_FILE, columns=["pool_key", "smiles", "mass"])
     pool = pool.dropna(subset=["pool_key", "mass"]).sort_values("mass", kind="stable")
     pool = pool.drop_duplicates("pool_key", keep="first").reset_index(drop=True)
     smiles = pool.smiles.tolist()
     chunks = [smiles[i:i + 5000] for i in range(0, len(smiles), 5000)]
     with ProcessPoolExecutor(max_workers=max(1, (os.cpu_count() or 2) - 1)) as ex:
         fps = np.concatenate(list(ex.map(_fp_chunk, chunks)))
-    np.save(ARTIFACT_DIR / "pool_fp2048.npy", fps)
-    pool[["pool_key"]].to_parquet(ARTIFACT_DIR / "pool_fp_keys.parquet", index=False)
+    np.save(ARTIFACT_DIR / POOL_FP_FILE, fps)
+    pool[["pool_key"]].to_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE, index=False)
     empty = (fps.sum(axis=1) == 0).sum()
     print(f"{len(fps):,} fingerprints ({fps.nbytes / 1e6:.0f} MB), {empty:,} empty, built in {time.time() - t0:.0f}s")
 

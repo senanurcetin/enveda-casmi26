@@ -16,7 +16,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR, DATA_DIR, OUTPUT_DIR  # noqa: E402
+from casmi.config import ARTIFACT_DIR, DATA_DIR, OUTPUT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 from casmi.channels.analog import AnalogIndex  # noqa: E402
 from casmi.channels.library import LibraryIndex  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
@@ -70,8 +70,8 @@ def main():
     cfg = EngineConfig()
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
-    fps = np.load(ARTIFACT_DIR / "pool_fp2048.npy")
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
+    fps = np.load(ARTIFACT_DIR / POOL_FP_FILE)
     library = LibraryIndex(store, key_of_row, cfg.library)
     analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
     engine = BaselineEngine(pool, library, cfg, analog, fps)

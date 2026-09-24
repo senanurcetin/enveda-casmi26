@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 from casmi.channels.analog import AnalogIndex  # noqa: E402
 from casmi.channels.library import LibraryIndex  # noqa: E402
 from casmi.chem.canon import skeleton_key  # noqa: E402
@@ -130,10 +130,10 @@ def main():
     cfg = EngineConfig()
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
-    fp_keys = pd.read_parquet(ARTIFACT_DIR / "pool_fp_keys.parquet").pool_key.to_numpy()
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
+    fp_keys = pd.read_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE).pool_key.to_numpy()
     assert (fp_keys == pool.key).all()
-    fps = np.load(ARTIFACT_DIR / "pool_fp2048.npy")
+    fps = np.load(ARTIFACT_DIR / POOL_FP_FILE)
     library = LibraryIndex(store, key_of_row, cfg.library)
     analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")                    # start from the shared cache

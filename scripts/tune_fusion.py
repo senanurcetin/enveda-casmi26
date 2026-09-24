@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR, PROJECT_ROOT, SEED  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE, PROJECT_ROOT, SEED  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
 from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.rank.ranker import Ranker  # noqa: E402
@@ -98,7 +98,7 @@ def main():
     models = [lgb.Booster(model_file=str(p)) for p in sorted((ARTIFACT_DIR / "models").glob("ranker-v13-clean_seed*.txt"))]
     rs = np.mean([m.predict(vin[cols]) for m in models], axis=0)
     score = combined(vin, rs, best["mode"], best.param)
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     order = pd.unique(vin.qid)
     ranks = {"C1": {}, "C2": {}}

@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR, PROJECT_ROOT  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE, PROJECT_ROOT  # noqa: E402
 from casmi.channels.library import LibraryIndex  # noqa: E402
 from casmi.chem.canon import skeleton_key  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
@@ -52,16 +52,16 @@ def main():
     t0 = time.time()
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     library = LibraryIndex(store, key_of_row, cfg.library)
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     queries = build_queries(store, key_of_row, max_queries=args.max_queries)
     analog = fps = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
-        fp_keys = pd.read_parquet(ARTIFACT_DIR / "pool_fp_keys.parquet").pool_key.to_numpy()
+        fp_keys = pd.read_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE).pool_key.to_numpy()
         assert (fp_keys == pool.key).all(), "fingerprints are not aligned with the pool"
-        fps = np.load(ARTIFACT_DIR / "pool_fp2048.npy")
+        fps = np.load(ARTIFACT_DIR / POOL_FP_FILE)
         analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
         print(f"analog index: {analog.matrix.shape[0]:,} spectra, {analog.matrix.nnz:,} nonzeros", flush=True)
     engine = BaselineEngine(pool, library, cfg, analog, fps)

@@ -18,7 +18,7 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from casmi.config import ARTIFACT_DIR  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 from casmi.channels.fpinfer import molecule_logp  # noqa: E402
 from casmi.channels.fpmodel import candidate_scores, load  # noqa: E402
 from casmi.chem.canon import skeleton_key  # noqa: E402
@@ -60,8 +60,8 @@ def load_everything(device):
     models = {f: load(ARTIFACT_DIR / "models" / f"fp_fold{f}.pt", device) for f in (0, 1)}
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
-    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool.parquet"))
-    fps = np.load(ARTIFACT_DIR / "pool_fp2048.npy")
+    pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
+    fps = np.load(ARTIFACT_DIR / POOL_FP_FILE)
     vin = build_queries(store, key_of_row)
     vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
     train_items = brd.training_queries(store, key_of_row, pool, vin_skel, 1500)

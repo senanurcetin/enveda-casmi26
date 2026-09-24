@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 from casmi.chem.canon import skeleton_key  # noqa: E402
 from casmi.spectra.clean import clean_peaks_fast  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
@@ -39,9 +39,9 @@ def main():
     print(f"{len(rows):,} eligible spectra", flush=True)
 
     # structures: fingerprint row in the pool, skeleton fold, V-in flag
-    pool_keys = pd.read_parquet(ARTIFACT_DIR / "pool_fp_keys.parquet").pool_key.to_numpy()
+    pool_keys = pd.read_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE).pool_key.to_numpy()
     fp_row = dict(zip(pool_keys, range(len(pool_keys))))
-    pool_fps = np.load(ARTIFACT_DIR / "pool_fp2048.npy", mmap_mode="r")
+    pool_fps = np.load(ARTIFACT_DIR / POOL_FP_FILE, mmap_mode="r")
     smiles = pd.read_parquet(ARTIFACT_DIR / "structures.parquet", columns=["pool_key", "smiles"])
     smiles = dict(zip(smiles.pool_key, smiles.smiles))
     uniq = pd.unique(keys)

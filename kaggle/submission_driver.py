@@ -63,6 +63,11 @@ for f in models_src.iterdir():
     shutil.copy(f, artifacts / "models" / f.name)
 
 env = {**os.environ, "CASMI_ARTIFACTS": str(artifacts), "CASMI_COCONUT": str(coconut), "PYTHONUNBUFFERED": "1"}
+# optional pool expansion with PubChemLite for Exposomics (CC BY 4.0, Schymanski et al., Zenodo 22143470)
+if os.environ.get("CASMI_USE_PUBCHEMLITE") == "1":
+    pcl = find("/kaggle/input/**/PubChemLite_CCSbase_*.csv") if ON_KAGGLE else Path(os.environ["CASMI_PUBCHEMLITE"])
+    env.update({"CASMI_PUBCHEMLITE": str(pcl), "CASMI_POOL_TAG": "_pcl"})
+    log(f"pool expansion: {pcl.name}")
 for step in ["build_structures.py", "build_store.py", "build_pool.py", "build_fingerprints.py"]:
     log(f"-> {step}")
     subprocess.run([sys.executable, str(work / "scripts" / step)], env=env, check=True)

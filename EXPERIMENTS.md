@@ -20,6 +20,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 5 | v3: Class-1 groups from enveda-180 (timsTOF, cross-instrument) | 0.375 | 0.735 | −0.074 … −0.037 vs #4 | **REJECT** |
 | 6 | #3 data without membership priors | 0.718 | 0.682 | — | diagnostic |
 | 7 | **v13-clean**: C1 from both sources, no membership priors (incl. NaN-coded NP-likeness) | **0.839** | **0.662** | +0.085 … +0.225 vs #1; −0.006 … +0.028 vs #3 | **ACCEPT vs #1; chosen over #3 on robustness** |
+| 9 | #7 on a pool + PubChemLite (1.08 M structures, median 96 candidates vs 58) | 0.832 | 0.627 | −0.038 … −0.022 | **REJECT on V-in** — but V-in cannot see the benefit (all its answers are in COCONUT); LB probe decides |
 | 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
