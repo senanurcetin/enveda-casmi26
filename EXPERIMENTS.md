@@ -65,6 +65,21 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
    alone, so none was adopted. Real Class-1 test molecules are likelier to resemble the training
    queries than V-in's showcase compounds.
 
+## Leaderboard
+
+| Date | Submission | Public LB | Note |
+|---|---|---|---|
+| 2026-09-24 | #7 v13-clean (D1+D2+D3, no membership priors) | **0.258** | two identical submissions scored identically — the pipeline is deterministic on the hidden test |
+
+**Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
+0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
+for Class 2 — i.e. real Class-2 MRR ≈ 0.25–0.30 against 0.66 in simulation. Leading hypotheses:
+(1) V-in's Class 2 is too easy — deliberately common natural products with many close analogs in
+the libraries, whereas real Class-2 molecules have never had a spectrum published; (2) dropping all
+membership priors also dropped a legitimate one — enveda-180-only structures are drug-like and
+cannot be answers for a natural-product test set. Calibration submissions planned: interim rule
+(does the ranker transfer at all?) and the v1 ranker with priors (did dropping them cost us?).
+
 ## Engineering notes
 
 - Spectrum store: 2.54 M spectra → 0.87 GB memmaps, built in 138 s after replacing the NumPy
