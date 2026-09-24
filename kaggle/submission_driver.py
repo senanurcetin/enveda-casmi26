@@ -18,7 +18,8 @@ import sys
 import time
 from pathlib import Path
 
-RANKER = "ranker-v13-clean"
+# which ranker to use; "none" = the interim rule (max of direct and propagated evidence)
+RANKER = os.environ.get("CASMI_RANKER", "ranker-v13-clean")
 T0 = time.time()
 
 
@@ -67,5 +68,6 @@ for step in ["build_structures.py", "build_store.py", "build_pool.py", "build_fi
     subprocess.run([sys.executable, str(work / "scripts" / step)], env=env, check=True)
 
 log(f"-> make_submission.py (ranker {RANKER})")
-subprocess.run([sys.executable, str(work / "scripts" / "make_submission.py"), "--ranker", RANKER], env=env, check=True)
+args = [] if RANKER == "none" else ["--ranker", RANKER]
+subprocess.run([sys.executable, str(work / "scripts" / "make_submission.py"), *args], env=env, check=True)
 log("done")

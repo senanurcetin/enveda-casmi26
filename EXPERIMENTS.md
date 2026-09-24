@@ -70,6 +70,8 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | Date | Submission | Public LB | Note |
 |---|---|---|---|
 | 2026-09-24 | #7 v13-clean (D1+D2+D3, no membership priors) | **0.258** | two identical submissions scored identically — the pipeline is deterministic on the hidden test |
+| 2026-09-24 | #1 interim rule max(D1, D2) — calibration | 0.190 | the learned ranker transfers: +0.068 |
+| 2026-09-24 | #3 v1 ranker *with* membership priors — calibration | 0.245 | dropping the priors helped on the real test: +0.013 |
 
 **Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
 0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
@@ -77,8 +79,18 @@ for Class 2 — i.e. real Class-2 MRR ≈ 0.25–0.30 against 0.66 in simulation
 (1) V-in's Class 2 is too easy — deliberately common natural products with many close analogs in
 the libraries, whereas real Class-2 molecules have never had a spectrum published; (2) dropping all
 membership priors also dropped a legitimate one — enveda-180-only structures are drug-like and
-cannot be answers for a natural-product test set. Calibration submissions planned: interim rule
-(does the ranker transfer at all?) and the v1 ranker with priors (did dropping them cost us?).
+cannot be answers for a natural-product test set.
+
+**After the calibration submissions.** The leaderboard *orders* the three models exactly as
+validation does (rule < v1 < v13-clean), so validation is a reliable guide for choices; only its
+level is optimistic. Solving LB = a + w₁·MRR₁ + w₂·MRR₂ over the three submissions gives
+w₁ ≈ 0.10, w₂ ≈ 0.18, a ≈ 0.055 — a calibration (3 points, 3 unknowns), not yet a test. It implies
+a V-in Class-2 gain is worth ~1.8× the same Class-1 gain, and that even a perfect simulated Class 2
+would add only ~0.06: most of the gap to the top (0.417) lies where V-in cannot see — pool
+coverage for PubChem-only answers and Class 3. Hypothesis (2) above was refuted: the priors did not
+carry legitimate signal on the real test. The nearest spectral neighbour of a Class-2 answer is
+closer for V-in (median Tanimoto 0.783) than for training queries (0.731), a modest part of V-in's
+optimism.
 
 ## Engineering notes
 
