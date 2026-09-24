@@ -283,6 +283,18 @@ My pipeline (not reproduced here) ranks a 715k-structure pool (train ∪ COCONUT
 
 The middle row is the instructive one. Its Class-1 answers were drug-like `enveda-180` structures, which are not in COCONUT — so no training answer was ever "in the library **and** in COCONUT", which is exactly what a natural-product Class-1 answer looks like. The ranker learned that combination as a decoy signature. The similarity distribution of those Class-1 answers matched V-in almost exactly (median 0.832 vs 0.848); the evidence was fine, the membership features were not. NP-likeness leaked the same information a second way: it is only defined for COCONUT rows, so NaN meant "not from COCONUT".
 
+### Update — does it hold on the leaderboard?
+
+I submitted the full pipeline with and without the membership priors (same code otherwise; the pipeline is deterministic — two identical submissions scored identically):
+
+| Full pipeline | V-in C1 | V-in C2 | Public LB |
+|---|---|---|---|
+| simple rule, no learned ranker | 0.908 | 0.252 | 0.190 |
+| ranker **with** membership priors | 0.680 | 0.676 | 0.245 |
+| ranker **without** membership priors | 0.839 | 0.662 | **0.258** |
+
+The leaderboard orders the three exactly as the knockout validation does, and removing the priors helped on the hidden test too. One comparison on the public split is not proof, and the absolute validation numbers are clearly optimistic (V-in's natural products are deliberately common, with close analogs in the libraries) — but the direction held.
+
 ## Takeaways
 
 1. **Simulate the pool, not just the answer.** If most real candidates have no reference spectra, most simulated candidates must have none either — otherwise "no direct match" becomes the answer key, for evidence features as much as for metadata.
