@@ -123,6 +123,9 @@ def main():
     ap.add_argument("--n-shards", type=int, default=1)
     ap.add_argument("--classes", default="C1,C2")
     ap.add_argument("--suffix", default="", help="output name suffix, e.g. _c1x")
+    ap.add_argument("--c1-mode", choices=["crosslib", "own"], default="crosslib",
+                    help="Class-1 knockout for train/e180 sets: remove the query library's spectra of the "
+                         "structure (crosslib) or only the query's own spectra (own, as in v1/v13)")
     args = ap.parse_args()
     classes = args.classes.split(",")
 
@@ -159,7 +162,7 @@ def main():
         truth, same = equivalent_keys(q.pool_key, mass, pool, keys, cfg.tol_ppm * 3)
         for cls in classes:
             ko = knockout_for(q, cls, library.rows_of, same)
-            if cls == "C1" and args.set in ("train", "e180"):
+            if cls == "C1" and args.set in ("train", "e180") and args.c1_mode == "crosslib":
                 # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
                 # reference). So remove every spectrum of the structure from the query's own library,
                 # and skip the query when no other library has one — then it is not Class 1 at all.

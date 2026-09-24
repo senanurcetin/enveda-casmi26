@@ -73,6 +73,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 2026-09-24 | #7 v13-clean (D1+D2+D3, no membership priors) | **0.258** | two identical submissions scored identically — the pipeline is deterministic on the hidden test |
 | 2026-09-24 | #1 interim rule max(D1, D2) — calibration | 0.190 | the learned ranker transfers: +0.068 |
 | 2026-09-24 | #3 v1 ranker *with* membership priors — calibration | 0.245 | dropping the priors helped on the real test: +0.013 |
+| 2026-09-24 | #9 v13-clean on pool + PubChemLite | **0.267** | new best; V-in predicted ≈ −0.007 (cost only), so real PubChem-only answers are worth ≈ +0.016 |
 
 **Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
 0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
@@ -92,6 +93,12 @@ coverage for PubChem-only answers and Class 3. Hypothesis (2) above was refuted:
 carry legitimate signal on the real test. The nearest spectral neighbour of a Class-2 answer is
 closer for V-in (median Tanimoto 0.783) than for training queries (0.731), a modest part of V-in's
 optimism.
+
+**PubChemLite (#9).** V-in rejected the larger pool (C2 −0.035: more decoys, median 96 candidates vs
+58), yet the leaderboard rose 0.258 → 0.267. V-in cannot see the benefit by construction — every V-in
+answer is a COCONUT structure — so this is the first measured evidence that the hidden test contains
+answers reachable only through PubChem. Pool coverage is a real lever; V-in only measures its cost.
+Next: retrain the ranker on the larger pool's candidate lists (its list-context features shifted).
 
 ## Engineering notes
 
