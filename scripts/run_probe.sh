@@ -16,6 +16,11 @@ while true; do
   sleep 60
 done
 log "$NAME: notebook complete"
+# daily submission limits reset at 00:00 UTC: optionally hold the submission until NOT_BEFORE_UTC
+if [ -n "$NOT_BEFORE_UTC" ]; then
+  while [ "$(date -u '+%Y-%m-%dT%H:%M')" \< "$NOT_BEFORE_UTC" ]; do sleep 120; done
+  log "$NAME: past $NOT_BEFORE_UTC UTC, submitting"
+fi
 before=$(count)
 kaggle competitions submit -c $C -k $K -v "$VERSION" -f submission.csv -m "$MSG" > /dev/null 2>&1
 sleep 15

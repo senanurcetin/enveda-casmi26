@@ -114,8 +114,11 @@ class AnalogIndex:
             if q["mz_c"].size == 0:
                 continue
             i, v = _vector(q["mz_c"], q["it_c"], q["precursor_mz"])
-            qv = sp.csr_matrix((v, (np.zeros_like(i), i)), shape=(1, 2 * N_BINS))
-            scores = np.asarray((self.matrix @ qv.T).todense()).ravel()
+            # dense query vector: a CSR mat-vec needs no nnz-sized temporary (a sparse x sparse
+            # product allocated ~260 MB per call and ran out of memory); same scores, ~5x faster
+            dq = np.zeros(2 * N_BINS, np.float32)
+            np.add.at(dq, i, v.astype(np.float32))
+            scores = self.matrix @ dq
             scores[~(mass_ok & (self.adduct == q["adduct"]))] = -1
             top = np.argpartition(-scores, min(self.cfg.prefilter_top, len(scores) - 1))[: self.cfg.prefilter_top]
             for t in top:
