@@ -68,6 +68,11 @@ if os.environ.get("CASMI_USE_PUBCHEMLITE") == "1":
     pcl = find("/kaggle/input/**/PubChemLite_CCSbase_*.csv") if ON_KAGGLE else Path(os.environ["CASMI_PUBCHEMLITE"])
     env.update({"CASMI_PUBCHEMLITE": str(pcl), "CASMI_POOL_TAG": "_pcl"})
     log(f"pool expansion: {pcl.name}")
+    # + ChEBI (CC BY 4.0) and LIPID MAPS (CC0), pre-normalised by scripts/build_extra_sources.py
+    if os.environ.get("CASMI_USE_EXTRA") == "1":
+        extra = find("/kaggle/input/**/extra_chebi.parquet").parent if ON_KAGGLE else Path(os.environ["CASMI_EXTRA_SOURCES"])
+        env.update({"CASMI_EXTRA_SOURCES": str(extra), "CASMI_POOL_TAG": "_pclx"})
+        log(f"pool expansion: ChEBI + LIPID MAPS from {extra}")
 for step in ["build_structures.py", "build_store.py", "build_pool.py", "build_fingerprints.py"]:
     log(f"-> {step}")
     subprocess.run([sys.executable, str(work / "scripts" / step)], env=env, check=True)
