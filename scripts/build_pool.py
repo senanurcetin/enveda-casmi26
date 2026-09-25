@@ -25,6 +25,9 @@ PUBCHEMLITE = os.environ.get("CASMI_PUBCHEMLITE")   # optional: PubChemLite for 
 # optional: directory with extra_lipidmaps.parquet (LIPID MAPS, CC0) / extra_chebi.parquet (ChEBI, CC BY 4.0),
 # produced by scripts/build_extra_sources.py
 EXTRA_DIR = os.environ.get("CASMI_EXTRA_SOURCES")
+# optional: PubChem literature subset (extra_pubchem.parquet in EXTRA_DIR, scripts/build_pubchem_subset.py),
+# capped to the N best-documented structures (by number of PubMed articles)
+PUBCHEM_MAX = int(os.environ.get("CASMI_PUBCHEM_MAX", "0"))
 MASS_RANGE = (100.0, 1300.0)          # test monoisotopic masses span 157–1,159 Da
 ENVEDA180_BIT = 1                     # bit 0 in build_structures.LIBS
 
@@ -89,10 +92,17 @@ def main():
     if PUBCHEMLITE:
         parts.append(load_pubchemlite())
     if EXTRA_DIR:
-        for name, bit in (("chebi", SOURCE_BITS["chebi"]), ("lipidmaps", SOURCE_BITS["lipidmaps"])):
+        names = [n for n in os.environ.get("CASMI_EXTRA_NAMES", "chebi,lipidmaps").split(",") if n]
+        for name in names:
+            bit = SOURCE_BITS[name]
             e = pd.read_parquet(Path(EXTRA_DIR) / f"extra_{name}.parquet")
             parts.append(e.assign(sources=bit, n_spectra=0, libs=0))
             print(f"{name}: {len(e):,} structures")
+        if PUBCHEM_MAX:
+            e = pd.read_parquet(Path(EXTRA_DIR) / "extra_pubchem.parquet", columns=["pool_key", "smiles", "mass", "n_pmid"])
+            e = e.nlargest(PUBCHEM_MAX, "n_pmid", keep="first").drop(columns="n_pmid")
+            parts.append(e.assign(sources=SOURCE_BITS["pubchem_lit"], n_spectra=0, libs=0))
+            print(f"PubChem literature subset: {len(e):,} structures")
     both = pd.concat(parts, ignore_index=True)
     g = both.groupby("pool_key", sort=False)
     pool = pd.DataFrame({

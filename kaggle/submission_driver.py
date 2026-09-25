@@ -73,6 +73,11 @@ if os.environ.get("CASMI_USE_PUBCHEMLITE") == "1":
         extra = find("/kaggle/input/**/extra_chebi.parquet").parent if ON_KAGGLE else Path(os.environ["CASMI_EXTRA_SOURCES"])
         env.update({"CASMI_EXTRA_SOURCES": str(extra), "CASMI_POOL_TAG": "_pclx"})
         log(f"pool expansion: ChEBI + LIPID MAPS from {extra}")
+    # or: the N best-documented structures of the PubChem literature subset (CID-PMID), alone
+    if os.environ.get("CASMI_PUBCHEM_MAX"):
+        extra = find("/kaggle/input/**/extra_pubchem*.parquet").parent if ON_KAGGLE else Path(os.environ["CASMI_EXTRA_SOURCES"])
+        env.update({"CASMI_EXTRA_SOURCES": str(extra), "CASMI_EXTRA_NAMES": "", "CASMI_POOL_TAG": "_pclp"})
+        log(f"pool expansion: top {os.environ['CASMI_PUBCHEM_MAX']} PubChem literature structures")
 for step in ["build_structures.py", "build_store.py", "build_pool.py", "build_fingerprints.py"]:
     log(f"-> {step}")
     subprocess.run([sys.executable, str(work / "scripts" / step)], env=env, check=True)
