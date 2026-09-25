@@ -58,6 +58,7 @@ def main():
                          "simulation design, not by chemistry, and the ranker learns them as shortcuts")
     ap.add_argument("--skip-vin", action="store_true", help="train and save only; evaluate with eval_pool_variant / eval_vreal")
     ap.add_argument("--c2-weight", type=float, default=1.0, help="relative weight of Class-2 groups")
+    ap.add_argument("--c3-weight", type=float, default=1.0, help="relative weight of Class-3 (generated-truth) groups")
     args = ap.parse_args()
     use_d3 = not args.no_d3
     tag = args.tag or ("ranker-d1d2d3" if use_d3 else "ranker-d1d2")
@@ -77,7 +78,7 @@ def main():
     print(f"train {tr.qid.nunique()} queries / {len(tr):,} rows | early-stop {va.qid.nunique()} queries | "
           f"{len(cols)} features", flush=True)
 
-    ranker = Ranker().fit(tr, va, cols, class_weight={"C1": 1.0, "C2": args.c2_weight})
+    ranker = Ranker().fit(tr, va, cols, class_weight={"C1": 1.0, "C2": args.c2_weight, "C3": args.c3_weight})
     print(f"best iterations per seed: {ranker.best_iters}")
     print("top features by gain:\n" + ranker.importance().head(12).round(0).to_string())
 

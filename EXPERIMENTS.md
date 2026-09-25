@@ -69,6 +69,16 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
    alone, so none was adopted. Real Class-1 test molecules are likelier to resemble the training
    queries than V-in's showcase compounds.
 
+8. **V-in cannot see pool decoys; V-real can (runs `vreal_*`).** V-real = 600 queries from the
+   training libraries that no ranker ever trained on (skeleton-level exclusion): 300 COCONUT
+   members, 300 structures known only through PubChemLite. Scored under the seven configurations
+   the leaderboard has judged, the COCONUT Class-2 stratum falls monotonically with pool size
+   (default 0.594 → +PubChemLite 0.548 → +ChEBI/LIPID MAPS 0.529 → +PubChem-lit 0.518), matching the
+   leaderboard's verdicts on #11 and #12 that V-in missed (V-in: −0.001). Its level is also close to
+   real: LB ≈ 0.5 × coco-C2 reproduces the leaderboard within ±0.01. First version had a design bug —
+   a PubChemLite-only truth stayed in every pool because it also carries the training-library
+   source bit; fixed (a Class-2 truth is a candidate only through a non-library source).
+
 ## Leaderboard
 
 | Date | Submission | Public LB | Note |

@@ -63,6 +63,9 @@ def main():
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / f"pool{args.pool}.parquet"))
     by_qid = queries(args.queries.split(","), store, key_of_row, pool)
     tbl = pd.read_parquet(ARTIFACT_DIR / f"{args.table}.parquet")
+    if "gen_smiles" in tbl:
+        g = tbl[tbl.gen == 1]
+        pool.register_generated(g.pool_key.to_numpy(), g.gen_smiles.to_numpy())
     scorer = FragmentScorer(pool.smiles_of)
     if CACHE.exists():
         scorer.cache.update(pickle.loads(CACHE.read_bytes()))

@@ -44,13 +44,15 @@ def add_context(tbl, cols):
 def add_d3(tbl, items, models, pool, fps, device):
     """D3 columns for every (query, class) group of `tbl`; `items` = [(Query, fold)]."""
     by_qid = {q.qid: (q, fold) for q, fold in items}
+    if "gen_smiles" in tbl:
+        g = tbl[tbl.gen == 1]
+        pool.register_generated(g.pool_key.to_numpy(), g.gen_smiles.to_numpy())
     ll, cos = np.zeros(len(tbl)), np.zeros(len(tbl))
     for qid, idx in tbl.groupby("qid", sort=False).indices.items():
         q, fold = by_qid[qid]
         use = [models[0], models[1]] if fold == -1 else [models[1 - fold]]
         lp_on, lp_off = molecule_logp(use, q.spectra, device)
-        rows = np.fromiter((pool.row_of[k] for k in tbl.pool_key.to_numpy()[idx]), np.int64, len(idx))
-        bits = np.unpackbits(fps[rows], axis=1).astype(np.float32)
+        bits = np.unpackbits(pool.packed_fps(tbl.pool_key.to_numpy()[idx], fps), axis=1).astype(np.float32)
         ll[idx], cos[idx] = candidate_scores(lp_on, lp_off, bits)
     tbl = tbl.assign(d3_ll=ll, d3_cos=cos)
     return add_context(tbl, ["d3_ll", "d3_cos"])

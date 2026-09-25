@@ -30,8 +30,7 @@ class Predictor:
         from casmi.channels.fpinfer import molecule_logp
         t = time.perf_counter()
         lp_on, lp_off = molecule_logp(self.fp_models, spectra, self.device)
-        rows = np.fromiter((self.pool.row_of[k] for k in f.pool_key), np.int64, len(f))
-        bits = np.unpackbits(self.engine.fps[rows], axis=1).astype(np.float32)
+        bits = np.unpackbits(self.pool.packed_fps(f.pool_key.to_numpy(), self.engine.fps), axis=1).astype(np.float32)
         f["d3_ll"], f["d3_cos"] = candidate_scores(lp_on, lp_off, bits)
         for c in ("d3_ll", "d3_cos"):
             v = f[c].to_numpy()

@@ -7,6 +7,7 @@
           the number checks plumbing and runtime only — it must never be used to pick a model.
 """
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -67,7 +68,9 @@ def main():
 
     t0 = time.time()
     stage = lambda name: print(f"[{time.time() - t0:6.0f}s] {name}", flush=True)
-    cfg = EngineConfig()
+    ranker = LoadedRanker(args.ranker) if args.ranker else None
+    # rankers trained with Class-3 hedge candidates expect them in every candidate list
+    cfg = EngineConfig(generate=ranker is not None and "gen" in ranker.columns)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
@@ -78,14 +81,13 @@ def main():
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     stage("assets loaded")
 
-    ranker = LoadedRanker(args.ranker) if args.ranker else None
     fp_models, device = [], "cpu"
     if ranker is not None and not args.no_d3 and any(c.startswith("d3_") for c in ranker.columns):
         import torch
         from casmi.channels.fpmodel import load
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        fp_models = [load(p, device) for p in sorted((ARTIFACT_DIR / "models").glob("fp_fold*.pt"))]
-    stage(f"ranker: {args.ranker or 'interim rule'} | D3 models: {len(fp_models)}")
+        fp_models = [load(p, device) for p in sorted((ARTIFACT_DIR / "models").glob(f"fp_fold[01]{os.environ.get('CASMI_FP_SUFFIX', '')}.pt"))]
+    stage(f"ranker: {args.ranker or 'interim rule'} | D3 models: {len(fp_models)} | generated candidates: {cfg.generate}")
 
     test = pd.read_parquet(args.test)
     predictor = Predictor(engine, pool, keys, ranker, fp_models, device)

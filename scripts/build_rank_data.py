@@ -204,6 +204,7 @@ def main():
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--n-shards", type=int, default=1)
     ap.add_argument("--classes", default="C1,C2")
+    ap.add_argument("--generate", action="store_true", help="add Class-3 hedge candidates (biotransformed analogs)")
     ap.add_argument("--suffix", default="", help="output name suffix, e.g. _c1x")
     ap.add_argument("--c1-mode", choices=["crosslib", "own"], default="crosslib",
                     help="Class-1 knockout for train/e180 sets: remove the query library's spectra of the "
@@ -212,7 +213,7 @@ def main():
     classes = args.classes.split(",")
 
     t0 = time.time()
-    cfg = EngineConfig()
+    cfg = EngineConfig(generate=args.generate)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
@@ -249,6 +250,11 @@ def main():
                                       truth_smiles=structure_smiles().get(q.pool_key))
         for cls in classes:
             ko = knockout_for(q, cls, library.rows_of, same | {q.pool_key})   # the query's own key, even if not in the pool
+            if cls == "C2" and args.set == "vreal":
+                # a spectrum-less test answer is a candidate only through a non-library source (COCONUT,
+                # PubChemLite, ...): a V-real truth known only from the training libraries leaves the pool
+                src = pool.table.sources.to_numpy()
+                ko.excluded_keys = {k for k in same if src[pool.row_of[k]] & ~(SOURCE_BITS["train"] | SOURCE_BITS["enveda180_only"]) == 0}
             if cls == "C1" and args.set in ("train", "e180", "vreal") and args.c1_mode == "crosslib":
                 # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
                 # reference). So remove every spectrum of the structure from the query's own library,
@@ -265,6 +271,13 @@ def main():
                 continue
             f = add_context(add_priors(f, pool, same if cls == "C2" else frozenset()))
             f["label"] = f.pool_key.isin(same).astype(np.int8)
+            if args.generate:
+                g = (f.gen == 1).to_numpy()
+                f["gen_smiles"] = ""
+                f.loc[g, "gen_smiles"] = [pool.smiles_of(k) for k in f.pool_key[g]]
+                tskel = skeleton_key(structure_smiles()[q.pool_key])
+                f.loc[g, "label"] = [int(skeleton_key(s_) == tskel and keys.get(k, s_) == truth)
+                                     for k, s_ in zip(f.pool_key[g], f.gen_smiles[g])]
             f["qid"], f["cls"], f["fold"] = q.qid, cls, fold
             if stratum_of:
                 f["stratum"] = stratum_of[q.pool_key]

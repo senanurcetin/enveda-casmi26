@@ -17,17 +17,19 @@ CONTEXT_OF = ["d1_max", "an_p4", "an_p2", "an_tani"]
 
 def add_priors(feats: pd.DataFrame, pool, knocked_keys=frozenset()) -> pd.DataFrame:
     t = pool.table
-    rows = np.fromiter((pool.row_of[k] for k in feats.pool_key), np.int64, len(feats))
-    knocked = feats.pool_key.isin(knocked_keys).to_numpy()
-    src = t.sources.to_numpy()[rows]
+    rows = np.fromiter((pool.row_of.get(k, -1) for k in feats.pool_key), np.int64, len(feats))
+    gen = rows < 0                                     # generated structures: in no source
+    knocked = feats.pool_key.isin(knocked_keys).to_numpy() | gen
+    rows = np.where(gen, 0, rows)
+    src = np.where(gen, 0, t.sources.to_numpy()[rows])
     in_train = ((src & SOURCE_BITS["train"]) > 0) & ~knocked
     feats = feats.assign(
         prior_in_train=in_train.astype(np.int8),
         prior_in_coconut=((src & SOURCE_BITS["coconut"]) > 0).astype(np.int8),
         prior_enveda180_only=(((src & SOURCE_BITS["enveda180_only"]) > 0) & ~knocked).astype(np.int8),
         prior_log_spectra=np.where(knocked, 0.0, np.log1p(t.n_spectra.to_numpy()[rows])),
-        prior_np_likeness=t.np_likeness.to_numpy(dtype=float)[rows],
-        prior_has_sugar=t.has_sugar.map({True: 1.0, False: 0.0}).to_numpy(dtype=float)[rows],
+        prior_np_likeness=np.where(gen, np.nan, t.np_likeness.to_numpy(dtype=float)[rows]),
+        prior_has_sugar=np.where(gen, np.nan, t.has_sugar.map({True: 1.0, False: 0.0}).to_numpy(dtype=float)[rows]),
         abs_ppm=np.abs(feats.ppm.to_numpy()),
     )
     return feats
@@ -50,5 +52,5 @@ def add_context(feats: pd.DataFrame) -> pd.DataFrame:
 
 
 def feature_columns(feats: pd.DataFrame):
-    drop = {"pool_key", "ppm", "n_cand", "label", "qid", "cls"}
+    drop = {"pool_key", "ppm", "n_cand", "label", "qid", "cls", "gen_smiles", "stratum"}
     return [c for c in feats.columns if c not in drop]

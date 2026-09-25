@@ -28,9 +28,32 @@ class CandidatePool:
         self.key = t["pool_key"].to_numpy()
         self.smiles = t["smiles"].to_numpy()
         self.row_of = dict(zip(self.key, range(len(t))))
+        # generated (Class-3 hedge) structures live outside the table: key -> SMILES / packed fingerprint
+        self.extra_smiles, self.extra_fp = {}, {}
 
     def smiles_of(self, key):
-        return self.smiles[self.row_of[key]]
+        r = self.row_of.get(key)
+        return self.smiles[r] if r is not None else self.extra_smiles[key]
+
+    def register_generated(self, keys, smiles):
+        """Add generated structures to the overlay (fingerprints as in build_fingerprints.py)."""
+        from rdkit import Chem
+        from rdkit.Chem import rdFingerprintGenerator
+        gen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
+        for k, s in zip(keys, smiles):
+            if k in self.extra_smiles:
+                continue
+            mol = Chem.MolFromSmiles(s)
+            bits = gen.GetFingerprintAsNumPy(mol).astype(np.uint8) if mol is not None else np.zeros(2048, np.uint8)
+            self.extra_smiles[k], self.extra_fp[k] = s, np.packbits(bits)
+
+    def packed_fps(self, keys, fps):
+        """Packed fingerprints for pool and generated keys alike."""
+        out = np.empty((len(keys), fps.shape[1]), fps.dtype)
+        for i, k in enumerate(keys):
+            r = self.row_of.get(k)
+            out[i] = fps[r] if r is not None else self.extra_fp[k]
+        return out
 
     def __len__(self):
         return len(self.mass)

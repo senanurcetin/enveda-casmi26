@@ -36,7 +36,7 @@ class Ranker:
         keep = lambda d: d[d.groupby(["qid", "cls"]).label.transform("max") > 0]
         train, valid = keep(train), keep(valid)
         mono = [1 if c in MONOTONE_UP else 0 for c in self.columns]
-        w = train.cls.map(class_weight).to_numpy() if class_weight else None
+        w = train.cls.map(class_weight).fillna(1.0).to_numpy() if class_weight else None
         dtr = lgb.Dataset(train[self.columns], train.label, group=self._groups(train), weight=w, free_raw_data=False)
         dva = lgb.Dataset(valid[self.columns], valid.label, group=self._groups(valid), reference=dtr)
         self.models, self.best_iters = [], []

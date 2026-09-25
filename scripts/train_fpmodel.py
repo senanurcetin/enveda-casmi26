@@ -73,6 +73,10 @@ def main():
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--bs", type=int, default=768)
     ap.add_argument("--lr", type=float, default=3e-4)
+    ap.add_argument("--d-model", type=int, default=256)
+    ap.add_argument("--n-layers", type=int, default=4)
+    ap.add_argument("--d-ff", type=int, default=1024)
+    ap.add_argument("--tag-suffix", default="", help="e.g. _L: models/fp_fold0_L.pt")
     ap.add_argument("--timstof-weight", type=float, default=2.0, help="sampling weight of instrument-matched spectra")
     args = ap.parse_args()
 
@@ -89,7 +93,7 @@ def main():
     w = np.where(data.side.is_timstof.to_numpy()[tr] == 1, args.timstof_weight, 1.0)
     w = w / w.sum()
 
-    model = FPModel(FPModelConfig()).to(device)
+    model = FPModel(FPModelConfig(d_model=args.d_model, n_layers=args.n_layers, d_ff=args.d_ff)).to(device)
     n_params = sum(p.numel() for p in model.parameters())
     steps_per_epoch = len(tr) // args.bs
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
@@ -98,7 +102,7 @@ def main():
     print(f"train folds {folds}: {len(tr):,} spectra | validate on {'fold ' + str(held) if held else 'train sample'} "
           f"| {n_params / 1e6:.1f}M params | {steps_per_epoch} steps/epoch", flush=True)
 
-    tag = "fp_fold" + "_".join(str(f) for f in folds)
+    tag = "fp_fold" + "_".join(str(f) for f in folds) + args.tag_suffix
     out = ARTIFACT_DIR / "models"
     out.mkdir(exist_ok=True)
     history, t0 = [], time.time()
