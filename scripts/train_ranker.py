@@ -56,6 +56,7 @@ def main():
                     help="drop features that encode how the pool was assembled (train/COCONUT/enveda-180 "
                          "membership, spectrum counts): their class-conditional distribution is set by the "
                          "simulation design, not by chemistry, and the ranker learns them as shortcuts")
+    ap.add_argument("--skip-vin", action="store_true", help="train and save only; evaluate with eval_pool_variant / eval_vreal")
     ap.add_argument("--c2-weight", type=float, default=1.0, help="relative weight of Class-2 groups")
     args = ap.parse_args()
     use_d3 = not args.no_d3
@@ -63,7 +64,7 @@ def main():
     t0 = time.time()
 
     train = pd.read_parquet(ARTIFACT_DIR / args.train_files) if use_d3 else load("train", False)
-    vin = load("vin", use_d3)
+    vin = None if args.skip_vin else load("vin", use_d3)
     # np_likeness / has_sugar are only populated for COCONUT structures: NaN itself encodes membership
     MEMBERSHIP = {"prior_in_train", "prior_in_coconut", "prior_enveda180_only", "prior_log_spectra", "d1_nref",
                   "prior_np_likeness", "prior_has_sugar"}
@@ -80,6 +81,12 @@ def main():
     print(f"best iterations per seed: {ranker.best_iters}")
     print("top features by gain:\n" + ranker.importance().head(12).round(0).to_string())
 
+    if args.skip_vin:
+        (ARTIFACT_DIR / "models").mkdir(exist_ok=True)
+        for i, m in enumerate(ranker.models):
+            m.save_model(str(ARTIFACT_DIR / "models" / f"{tag}_seed{i}.txt"))
+        print(f"saved {tag} ({time.time() - t0:.0f}s)")
+        return
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     # V-in query order must match run_validation's, so compare_runs pairs the same molecules

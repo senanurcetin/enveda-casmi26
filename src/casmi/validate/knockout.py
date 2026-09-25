@@ -77,14 +77,16 @@ def knockout_for(query: Query, cls: str, rows_of_key, equivalent_keys) -> Knocko
     return Knockout(excluded, set(equivalent_keys) if cls == "C3" else set())
 
 
-def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0):
+def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0, truth_smiles=None):
     """Metric truth and every pool key in the mass window that is the same structure under the
     metric (tautomer variants stored under another standard key). The skeleton key is an exact
-    necessary condition, so only skeleton matches pay for tautomer canonicalisation."""
+    necessary condition, so only skeleton matches pay for tautomer canonicalisation.
+    `truth_smiles` is required when the query structure itself is not in this pool."""
     from casmi.chem.canon import skeleton_key
-    truth_smiles = pool.smiles_of(query_key)
+    if truth_smiles is None:
+        truth_smiles = pool.smiles_of(query_key)
     truth, skel = keys.get(query_key, truth_smiles), skeleton_key(truth_smiles)
-    same = {query_key}
+    same = {query_key} if query_key in pool.row_of else set()
     for k in pool.key[pool.window(query_mass, window_ppm).idx]:
         if k != query_key and skeleton_key(pool.smiles_of(k)) == skel and keys.get(k, pool.smiles_of(k)) == truth:
             same.add(k)

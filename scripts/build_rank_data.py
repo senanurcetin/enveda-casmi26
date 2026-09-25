@@ -115,9 +115,91 @@ def e180_class1_queries(store, key_of_row, pool, vin_skeletons, n, seed=0):
     return out
 
 
+def training_query_skeletons():
+    """Skeletons of every structure any ranker was trained on (train and enveda-180 tables)."""
+    smiles = structure_smiles()
+    keys = set()
+    for f in ARTIFACT_DIR.glob("rank_train*_[0-9].parquet"):
+        keys |= {q.split(":", 1)[1] for q in pd.read_parquet(f, columns=["qid"]).qid.unique()}
+    for f in ARTIFACT_DIR.glob("rank_e180*_[0-9].parquet"):
+        keys |= {q.split(":", 1)[1] for q in pd.read_parquet(f, columns=["qid"]).qid.unique()}
+    return {skeleton_key(smiles[k]) for k in keys if k in smiles}
+
+
+_SMILES = {}
+
+
+def structure_smiles():
+    if not _SMILES:
+        s = pd.read_parquet(ARTIFACT_DIR / "structures.parquet", columns=["pool_key", "smiles"])
+        _SMILES.update(zip(s.pool_key, s.smiles))
+    return _SMILES
+
+
+def vreal_queries(store, key_of_row, vin_skeletons, n_per_stratum=300, seed=1):
+    """V-real: Class-2-style queries that look like the hidden test rather than like V-in.
+
+    Two strata of structures with spectra in the non-Enveda libraries, both never used as a ranker
+    training query (skeleton-level exclusion, like V-in):
+      pcl   in PubChemLite but not in COCONUT — answers reachable only through PubChem, the kind the
+            leaderboard showed exists (pool + PubChemLite: +0.009) and V-in cannot contain
+      coco  COCONUT members, like the training queries, but held out of every ranker
+    Strata are defined on the PubChemLite pool so the query set is identical for every pool variant;
+    in a pool without PubChemLite a `pcl` answer is simply absent (it scores 0, as on the test)."""
+    meta = store.meta
+    pcl_src = pd.read_parquet(ARTIFACT_DIR / "pool_pcl.parquet", columns=["pool_key", "sources", "mass"])
+    src = dict(zip(pcl_src.pool_key, pcl_src.sources))
+    mass = dict(zip(pcl_src.pool_key, pcl_src.mass))
+    smiles = structure_smiles()
+    exclude = vin_skeletons | training_query_skeletons()
+    ok = (meta.ingest_lib.isin(TRAIN_LIBS).to_numpy() & meta.test_adduct.to_numpy()
+          & (meta.n_peaks.to_numpy() >= 5) & (np.abs(meta.ppm.to_numpy()) <= 20))
+    rows = np.flatnonzero(ok)
+    t = pd.DataFrame({"row": rows, "key": key_of_row[rows], "lib": meta.ingest_lib.astype(str).to_numpy()[rows]})
+    t = t[t.key.map(mass).between(*TEST_MASS)]
+    s_ = t.key.map(src).fillna(0).astype(np.int64)
+    t["stratum"] = np.where(s_ & SOURCE_BITS["coconut"], "coco", np.where(s_ & SOURCE_BITS["pubchem"], "pcl", ""))
+    t = t[t.stratum != ""]
+    best_lib = t.groupby(["key", "lib"]).size().reset_index(name="n").sort_values(["n", "key"], ascending=[False, True])
+    best_lib = best_lib.drop_duplicates("key")
+    t = t.merge(best_lib[["key", "lib"]], on=["key", "lib"])
+    rows_of = {k: g.to_numpy() for k, g in t.groupby("key").row}
+    lib_of = dict(zip(best_lib.key, best_lib.lib))
+    stratum_of = dict(zip(t.key, t.stratum))
+    rng = np.random.default_rng(seed)
+    out = []
+    for stratum in ("pcl", "coco"):
+        keys = np.array(sorted(k for k in rows_of if stratum_of[k] == stratum))
+        rng.shuffle(keys)
+        n = 0
+        for k in keys:
+            skel = skeleton_key(smiles[k])
+            if skel is None or skel in exclude:
+                continue
+            exclude = exclude | {skel}          # one query per skeleton
+            r = rows_of[k]
+            if len(r) > 5:
+                r = np.sort(rng.choice(r, 5, replace=False))
+            spectra = []
+            for i in r:
+                mz, it = store.peaks(i)
+                m = meta.iloc[i]
+                spectra.append(dict(mz=mz, it=it, precursor_mz=float(m.precursor_mz), adduct=str(m.adduct),
+                                    ce_ev=float(m.ce_ev), mode=str(m.ionization_mode)))
+            # the test's precursor masses are right; a query whose answer falls outside the mass
+            # window (mis-annotated adduct or precursor) would only measure annotation noise
+            if not abs(molecule_mass(spectra) - mass[k]) / mass[k] * 1e6 <= 10.0:
+                continue
+            out.append((Query(qid=f"{lib_of[k]}:{k}", pool_key=k, spectra=spectra, spectrum_rows=r), fold_of(skel)))
+            n += 1
+            if n == n_per_stratum:
+                break
+    return out, stratum_of
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--set", choices=["train", "vin", "e180"], required=True)
+    ap.add_argument("--set", choices=["train", "vin", "e180", "vreal"], required=True)
     ap.add_argument("--n", type=int, default=1500)
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--n-shards", type=int, default=1)
@@ -144,8 +226,12 @@ def main():
     engine = BaselineEngine(pool, library, cfg, analog, fps)
 
     vin = build_queries(store, key_of_row)
+    stratum_of = {}
     if args.set == "vin":
         items = [(q, -1) for q in vin]
+    elif args.set == "vreal":
+        vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
+        items, stratum_of = vreal_queries(store, key_of_row, vin_skel)
     else:
         vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
         make = e180_class1_queries if args.set == "e180" else training_queries
@@ -159,17 +245,18 @@ def main():
     tables = []
     for qi, (q, fold) in enumerate(items):
         mass = molecule_mass(q.spectra, cfg.mass_offset_ppm)
-        truth, same = equivalent_keys(q.pool_key, mass, pool, keys, cfg.tol_ppm * 3)
+        truth, same = equivalent_keys(q.pool_key, mass, pool, keys, cfg.tol_ppm * 3,
+                                      truth_smiles=structure_smiles().get(q.pool_key))
         for cls in classes:
-            ko = knockout_for(q, cls, library.rows_of, same)
-            if cls == "C1" and args.set in ("train", "e180") and args.c1_mode == "crosslib":
+            ko = knockout_for(q, cls, library.rows_of, same | {q.pool_key})   # the query's own key, even if not in the pool
+            if cls == "C1" and args.set in ("train", "e180", "vreal") and args.c1_mode == "crosslib":
                 # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
                 # reference). So remove every spectrum of the structure from the query's own library,
                 # and skip the query when no other library has one — then it is not Class 1 at all.
                 qlib = q.qid.split(":")[0]
-                own = [r for k in same for r in library.rows_of.get(k, []) if lib_of_row[r] == qlib]
+                own = [r for k in same | {q.pool_key} for r in library.rows_of.get(k, []) if lib_of_row[r] == qlib]
                 ko.excluded_rows = np.union1d(ko.excluded_rows, np.asarray(own, np.int64))
-                refs = [r for k in same for r in library.rows_of.get(k, []) if lib_of_row[r] != qlib]
+                refs = [r for k in same | {q.pool_key} for r in library.rows_of.get(k, []) if lib_of_row[r] != qlib]
                 if not refs:
                     skipped_c1 += 1
                     continue
@@ -179,6 +266,8 @@ def main():
             f = add_context(add_priors(f, pool, same if cls == "C2" else frozenset()))
             f["label"] = f.pool_key.isin(same).astype(np.int8)
             f["qid"], f["cls"], f["fold"] = q.qid, cls, fold
+            if stratum_of:
+                f["stratum"] = stratum_of[q.pool_key]
             tables.append(f)
         if (qi + 1) % 50 == 0:
             pd.concat(tables, ignore_index=True).to_parquet(out_path, index=False)

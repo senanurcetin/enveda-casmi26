@@ -50,6 +50,9 @@ def main():
     tbl = ad3.add_d3(tbl, [(q, -1) for q in vin_q], models, pool, fps, device)
     rk = [lgb.Booster(model_file=str(p)) for p in sorted((ARTIFACT_DIR / "models").glob(f"{args.ranker}_seed*.txt"))]
     cols = rk[0].feature_name()
+    if any(c.startswith("d4_") for c in cols):
+        from casmi.channels.fragments import add_d4_table
+        tbl = add_d4_table(tbl, {q.qid: q.spectra for q in vin_q}, pool.smiles_of, ARTIFACT_DIR / "frag_cache.pkl")
     score = np.mean([m.predict(tbl[cols]) for m in rk], axis=0)
 
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")

@@ -21,7 +21,8 @@ class Predictor:
     def __init__(self, engine, pool, keys, ranker=None, fp_models=None, device="cpu"):
         self.engine, self.pool, self.keys = engine, pool, keys
         self.ranker, self.fp_models, self.device = ranker, fp_models or [], device
-        self.timings = {"features": 0.0, "d3": 0.0, "rank": 0.0, "dedupe": 0.0}
+        self.timings = {"features": 0.0, "d3": 0.0, "d4": 0.0, "rank": 0.0, "dedupe": 0.0}
+        self.frag = None
         self.failures = []
 
     # ------------------------------------------------------------------ one molecule
@@ -48,6 +49,13 @@ class Predictor:
         f = add_context(add_priors(f, self.pool))
         if self.fp_models:
             f = self._d3(f, spectra)
+        if self.ranker is not None and any(c.startswith("d4_") for c in self.ranker.columns):
+            from casmi.channels.fragments import FragmentScorer, add_d4
+            t = time.perf_counter()
+            if self.frag is None:
+                self.frag = FragmentScorer(self.pool.smiles_of)
+            f = add_d4(f, self.frag, spectra)
+            self.timings["d4"] += time.perf_counter() - t
         t = time.perf_counter()
         if self.ranker is not None:
             order = np.argsort(-self.ranker.predict(f), kind="stable")
