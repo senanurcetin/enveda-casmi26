@@ -21,6 +21,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 6 | #3 data without membership priors | 0.718 | 0.682 | — | diagnostic |
 | 7 | **v13-clean**: C1 from both sources, no membership priors (incl. NaN-coded NP-likeness) | **0.839** | **0.662** | +0.085 … +0.225 vs #1; −0.006 … +0.028 vs #3 | **ACCEPT vs #1; chosen over #3 on robustness** |
 | 9 | #7 on a pool + PubChemLite (1.08 M structures, median 96 candidates vs 58) | 0.832 | 0.627 | −0.038 … −0.022 | **REJECT on V-in** — but V-in cannot see the benefit (all its answers are in COCONUT); LB probe decides |
+| 10 | #9 with the ranker retrained on _pcl candidate lists | 0.842 | 0.619 | −0.019 … −0.008 vs #9 (point ≈ 0) | NOT PROVEN on V-in; +0.006 on LB |
 | 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
@@ -73,7 +74,8 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 2026-09-24 | #7 v13-clean (D1+D2+D3, no membership priors) | **0.258** | two identical submissions scored identically — the pipeline is deterministic on the hidden test |
 | 2026-09-24 | #1 interim rule max(D1, D2) — calibration | 0.190 | the learned ranker transfers: +0.068 |
 | 2026-09-24 | #3 v1 ranker *with* membership priors — calibration | 0.245 | dropping the priors helped on the real test: +0.013 |
-| 2026-09-24 | #9 v13-clean on pool + PubChemLite | **0.267** | new best; V-in predicted ≈ −0.007 (cost only), so real PubChem-only answers are worth ≈ +0.016 |
+| 2026-09-24 | #9 v13-clean on pool + PubChemLite | 0.267 | V-in predicted ≈ −0.007 (cost only), so real PubChem-only answers are worth ≈ +0.016 |
+| 2026-09-25 | #10 ranker retrained on PubChemLite-pool candidate lists (notebook `casmi26-probe-pcl2`) | **0.273** | new best; V-in neutral (C1 +0.010, C2 −0.008, NOT PROVEN) — consistent with better ranking of PubChem-only answers, which V-in cannot see; small, treated as a consistent signal rather than proof |
 
 **Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
 0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
