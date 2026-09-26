@@ -136,7 +136,7 @@ def structure_smiles():
     return _SMILES
 
 
-def vreal_queries(store, key_of_row, vin_skeletons, n_per_stratum=300, seed=1):
+def _vreal_build(store, key_of_row, vin_skeletons, n_per_stratum=300, seed=1):
     """V-real: Class-2-style queries that look like the hidden test rather than like V-in.
 
     Two strata of structures with spectra in the non-Enveda libraries, both never used as a ranker
@@ -197,6 +197,40 @@ def vreal_queries(store, key_of_row, vin_skeletons, n_per_stratum=300, seed=1):
     return out, stratum_of
 
 
+VREAL_FILE = "vreal_queries.parquet"
+
+
+def vreal_queries(store, key_of_row, vin_skeletons, n_per_stratum=300, seed=1):
+    """V-real, frozen on first use (artifacts/vreal_queries.parquet): later training tables must not
+    change which structures V-real holds out, and must themselves exclude V-real's skeletons."""
+    path = ARTIFACT_DIR / VREAL_FILE
+    if not path.exists():
+        items, stratum_of = _vreal_build(store, key_of_row, vin_skeletons, n_per_stratum, seed)
+        pd.DataFrame({"qid": [q.qid for q, _ in items], "pool_key": [q.pool_key for q, _ in items],
+                      "rows": [list(map(int, q.spectrum_rows)) for q, _ in items], "fold": [f for _, f in items],
+                      "stratum": [stratum_of[q.pool_key] for q, _ in items]}).to_parquet(path, index=False)
+    t = pd.read_parquet(path)
+    meta, items = store.meta, []
+    for qid, key, rows, fold in zip(t.qid, t.pool_key, t.rows, t.fold):
+        r = np.asarray(rows, np.int64)
+        spectra = []
+        for i in r:
+            mz, it = store.peaks(i)
+            m = meta.iloc[i]
+            spectra.append(dict(mz=mz, it=it, precursor_mz=float(m.precursor_mz), adduct=str(m.adduct),
+                                ce_ev=float(m.ce_ev), mode=str(m.ionization_mode)))
+        items.append((Query(qid=qid, pool_key=key, spectra=spectra, spectrum_rows=r), int(fold)))
+    return items, dict(zip(t.pool_key, t.stratum))
+
+
+def vreal_skeletons():
+    path = ARTIFACT_DIR / VREAL_FILE
+    if not path.exists():
+        return set()
+    smiles = structure_smiles()
+    return {skeleton_key(smiles[k]) for k in pd.read_parquet(path, columns=["pool_key"]).pool_key}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", choices=["train", "vin", "e180", "vreal"], required=True)
@@ -204,6 +238,8 @@ def main():
     ap.add_argument("--shard", type=int, default=0)
     ap.add_argument("--n-shards", type=int, default=1)
     ap.add_argument("--classes", default="C1,C2")
+    ap.add_argument("--skip", type=int, default=0, help="skip the shard's first K queries (resume after a crash)")
+    ap.add_argument("--out-shard", type=int, default=None, help="output file index (default: --shard)")
     ap.add_argument("--generate", action="store_true", help="add Class-3 hedge candidates (biotransformed analogs)")
     ap.add_argument("--suffix", default="", help="output name suffix, e.g. _c1x")
     ap.add_argument("--c1-mode", choices=["crosslib", "own"], default="crosslib",
@@ -223,7 +259,7 @@ def main():
     library = LibraryIndex(store, key_of_row, cfg.library)
     analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")                    # start from the shared cache
-    keys.path = ARTIFACT_DIR / f"metric_keys_{args.set}_{args.shard}.parquet"   # but never write it concurrently
+    keys.path = ARTIFACT_DIR / f"metric_keys_{args.set}_{args.shard if args.out_shard is None else args.out_shard}.parquet"   # but never write it concurrently
     engine = BaselineEngine(pool, library, cfg, analog, fps)
 
     vin = build_queries(store, key_of_row)
@@ -236,11 +272,11 @@ def main():
     else:
         vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
         make = e180_class1_queries if args.set == "e180" else training_queries
-        items = make(store, key_of_row, pool, vin_skel, args.n)
-    items = items[args.shard::args.n_shards]
+        items = make(store, key_of_row, pool, vin_skel | vreal_skeletons(), args.n)
+    items = items[args.shard::args.n_shards][args.skip:]
     print(f"{args.set} shard {args.shard}: {len(items)} queries, loaded in {time.time() - t0:.0f}s", flush=True)
 
-    out_path = ARTIFACT_DIR / f"rank_{args.set}{args.suffix}_{args.shard}.parquet"
+    out_path = ARTIFACT_DIR / f"rank_{args.set}{args.suffix}_{args.shard if args.out_shard is None else args.out_shard}.parquet"
     lib_of_row = store.meta.ingest_lib.astype(str).to_numpy()
     skipped_c1 = 0
     tables = []

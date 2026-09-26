@@ -64,6 +64,24 @@ TRANSFORMS = [
     _t("caffeoyl", 162.03169, "[OX2H1:1]>>[O:1]C(=O)C=Cc1ccc(O)c(O)c1"),
     _t("feruloyl", 176.04734, "[OX2H1:1]>>[O:1]C(=O)C=Cc1ccc(O)c(OC)c1"),
     _t("galloyl", 152.01096, "[OX2H1:1]>>[O:1]C(=O)c1cc(O)c(O)c(O)c1"),
+    # v2 (diagnose_c3.py: the formula changes the misses needed most often)
+    _t("homolog", 14.01565, "[CH2;!R:1]-[CH2;!R:2]>>[C:1]-C-[C:2]", "[CH3;!R:1]>>[C:1]C"),
+    _t("dehomolog", -14.01565, "[CH2;!R:1]-[CH2;!R]-[CH2;!R:2]>>[C:1]-[C:2]", "[CH2;!R:1]-[CH3]>>[C:1]"),
+    _t("carbonyl_reduction", 2.01565, "[#6X3;$([#6](-[#6])-[#6]):1]=[O:2]>>[C:1]-[O:2]"),
+    _t("carbonyl_to_ch2", -13.97926, "[#6X3;$([#6](-[#6])-[#6]):1]=[O]>>[C:1]"),
+    _t("decarboxyl", -43.98983, "[#6:1]-C(=O)-[OH]>>[#6:1]"),
+    _t("chloro", 33.96103, "[cH1:1]>>[c:1]Cl"),
+    _t("dechloro", -33.96103, "[#6:1]-Cl>>[#6:1]"),
+    _t("n_acetyl", 42.01057, "[NX3;H1,H2;!$(N-C=O):1]>>[N:1]C(C)=O"),
+    _t("c_hexose", 162.05282, f"[cH1:1]>>[c:1]{HEX}"),
+    _t("desulfate", -79.95682, "[O:1]-S(=O)(=O)-[OH]>>[O:1]"),
+    _t("demalonyl", -86.00039, "[O:1]-C(=O)-[CH2]-C(=O)-[OH]>>[O:1]"),
+    _t("depentose", -132.04226, "[O:1]-[CH1;R1]1-[OX2;R1]-[CH2;R1]-[CH1;R1](-[OH])-[CH1;R1](-[OH])-[CH1;R1]1-[OH]>>[O:1]"),
+    _t("deglucuronide", -176.03209, "[O:1]-[CH1;R1]1-[OX2;R1]-[CH1;R1](-C(=O)-[OH])-[CH1;R1](-[OH])-[CH1;R1](-[OH])-[CH1;R1]1-[OH]>>[O:1]"),
+    _t("degalloyl", -152.01096, "[O:1]-C(=O)-c1cc(O)c(O)c(O)c1>>[O:1]"),
+    _t("decoumaroyl", -146.03678, "[O:1]-C(=O)-C=C-c1ccc(O)cc1>>[O:1]"),
+    _t("decaffeoyl", -162.03169, "[O:1]-C(=O)-C=C-c1ccc(O)c(O)c1>>[O:1]"),
+    _t("deferuloyl", -176.04734, "[O:1]-C(=O)-C=C-c1ccc(O)c(OC)c1>>[O:1]"),
 ]
 _RXN = {t.name: [AllChem.ReactionFromSmarts(s) for s in t.smarts] for t in TRANSFORMS}
 DELTAS = np.array([t.delta for t in TRANSFORMS])
@@ -98,7 +116,7 @@ def apply(mol, transform, cap=60):
     return out
 
 
-def propose(analogs, query_mass, tol_ppm=10.0, max_analogs=8, cap=200):
+def propose(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300):
     """analogs: [(smiles, similarity, analog_mass)], best first.
     Returns [(smiles, similarity, transform names)] of structures at the query mass."""
     tol_da = query_mass * tol_ppm * 1e-6

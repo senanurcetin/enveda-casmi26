@@ -29,11 +29,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--set", default="vreal", choices=["vreal", "vin"])
     ap.add_argument("--scorers", required=True)
+    ap.add_argument("--suffix", default="_gen", help="table suffix: rank_{set}{suffix}_d3_d4.parquet")
     ap.add_argument("--stratum", default="", help="restrict V-real to one stratum (coco / pcl)")
     args = ap.parse_args()
     t0 = time.time()
     import lightgbm as lgb
-    tbl = pd.read_parquet(ARTIFACT_DIR / f"rank_{args.set}_gen_d3_d4.parquet")
+    tbl = pd.read_parquet(ARTIFACT_DIR / f"rank_{args.set}{args.suffix}_d3_d4.parquet")
     if args.stratum:
         tbl = tbl[tbl.stratum == args.stratum]
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "pool_pcl.parquet"))
@@ -56,7 +57,7 @@ def main():
             truth = keys.get(key, smiles[key])
             ranked = keys.dedupe_ranked(grp.pool_key.tolist()[:60], pool.smiles_of, 25)
             got[(qid, cls)] = rank_of_truth([mk for _, mk in ranked], truth)
-        report = {"tag": f"{args.set}{args.stratum}_{spec.replace(':', '-')}", "config": {"set": args.set, "scorer": spec, "stratum": args.stratum},
+        report = {"tag": f"{args.set}{args.suffix}{args.stratum}_{spec.replace(':', '-')}", "config": {"set": args.set, "scorer": spec, "stratum": args.stratum},
                   "n_queries": len(order), "classes": {}}
         line = []
         for cls in ("C1", "C2", "C3"):

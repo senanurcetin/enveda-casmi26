@@ -23,8 +23,8 @@ class EngineConfig:
     library: LibraryConfig = field(default_factory=LibraryConfig)
     analog: AnalogConfig = field(default_factory=AnalogConfig)
     generate: bool = False            # Class-3 hedge: add biotransformed analogs as candidates
-    gen_max_analogs: int = 8
-    gen_cap: int = 200
+    gen_max_analogs: int = 15
+    gen_cap: int = 300
 
 
 def molecule_mass(spectra, offset_ppm=0.0):

@@ -30,6 +30,12 @@ spec.loader.exec_module(ad3)
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--suffix", default="_gen", help="table suffix: rank_{set}{suffix}_*.parquet")
+    ap.add_argument("--n-train", type=int, default=1500)
+    args = ap.parse_args()
+    sfx = args.suffix
     t0 = time.time()
     device = "cuda" if torch.cuda.is_available() else "cpu"
     models = {f: load(ARTIFACT_DIR / "models" / f"fp_fold{f}.pt", device) for f in (0, 1)}
@@ -40,15 +46,16 @@ def main():
     vin = build_queries(store, key_of_row)
     vin_skel = {skeleton_key(pool.smiles_of(q.pool_key)) for q in vin}
     brd = ad3.brd
+    excl = vin_skel | brd.vreal_skeletons()
     sets = {
-        "vin": ([(q, -1) for q in vin], ["rank_vin_gen_0.parquet"]),
-        "vreal": (brd.vreal_queries(store, key_of_row, vin_skel)[0], ["rank_vreal_gen_0.parquet"]),
-        "train": (brd.training_queries(store, key_of_row, pool, vin_skel, 1500)
-                  + brd.e180_class1_queries(store, key_of_row, pool, vin_skel, 1200),
-                  ["rank_train_gen_0.parquet", "rank_train_gen_1.parquet", "rank_e180_gen_0.parquet"]),
+        "vin": ([(q, -1) for q in vin], [f"rank_vin{sfx}_0.parquet"]),
+        "vreal": (brd.vreal_queries(store, key_of_row, vin_skel)[0], [f"rank_vreal{sfx}_0.parquet"]),
+        "train": (brd.training_queries(store, key_of_row, pool, excl, args.n_train)
+                  + brd.e180_class1_queries(store, key_of_row, pool, excl, 1200),
+                  sorted(f.name for f in ARTIFACT_DIR.glob(f"rank_train{sfx}_[0-9].parquet")) + [f"rank_e180{sfx}_0.parquet"]),
     }
     for name, (items, files) in sets.items():
-        out = ARTIFACT_DIR / f"rank_{name}_gen_d3_d4.parquet"
+        out = ARTIFACT_DIR / f"rank_{name}{sfx}_d3_d4.parquet"
         if out.exists():
             print(f"{out.name} exists")
             continue
