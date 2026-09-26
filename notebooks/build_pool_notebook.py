@@ -20,14 +20,14 @@ If the answer is not in your candidate pool, your ranker scores 0 on that molecu
 | + PubChemLite + ChEBI + LIPID MAPS | +415 k | 0.268 (−0.005) |
 | + PubChemLite + top-250k PubChem compounds by PubMed count | +567 k | **0.252 (−0.021)** |
 
-Two of the three additions *hurt*. My validation set did not warn me: it predicted no change (±0.001) for all of them.
+Two of the three additions *hurt*. My validation set got all three wrong: it said PubChemLite would **hurt**, and that the other two would change nothing.
 
 This notebook shows **why** from the competition data, in about a minute on CPU. It then shows the validation set that *did* track these leaderboard moves, and how to build one.
 
 **TL;DR**
 1. MRR is a ranking metric. Every structure you add inside a query's ±10 ppm window is a new competitor for rank 1. A new source helps only if the **answers** it adds outweigh the **decoys**.
 2. How well a source covers the training libraries is a poor guide. ChEBI covered those structures about as well as PubChemLite per structure added, yet it lost on the leaderboard.
-3. A validation set of *famous* natural products (like `enveda-np-examples`) cannot see decoy costs. Its answers are easy to find, and they are all in COCONUT anyway. Harder held-out queries could. They reproduced the leaderboard's ordering of all three pools.'''))
+3. A validation set of *famous* natural products (like `enveda-np-examples`) barely sees decoy costs. Its answers are easy to find, and nearly all are in COCONUT, so it cannot see a new source's benefit either. Harder held-out queries tracked both leaderboard losses.'''))
 
 A(M("## 1. Setup — competition data plus four public structure lists"))
 A(C(r'''import glob, re, time
@@ -132,7 +132,12 @@ ref_ext = set(pd.concat([coco, pcl]).key)
 m_ref = np.sort(ref.mass.to_numpy())
 tol = qmass * 10e-6
 w_ref = (np.searchsorted(m_ref, qmass + tol, "right") - np.searchsorted(m_ref, qmass - tol, "left")).mean()
-rows = []
+# reference: PubChemLite measured against the base pool (train + COCONUT), from the first table
+pcl_row = res.iloc[1]
+rows = [{"source": "PubChemLite (vs base pool)", "new structures": int(pcl_row.structures - base.structures),
+         "answers gained": int(round((pcl_row.coverage - base.coverage) * len(qkeys))),
+         "coverage gain (pts)": pcl_row["Δ coverage (pts)"], "decoys per window (+%)": pcl_row["Δ window (%)"],
+         "answers per 1% more decoys": (pcl_row.coverage - base.coverage) * len(qkeys) / pcl_row["Δ window (%)"]}]
 for name in ["ChEBI", "LIPID MAPS", "PubChem-lit 250k"]:
     d = SOURCES[name]
     new = d[~d.key.isin(ref.key)]
@@ -145,7 +150,11 @@ for name in ["ChEBI", "LIPID MAPS", "PubChem-lit 250k"]:
                  "answers per 1% more decoys": gained / max(100 * added / w_ref, 1e-9)})
 print(pd.DataFrame(rows).round(2).to_string(index=False))'''))
 
-A(M(r'''The last column is the one that matters, and it is small for all three sources. Coverage of *training-library* structures is itself an optimistic proxy: those structures were chosen because someone measured them, so they are exactly what curated databases contain. The test's Class-2 molecules have never been measured.
+A(M(r'''The last column is the one that matters, and it tells only half the story:
+- **PubChem-lit** buys very few answers for a lot of decoys. The leaderboard punished it hardest (−0.021), as this predicts.
+- **ChEBI and LIPID MAPS** look *better* than PubChemLite on this measure. Yet adding them lost 0.005 on the leaderboard.
+
+So coverage of *training-library* structures is itself an optimistic proxy. Those structures exist because someone had a reference standard to measure, and that is exactly what curated databases like ChEBI and LIPID MAPS contain. The test's Class-2 molecules have never been measured. They are natural-product isolates, not lipid standards, so the answers these sources add on paper mostly never appear in the test, while their decoys do.
 
 **Rule I now follow:** a pool change is a hypothesis about the hidden test. Measure its cost on a validation set that can see decoys, and let the leaderboard judge its benefit. Change one source at a time.'''))
 
@@ -153,9 +162,9 @@ A(M(r'''## 3. Why my validation set was blind, and the one that was not
 
 My first validation set (**V-in**) was the natural choice: the 250 structures of `enveda-np-examples`, the only data measured on the test instrument. For each of them I rebuilt the Class-2 situation: I removed every spectrum of the structure from every library and kept it in the pool.
 
-It predicted **no change** for all three pools. Two reasons, both visible in the data:
+It rejected PubChemLite (−0.035 on Class 2, the only effect it can see is the cost) and saw nothing for the other two (+0.001, −0.009). Two reasons, both visible in the data:
 - the hosts describe these as *deliberately common* natural products. They have many close relatives in the libraries, so the answer usually sits far ahead of any new isomer;
-- all 250 answers are in COCONUT, so V-in can never see the *benefit* of a new source either.
+- 249 of the 250 answers are in COCONUT, so V-in can never see the *benefit* of a new source either.
 
 The second set (**V-real**) uses 600 structures from the training libraries that my ranker never trained on (excluded at scaffold level, tautomers included). Half are COCONUT members; half are known only through PubChemLite. They are harder and less famous, which is closer to what the leaderboard implies about the real Class 2.
 
@@ -180,7 +189,7 @@ ax[1].bar(res.pool.str.replace("+ ", "+\n"), res["mean window"], color="#6b8fb5"
 ax[1].set_title("mean candidates in a ±10 ppm window"); ax[1].tick_params(axis="x", labelsize=8)
 plt.tight_layout(); plt.show()'''))
 
-A(M(r'''V-real's Class-2 score falls with every source added after PubChemLite, in the order the leaderboard fell. Between PubChemLite and the base pool it cannot judge the benefit on this half, because every answer there is in COCONUT. Its *level* is also informative: about half of the V-real Class-2 MRR reproduces the public LB within ±0.01 across these runs. V-in's level would predict a score above 0.4.
+A(M(r'''V-real's Class-2 score falls with every source added after PubChemLite, and it falls further for the source the leaderboard punished more. It cannot judge PubChemLite itself on this half, because every answer there is in COCONUT: like V-in, it only sees the cost. Its *level* is informative too. For the three PubChemLite-based pools, half of V-real's Class-2 MRR lands within 0.01 of the public LB. For the base pool it overshoots (0.30 vs 0.26), consistent with answers that only PubChemLite contains. Half of V-in's level would predict about 0.31 everywhere.
 
 ## 4. Takeaways
 - **Pool size is a trade, not a free win.** Check how many decoys a source adds inside your query windows, not just how many answers it covers.
