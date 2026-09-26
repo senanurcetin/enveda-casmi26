@@ -26,6 +26,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 12 | #10 on pool + top-250k PubChem literature structures (`_pclp`, CID-PMID ranked by article count; +205.6 k new; median 111 candidates) | 0.841 | 0.610 | −0.015 … −0.008 vs #10 (point −0.006 … −0.003) | NOT PROVEN on V-in; **REJECT on LB** (0.252 vs 0.273) |
 | 13 | D4 fragment explanation (depth-2 bond cleavage, explained intensity) in the ranker (`ranker-v14-d4`) | V-in 0.807 / V-real C2 0.631 | V-in 0.636 | V-real vs #10: C2 +0.068 | V-in NOT PROVEN (C1 −0.035); V-real C2 clearly better |
 | 14 | **Class-3 hedge**: biotransformed spectral analogs as candidates with full features, C3 groups in training (`ranker-v15-gen`) | V-in 0.813 / V-real 0.431 | V-in 0.625 / V-real 0.628 | vs #10: V-real +0.027 … +0.036, V-in +0.024 … +0.067 (CI lower bounds); C3 MRR V-in 0.202, V-real 0.040 | **ACCEPT on both**; LB 0.298 |
+| 15 | Generator v2 (42 transforms incl. homologs, carbonyl reduction, acyl/sugar losses; 15 analog seeds) + ranker on 2× training queries (`ranker-v16-gen2`) | V-real 0.433 | V-real 0.636 | vs #14: V-real +0.003 … +0.009 (ACCEPT); V-in lower bounds −0.004 … +0.002; C3 V-real 0.040 → 0.075 | **ACCEPT**; LB 0.309 |
 | 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
@@ -94,6 +95,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 2026-09-25 | #12 = #10 + top-250k PubChem literature structures (`casmi26-probe-pclp`) | 0.252 | −0.021 vs #10. Yield on training-library structures was 37 per 10 k new structures (ChEBI 224, PubChemLite 207). **Conclusion of the pool-coverage work: PubChemLite is the only addition that pays; generic chemistry databases add decoys faster than answers.** Further gains have to come from ranking, not from a bigger pool |
 | 2026-09-26 | #14 D4 + Class-3 hedge (`ranker-v15-gen`, notebook `casmi26-probe-gen`) | **0.298** | new best, +0.025 vs #10; V-real predicted +0.027 … +0.051 (point), V-in's C1 loss did not show up |
 | 2026-09-26 | #14b = #14 with Class-3 groups weighted ×2 (`ranker-v15-gen-c3w2`, `casmi26-probe-gen2`) | 0.281 | −0.017 vs #14. V-real saw the direction (C2 −0.009, C3 +0.004) but not the size: pushing generated candidates up costs real Class-1/2 molecules more than it gains on Class 3. Keep weight 1 |
+| 2026-09-26 | #15 generator v2 + 2× training queries (`ranker-v16-gen2`, `casmi26-probe-gen3`) | **0.309** | new best, +0.011 vs #14; V-real predicted +0.012 … +0.018 (point) |
 
 **Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
 0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
