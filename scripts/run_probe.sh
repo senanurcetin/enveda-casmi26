@@ -22,6 +22,7 @@ if [ -n "$NOT_BEFORE_UTC" ]; then
   log "$NAME: past $NOT_BEFORE_UTC UTC, submitting"
 fi
 before=$(count)
+until [ -n "$before" ] && [ "$before" -gt 0 ]; do sleep 30; before=$(count); done   # a timed-out list reads as 0
 timeout 300 kaggle competitions submit -c $C -k $K -v "$VERSION" -f submission.csv -m "$MSG" > /dev/null 2>&1
 # the submissions list can lag or fail transiently: look a few times before giving up (never resubmit)
 ok=0
