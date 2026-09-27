@@ -23,8 +23,10 @@ if [ -n "$NOT_BEFORE_UTC" ]; then
 fi
 before=$(count)
 kaggle competitions submit -c $C -k $K -v "$VERSION" -f submission.csv -m "$MSG" > /dev/null 2>&1
-sleep 15
-[ "$(count)" -gt "$before" ] || { log "$NAME: submission NOT registered (daily limit?)"; exit 1; }
+# the submissions list can lag or fail transiently: look a few times before giving up (never resubmit)
+ok=0
+for i in 1 2 3 4 5 6; do sleep 20; n=$(count); [ -n "$n" ] && [ "$n" -gt "$before" ] && { ok=1; break; }; done
+[ "$ok" = 1 ] || { log "$NAME: submission not visible after 2 min - check the list by hand, do NOT resubmit"; exit 1; }
 log "$NAME: submitted"
 for i in $(seq 1 60); do
   row=$(kaggle competitions submissions -c $C 2>&1 | grep -v Warning | grep -F "$MSG" | head -n 1)
