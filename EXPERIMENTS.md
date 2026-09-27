@@ -98,6 +98,8 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 2026-09-26 | #14b = #14 with Class-3 groups weighted ×2 (`ranker-v15-gen-c3w2`, `casmi26-probe-gen2`) | 0.281 | −0.017 vs #14. V-real saw the direction (C2 −0.009, C3 +0.004) but not the size: pushing generated candidates up costs real Class-1/2 molecules more than it gains on Class 3. Keep weight 1 |
 | 2026-09-26 | #15 generator v2 + 2× training queries (`ranker-v16-gen2`, `casmi26-probe-gen3`) | **0.309** | new best, +0.011 vs #14; V-real predicted +0.012 … +0.018 (point) |
 | 2026-09-27 | #16 v17 (`casmi26-probe-v17`) | 0.302 | −0.007 vs #15. Second loss for a change whose V-real gain came mostly from simulated Class 3 (#14b too). Lessons: (1) V-real's Class-3 simulation is optimistic — its queries have close library analogs, real novel molecules have fewer; discount C3 gains. (2) a significant V-in Class-1 drop is a real warning: V-in is the only instrument-matched set, and it flagged this change |
+| 2026-09-28 | #16a v17 without NP-likeness (`casmi26-probe-v17nonp`) | 0.304 | NP-likeness explained the V-in Class-1 loss but not the LB loss |
+| 2026-09-28 | #16b v16 features + tuned LightGBM (`casmi26-probe-v17abl`) | 0.305 | even the tuning alone lost 0.004. **All of v17 rejected; v16 (0.309) stays.** V-real gains of +0.005 … +0.010 are below what it can resolve against the leaderboard |
 
 **Calibration.** Validation predicted 0.42–0.50 over the plausible class mixes; the leaderboard gave
 0.258. With Class 1 near its V-in level (~0.84) at ~16%, Class 1 contributes ~0.14, leaving ~0.12
