@@ -8,10 +8,10 @@ NAME=$1; MSG=$2; VERSION=${3:-1}
 C=enveda-CASMI26-molecule-id-mass-spectra
 K=senanuretin/casmi26-probe-$NAME
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
-count() { kaggle competitions submissions -c $C 2>&1 | grep -c "SubmissionStatus"; }
+count() { timeout 120 kaggle competitions submissions -c $C 2>&1 | grep -c "SubmissionStatus"; }
 
 while true; do
-  s=$(kaggle kernels status $K 2>&1 | grep -v Warning)
+  s=$(timeout 120 kaggle kernels status $K 2>&1 | grep -v Warning)
   case "$s" in *COMPLETE*) break;; *ERROR*|*CANCEL*) log "$NAME: notebook failed ($s) - not submitted"; exit 1;; esac
   sleep 60
 done
@@ -22,14 +22,14 @@ if [ -n "$NOT_BEFORE_UTC" ]; then
   log "$NAME: past $NOT_BEFORE_UTC UTC, submitting"
 fi
 before=$(count)
-kaggle competitions submit -c $C -k $K -v "$VERSION" -f submission.csv -m "$MSG" > /dev/null 2>&1
+timeout 300 kaggle competitions submit -c $C -k $K -v "$VERSION" -f submission.csv -m "$MSG" > /dev/null 2>&1
 # the submissions list can lag or fail transiently: look a few times before giving up (never resubmit)
 ok=0
 for i in 1 2 3 4 5 6; do sleep 20; n=$(count); [ -n "$n" ] && [ "$n" -gt "$before" ] && { ok=1; break; }; done
 [ "$ok" = 1 ] || { log "$NAME: submission not visible after 2 min - check the list by hand, do NOT resubmit"; exit 1; }
 log "$NAME: submitted"
 for i in $(seq 1 60); do
-  row=$(kaggle competitions submissions -c $C 2>&1 | grep -v Warning | grep -F "$MSG" | head -n 1)
+  row=$(timeout 120 kaggle competitions submissions -c $C 2>&1 | grep -v Warning | grep -F "$MSG" | head -n 1)
   echo "$row" | grep -q PENDING || break
   sleep 180
 done
