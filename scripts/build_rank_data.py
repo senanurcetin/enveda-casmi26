@@ -241,6 +241,8 @@ def main():
     ap.add_argument("--skip", type=int, default=0, help="skip the shard's first K queries (resume after a crash)")
     ap.add_argument("--out-shard", type=int, default=None, help="output file index (default: --shard)")
     ap.add_argument("--generate", action="store_true", help="add Class-3 hedge candidates (biotransformed analogs)")
+    ap.add_argument("--gen-consensus", action="store_true", help="v17: seed/route consensus + transform-type features")
+    ap.add_argument("--np-score", action="store_true", help="v17: RDKit NP-likeness for every candidate")
     ap.add_argument("--suffix", default="", help="output name suffix, e.g. _c1x")
     ap.add_argument("--c1-mode", choices=["crosslib", "own"], default="crosslib",
                     help="Class-1 knockout for train/e180 sets: remove the query library's spectra of the "
@@ -249,7 +251,7 @@ def main():
     classes = args.classes.split(",")
 
     t0 = time.time()
-    cfg = EngineConfig(generate=args.generate)
+    cfg = EngineConfig(generate=args.generate, gen_consensus=args.gen_consensus, np_score=args.np_score)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))

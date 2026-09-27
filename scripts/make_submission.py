@@ -70,7 +70,8 @@ def main():
     stage = lambda name: print(f"[{time.time() - t0:6.0f}s] {name}", flush=True)
     ranker = LoadedRanker(args.ranker) if args.ranker else None
     # rankers trained with Class-3 hedge candidates expect them in every candidate list
-    cfg = EngineConfig(generate=ranker is not None and "gen" in ranker.columns)
+    cols = set(ranker.columns) if ranker is not None else set()
+    cfg = EngineConfig(generate="gen" in cols, gen_consensus="gen_n_seeds" in cols, np_score="np_score" in cols)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))

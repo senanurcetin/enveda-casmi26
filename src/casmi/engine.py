@@ -25,6 +25,8 @@ class EngineConfig:
     generate: bool = False            # Class-3 hedge: add biotransformed analogs as candidates
     gen_max_analogs: int = 15
     gen_cap: int = 300
+    gen_consensus: bool = False       # v17 features: seed / route consensus and transform type
+    np_score: bool = False            # RDKit NP-likeness for every candidate (chemistry, not membership)
 
 
 def molecule_mass(spectra, offset_ppm=0.0):
@@ -59,30 +61,54 @@ class BaselineEngine:
             if analogs is None and self.analog is not None:
                 analogs = self.analog.search(spectra, mass, excluded_rows)
             f = f.assign(gen=0, gen_sim=0.0, gen_depth=0)
+            if self.cfg.gen_consensus:
+                f = f.assign(gen_sim_sum=0.0, gen_n_seeds=0, gen_n_paths=0, gen_t1=-1, gen_t2=-1)
             g = self._generated(analogs or {}, mass, excluded_keys or set())
             if len(g):
                 f = pd.concat([f, g], ignore_index=True)
                 f["n_cand"] = len(f)
+        if self.cfg.np_score and len(f):
+            from casmi.chem.npscore import np_likeness
+            f["np_score"] = [np_likeness(k, self.pool.smiles_of(k)) for k in f.pool_key]
         return f
 
     def _generated(self, analogs, mass, excluded_keys):
         """Biotransformed analogs at the query mass that are not already pool candidates."""
         from rdkit import Chem
         from rdkit.Chem.Descriptors import ExactMolWt
-        from casmi.generate.transforms import propose
+        from casmi.generate.transforms import propose, propose_agg
         order = sorted(analogs.items(), key=lambda kv: -kv[1][0])[: self.cfg.gen_max_analogs]
         seeds = [(self.pool.smiles_of(k), sim, am) for k, (sim, am) in order if k in self.pool.row_of]
-        rows, seen = [], set()
-        for smi, sim, path in propose(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap):
+        rows, seen = [], {}
+        if self.cfg.gen_consensus:
+            props = propose_agg(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap)
+            items = sorted(props.items(), key=lambda kv: -kv[1]["sim_max"])
+        else:
+            items = [(smi, dict(sim_max=sim, depth=path.count("+") + 1))
+                     for smi, sim, path in propose(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap)]
+        for smi, r in items:
             mol = Chem.MolFromSmiles(smi)
             ik = Chem.MolToInchiKey(mol)[:14] if mol is not None else ""
-            if not ik or ik in seen or (ik in self.pool.row_of and ik not in excluded_keys):
+            if not ik or (ik in self.pool.row_of and ik not in excluded_keys):
                 continue
-            seen.add(ik)
-            rows.append(("G" + ik, smi, (mass - ExactMolWt(mol)) / ExactMolWt(mol) * 1e6, sim, path.count("+") + 1))
+            if ik in seen:                                     # same structure reached as another SMILES
+                if self.cfg.gen_consensus:
+                    row = rows[seen[ik]]
+                    row[5] += r["sim_sum"]
+                    row[6] += r["n_seeds"]
+                    row[7] += r["n_paths"]
+                continue
+            seen[ik] = len(rows)
+            row = ["G" + ik, smi, (mass - ExactMolWt(mol)) / ExactMolWt(mol) * 1e6, r["sim_max"], r["depth"]]
+            if self.cfg.gen_consensus:
+                row += [r["sim_sum"], r["n_seeds"], r["n_paths"], r["t1"], r["t2"]]
+            rows.append(row)
         if not rows:
             return pd.DataFrame()
-        g = pd.DataFrame(rows, columns=["pool_key", "gen_smiles", "ppm", "gen_sim", "gen_depth"])
+        cols = ["pool_key", "gen_smiles", "ppm", "gen_sim", "gen_depth"]
+        if self.cfg.gen_consensus:
+            cols += ["gen_sim_sum", "gen_n_seeds", "gen_n_paths", "gen_t1", "gen_t2"]
+        g = pd.DataFrame(rows, columns=cols)
         self.pool.register_generated(g.pool_key, g.gen_smiles)
         g = g.drop(columns="gen_smiles").assign(d1_max=0.0, d1_mean=0.0, d1_nref=0, gen=1)
         if analogs:

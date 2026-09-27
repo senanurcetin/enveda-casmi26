@@ -23,6 +23,7 @@ class Predictor:
         self.ranker, self.fp_models, self.device = ranker, fp_models or [], device
         self.timings = {"features": 0.0, "d3": 0.0, "d4": 0.0, "rank": 0.0, "dedupe": 0.0}
         self.frag = None
+        self.frag_x = None
         self.failures = []
 
     # ------------------------------------------------------------------ one molecule
@@ -54,6 +55,11 @@ class Predictor:
             if self.frag is None:
                 self.frag = FragmentScorer(self.pool.smiles_of)
             f = add_d4(f, self.frag, spectra)
+            if any(c.startswith("d4x_") for c in self.ranker.columns):
+                from casmi.channels.fragments import D4X
+                if self.frag_x is None:
+                    self.frag_x = FragmentScorer(self.pool.smiles_of, **D4X)
+                f = add_d4(f, self.frag_x, spectra, "d4x")
             self.timings["d4"] += time.perf_counter() - t
         t = time.perf_counter()
         if self.ranker is not None:

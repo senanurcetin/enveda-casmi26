@@ -56,6 +56,8 @@ def main():
                     help="drop features that encode how the pool was assembled (train/COCONUT/enveda-180 "
                          "membership, spectrum counts): their class-conditional distribution is set by the "
                          "simulation design, not by chemistry, and the ranker learns them as shortcuts")
+    ap.add_argument("--params", default="", help='JSON overrides of RankerConfig.params, e.g. {"num_leaves": 63}')
+    ap.add_argument("--drop", default="", help="comma-separated feature prefixes to leave out (ablation)")
     ap.add_argument("--skip-vin", action="store_true", help="train and save only; evaluate with eval_pool_variant / eval_vreal")
     ap.add_argument("--c2-weight", type=float, default=1.0, help="relative weight of Class-2 groups")
     ap.add_argument("--c3-weight", type=float, default=1.0, help="relative weight of Class-3 (generated-truth) groups")
@@ -71,6 +73,8 @@ def main():
                   "prior_np_likeness", "prior_has_sugar"}
     cols = [c for c in feature_columns(train) if c != "fold" and not (args.drop_d3 and c.startswith("d3_"))
             and not (args.no_membership and c in MEMBERSHIP)]
+    if args.drop:
+        cols = [c for c in cols if not any(c.startswith(pfx) for pfx in args.drop.split(","))]
     qids = train.qid.unique()
     rng = np.random.default_rng(SEED)
     es = set(rng.choice(qids, len(qids) // 5, replace=False))
@@ -78,7 +82,9 @@ def main():
     print(f"train {tr.qid.nunique()} queries / {len(tr):,} rows | early-stop {va.qid.nunique()} queries | "
           f"{len(cols)} features", flush=True)
 
-    ranker = Ranker().fit(tr, va, cols, class_weight={"C1": 1.0, "C2": args.c2_weight, "C3": args.c3_weight})
+    from casmi.rank.ranker import RankerConfig
+    base = RankerConfig()
+    ranker = Ranker(RankerConfig(params={**base.params, **(json.loads(args.params) if args.params else {})})).fit(tr, va, cols, class_weight={"C1": 1.0, "C2": args.c2_weight, "C3": args.c3_weight})
     print(f"best iterations per seed: {ranker.best_iters}")
     print("top features by gain:\n" + ranker.importance().head(12).round(0).to_string())
 

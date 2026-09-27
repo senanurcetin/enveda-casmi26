@@ -34,6 +34,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--suffix", default="_gen", help="table suffix: rank_{set}{suffix}_*.parquet")
     ap.add_argument("--n-train", type=int, default=1500)
+    ap.add_argument("--d4x", action="store_true", help="also join the depth-3 D4 block (d4x_)")
     args = ap.parse_args()
     sfx = args.suffix
     t0 = time.time()
@@ -65,7 +66,11 @@ def main():
         g = tbl[tbl.gen == 1]
         pool.register_generated(g.pool_key.to_numpy(), g.gen_smiles.to_numpy())
         tbl = ad3.add_d3(tbl, items, models, pool, fps, device)
-        tbl = add_d4_table(tbl, {q.qid: q.spectra for q, _ in items}, pool.smiles_of, ARTIFACT_DIR / "frag_cache.pkl")
+        spectra_of = {q.qid: q.spectra for q, _ in items}
+        tbl = add_d4_table(tbl, spectra_of, pool.smiles_of, ARTIFACT_DIR / "frag_cache.pkl")
+        if args.d4x:
+            from casmi.channels.fragments import D4X
+            tbl = add_d4_table(tbl, spectra_of, pool.smiles_of, ARTIFACT_DIR / "frag_cache_depth3.pkl", "d4x", **D4X)
         tbl.to_parquet(out, index=False)
         print(f"{out.name}: {len(tbl):,} rows, groups {tbl.groupby('cls').qid.nunique().to_dict()}, "
               f"generated truths {int(tbl[(tbl.gen == 1)].label.sum())} ({time.time() - t0:.0f}s)", flush=True)

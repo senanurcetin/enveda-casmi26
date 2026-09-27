@@ -146,3 +146,48 @@ def propose(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300):
             if len(out) >= cap:
                 return out
     return out
+
+
+T_INDEX = {t.name: i for i, t in enumerate(TRANSFORMS)}
+
+
+def propose_agg(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300):
+    """Like `propose`, but every product carries its consensus: how many distinct analog seeds and
+    (seed, path) routes produce it. analogs: [(smiles, similarity, analog_mass)], best first.
+    Returns {smiles: dict(sim_max, sim_sum, n_seeds, n_paths, depth, t1, t2)}."""
+    tol_da = query_mass * tol_ppm * 1e-6
+    out = {}
+    for si, (smi, sim, amass) in enumerate(analogs[:max_analogs]):
+        paths = matching(query_mass - amass, tol_da * 2)
+        if not paths:
+            continue
+        mol = Chem.MolFromSmiles(smi)
+        if mol is None:
+            continue
+        for path in paths:
+            level = {smi: mol}
+            for t in path:
+                nxt = {}
+                for m in level.values():
+                    nxt.update(apply(m, t))
+                level = nxt
+                if not level:
+                    break
+            for psmi, prod in level.items():
+                rec = out.get(psmi)
+                if rec is None:
+                    if len(out) >= cap or abs(ExactMolWt(prod) - query_mass) > tol_da:
+                        continue
+                    rec = out[psmi] = dict(sim_max=sim, seeds=set(), sims={}, n_paths=0, depth=len(path),
+                                           t1=T_INDEX[path[0].name], t2=T_INDEX[path[1].name] if len(path) > 1 else -1)
+                rec["seeds"].add(si)
+                rec["sims"][si] = sim
+                rec["n_paths"] += 1
+                rec["sim_max"] = max(rec["sim_max"], sim)
+                if len(path) < rec["depth"]:
+                    rec["depth"], rec["t1"] = len(path), T_INDEX[path[0].name]
+                    rec["t2"] = T_INDEX[path[1].name] if len(path) > 1 else -1
+    for rec in out.values():
+        rec["n_seeds"] = len(rec.pop("seeds"))
+        rec["sim_sum"] = float(sum(rec.pop("sims").values()))
+    return out
