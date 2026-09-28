@@ -11,7 +11,7 @@ log() { echo "[$(date '+%H:%M:%S')] $*"; }
 for f in 1 0; do
   [ -f "$A/models/fp_fold${f}_L.pt" ] && grep -q "epoch 6" runs/fp_L_$f.log 2>/dev/null && continue
   log "D3-large fold $f"
-  $PY -u scripts/train_fpmodel.py --train-folds $f --epochs 6 --d-model 384 --n-layers 6 --d-ff 1536 --tag-suffix _L 2>&1 \
+  $PY -u scripts/train_fpmodel.py --train-folds $f --epochs 6 --bs 384 --d-model 384 --n-layers 6 --d-ff 1536 --tag-suffix _L 2>&1 \
     | grep --line-buffered -E "^train|^epoch|Error|Traceback" > runs/fp_L_$f.log
   grep -q "epoch 6" runs/fp_L_$f.log || { log "fold $f failed"; exit 1; }
   tail -n 1 runs/fp_L_$f.log
