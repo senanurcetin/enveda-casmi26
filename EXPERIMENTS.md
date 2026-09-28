@@ -28,6 +28,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 14 | **Class-3 hedge**: biotransformed spectral analogs as candidates with full features, C3 groups in training (`ranker-v15-gen`) | V-in 0.813 / V-real 0.431 | V-in 0.625 / V-real 0.628 | vs #10: V-real +0.027 … +0.036, V-in +0.024 … +0.067 (CI lower bounds); C3 MRR V-in 0.202, V-real 0.040 | **ACCEPT on both**; LB 0.298 |
 | 15 | Generator v2 (42 transforms incl. homologs, carbonyl reduction, acyl/sugar losses; 15 analog seeds) + ranker on 2× training queries (`ranker-v16-gen2`) | V-real 0.433 | V-real 0.636 | vs #14: V-real +0.003 … +0.009 (ACCEPT); V-in lower bounds −0.004 … +0.002; C3 V-real 0.040 → 0.075 | **ACCEPT**; LB 0.309 |
 | 16 | v17: + consensus / transform-type / NP-likeness features, depth-3 D4 block, tuned LightGBM (`ranker-v17`) | V-in 0.767 (−0.038) | V-in 0.658 | vs #15: V-real +0.007 … +0.010 (ACCEPT; C3 +0.015); V-in C1 −0.038 (significant) | **REJECT on LB** (0.302 vs 0.309) |
+| 17 | Large D3 (d_model 384, 6 layers, 6 epochs, batch 384; truth-vs-decoy 0.868/0.875 vs 0.832) + v16 recipe (`ranker-v18-d3L`) | V-real 0.431 / V-in 0.791 | V-real 0.645 / V-in 0.642 | vs #15: V-real −0.003 … −0.002 (NOT PROVEN); V-in C1 −0.015 | not submitted (guard: V-real must ACCEPT) |
 | 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
@@ -136,3 +137,15 @@ Next: retrain the ranker on the larger pool's candidate lists (its list-context 
   laptop GPU, 8 min/epoch. Held-out-fold BCE 0.0672 (prior-only ≈ 0.109); the true fingerprint
   out-scores a random decoy 83% of the time. Trained locally: no Kaggle GPU quota used.
 - End-to-end submission path on the public file: 643 s for 400 molecules, 0 fallbacks.
+
+## State at pause (2026-09-28)
+
+- **Best submission:** #15 `ranker-v16-gen2`, notebook `casmi26-probe-gen3`, public LB **0.309**
+  (train + COCONUT + PubChemLite pool; D1/D2/D3/D4 channels; biotransformation hedge v2; LambdaRank on
+  3,000 simulated queries). Second-best distinct submission: #16b `casmi26-probe-v17abl`, 0.305.
+- **Reproduce:** `kaggle/submission_driver.py` with `CASMI_RANKER=ranker-v16-gen2`, `CASMI_USE_PUBCHEMLITE=1`
+  (Kaggle datasets casmi-code, casmi-models, casmi-coconut, casmi-pubchemlite). Engine options added after v16
+  (consensus, NP-likeness, depth-3 D4, large D3) switch on only for rankers trained with them.
+- **What did not transfer:** pool growth beyond PubChemLite, Class-3 up-weighting, v17 features, tuned
+  LightGBM, large D3. V-real resolves effects of about ±0.01 and overrates simulated Class-3 gains; a
+  significant V-in Class-1 drop has been a reliable warning.
