@@ -262,3 +262,19 @@ Data lives outside OneDrive (`C:/Users/MONSTER/kaggle-data/casmi26`) and outside
 | Overfitting to public LB noise (±0.03) | never tune on LB; final pick favours robustness |
 | Licensing of derived assets | train-derived artifacts private or rebuilt in-notebook; COCONUT/ChEBI/PubChem public |
 | Local RAM (16 GB, often ~3 GB free) | row-group streaming, memmaps, float32; heavy jobs on Kaggle |
+
+## 10. As built (2026-09-30) — where the system departs from this plan
+
+- **Pool:** train + COCONUT + PubChemLite. PubChem, ChEBI and LIPID MAPS were built and rejected on
+  the leaderboard (they add decoys faster than answers).
+- **D3** stayed at 2,048 Morgan bits and the small model; a 12 M-parameter version was better alone
+  but not in the ranker.
+- **D4** is implemented as fragment *explanation* (depth-2 bond cleavage, share of intensity/peaks);
+  it was the largest single Class-2 gain. A learned bond-propensity likelihood (D5) was weaker.
+- **Class-3 hedge (F)** is no longer a gated tail: generated candidates (42 biotransformations of the
+  top-15 spectral analogs) enter the candidate list with full features and the ranker places them.
+  Training includes Class-3 groups; up-weighting them hurt.
+- **Priors (D5 in section 4)** were removed: membership features are simulation shortcuts.
+- **Validation:** a second held-out set, V-real (600 frozen library queries), was added because
+  V-in's showcase compounds could not see pool decoys. Decisions: V-real paired bootstrap, a
+  significant V-in Class-1 drop as a veto, the leaderboard for anything V-real cannot see.

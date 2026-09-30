@@ -1,0 +1,8 @@
+pool,scorer,pcl-C1,pcl-C2,coco-C1,coco-C2,LB
+(default),rule,0.37,0.2997,0.5121,0.2971,0.19
+(default),ranker-d1d2d3,0.359,0.9776,0.5168,0.6139,0.245
+(default),ranker-v13-clean,0.3748,0.7096,0.4812,0.5941,0.258
+_pcl,ranker-v13-clean,0.3707,0.6042,0.4826,0.5412,0.267
+_pcl,ranker-v13-clean-pcl,0.3708,0.5928,0.4885,0.5477,0.273
+_pclx,ranker-v13-clean-pcl,0.3714,0.5824,0.4876,0.5292,0.268
+_pclp,ranker-v13-clean-pcl,0.37,0.5664,0.4898,0.5184,0.252
