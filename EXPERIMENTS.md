@@ -30,6 +30,7 @@ f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 | 16 | v17: + consensus / transform-type / NP-likeness features, depth-3 D4 block, tuned LightGBM (`ranker-v17`) | V-in 0.767 (−0.038) | V-in 0.658 | vs #15: V-real +0.007 … +0.010 (ACCEPT; C3 +0.015); V-in C1 −0.038 (significant) | **REJECT on LB** (0.302 vs 0.309) |
 | 17 | Large D3 (d_model 384, 6 layers, 6 epochs, batch 384; truth-vs-decoy 0.868/0.875 vs 0.832) + v16 recipe (`ranker-v18-d3L`) | V-real 0.431 / V-in 0.791 | V-real 0.645 / V-in 0.642 | vs #15: V-real −0.003 … −0.002 (NOT PROVEN); V-in C1 −0.015 | not submitted (guard: V-real must ACCEPT) |
 | 18 | D5 learned bond-cleavage likelihood (793 event types from 30 k library spectra), screened alone on Class-2 lists | — | alone: V-in 0.058 (LL) / 0.315 (weighted observed); V-real 0.099 / 0.415 — D4 alone 0.404 / 0.558 | — | dropped at screen (weaker than D4 alone; mean log-likelihood is dominated by event count) |
+| 19 | Learned spectral similarity (MS2DeepScore-style, D3 encoder, 128-d, Tanimoto-balanced MSE, per fold) for analog retrieval | — | best analog in top 5 (Tanimoto to truth): learned 0.400 / 0.276 / 0.416 vs entropy 0.523 / 0.405 / 0.527 (V-real coco / pcl / V-in) | — | dropped at screen: entropy similarity finds clearly closer analogs |
 | 8 | fusion / gate of #7 with the interim rule, tuned on cross-fitted training OOF | 0.839 | 0.662 | ±0 (tuning chose "ranker only") | no change |
 
 ## Findings that changed the design
