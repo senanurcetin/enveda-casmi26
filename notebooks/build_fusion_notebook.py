@@ -84,6 +84,7 @@ def main():
     ap.add_argument("--max-lib", type=float, default=0.7)
     ap.add_argument("--id", default="senanuretin/casmi26-fusion-ours")
     ap.add_argument("--meta", help="kernel-metadata.json of the source notebook")
+    ap.add_argument("--drop", action="append", default=[], help="dataset source to remove (validation-only inputs); repeatable")
     args = ap.parse_args()
 
     nb = json.load(open(args.src))
@@ -122,9 +123,9 @@ def main():
     for d in ["senanuretin/casmi-code", "senanuretin/casmi-models", "senanuretin/casmi-coconut", "senanuretin/casmi-pubchemlite"]:
         if d not in ds:
             ds.append(d)
-    meta["dataset_sources"] = ds
+    meta["dataset_sources"] = [d for d in ds if d not in args.drop]
     json.dump(meta, open(out / "kernel-metadata.json", "w"), indent=1)
-    print("wrote", out, "| fusion cell at index", idx, "| datasets", len(ds))
+    print("wrote", out, "| fusion cell at index", idx, "| datasets", len(meta["dataset_sources"]))
 
 
 if __name__ == "__main__":
