@@ -109,8 +109,8 @@ def main():
     ours_cell = (f"OURS_DIR = '/kaggle/working/ours_code'\n"
                  "os.makedirs(OURS_DIR, exist_ok=True)\n"
                  f"open(os.path.join(OURS_DIR, 'ours_channel.py'), 'w').write({OURS_SRC!r})\n" + OURS_CELL)
-    cells.insert(idx, {"cell_type": "code", "metadata": {}, "execution_count": None, "outputs": [],
-                       "source": ours_cell.splitlines(keepends=True)})
+    cells.insert(idx, {"cell_type": "code", "id": "ours-channel", "metadata": {}, "execution_count": None, "outputs": [],
+                       "source": ours_cell.splitlines(keepends=True)})   # nbformat 4.5: every cell needs an id
 
     out = Path(args.out_dir); out.mkdir(parents=True, exist_ok=True)
     json.dump(nb, open(out / "notebook.ipynb", "w"))
