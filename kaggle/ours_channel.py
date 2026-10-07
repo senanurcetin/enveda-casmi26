@@ -23,7 +23,9 @@ def _find(pattern):
     return Path(hits[0])
 
 
-def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print):
+def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print, data_dir=None):
+    """data_dir: folder with the train.parquet to build the library from (validation runs pass the host
+    notebook's purged copy, so held-out structures are not in our library either). None = competition data."""
     t0 = time.time()
     say = lambda m: log(f"[ours {time.time() - t0:6.0f}s] {m}")
     out_csv = Path(out_csv)
@@ -43,11 +45,23 @@ def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print):
                             f"--find-links={code_src / 'wheels'}", "rdkit==2026.3.3"], check=True)
         import rdkit
         assert rdkit.__version__ == "2026.03.3", f"RDKit {rdkit.__version__}: metric keys would not match"
+        if data_dir is not None:              # config.DATA_DIR always resolves to the competition folder on Kaggle
+            cfgp = work / "src" / "casmi" / "config.py"
+            src = cfgp.read_text()
+            head = "def _find_competition_data() -> Path:"
+            assert head in src, "config.py layout changed"
+            nl = "\r\n" if "\r\n" in src else "\n"
+            src = src.replace(head, head + nl + '    if os.environ.get("CASMI_DATA_OVERRIDE"):' + nl
+                              + '        return Path(os.environ["CASMI_DATA_OVERRIDE"])', 1)
+            cfgp.write_text(src)
+            say(f"library built from {data_dir}")
         (artifacts / "models").mkdir(parents=True, exist_ok=True)
         for f in models_src.iterdir():
             shutil.copy(f, artifacts / "models" / f.name)
         env = {**os.environ, "CASMI_ARTIFACTS": str(artifacts), "CASMI_COCONUT": str(coconut),
                "CASMI_PUBCHEMLITE": str(pcl), "CASMI_POOL_TAG": "_pcl", "PYTHONUNBUFFERED": "1"}
+        if data_dir is not None:
+            env["CASMI_DATA_OVERRIDE"] = str(data_dir)
         for step in ["build_structures.py", "build_store.py", "build_pool.py", "build_fingerprints.py"]:
             say(f"-> {step}")
             subprocess.run([sys.executable, str(work / "scripts" / step)], env=env, check=True)

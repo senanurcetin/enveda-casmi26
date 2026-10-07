@@ -44,12 +44,14 @@ if CFG['OURS_BETA'] > 0:
     import importlib.util as _ilu
     _spec = _ilu.spec_from_file_location('ours_channel', os.path.join(OURS_DIR, 'ours_channel.py'))
     _mod = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_mod)
-    _csv = _mod.run_ours(os.path.join(COMP, 'test.parquet'), os.path.join(WORK, 'ours_submission.csv'), log=print)
+    _csv = _mod.run_ours(os.path.join(COMP, 'test.parquet'), os.path.join(WORK, 'ours_submission.csv'), log=print,
+                         data_dir=COMP if CFG['VALIDATION'] else None)   # validation: library from the purged train
     if _csv is not None and os.path.exists(_csv):
         _o = pd.read_csv(_csv)
         OURS = {str(m): [x for x in str(s).split(';') if x and x != 'CCO'] for m, s in zip(_o.molecule_id, _o.smiles)}
     log(f'OURS: {len(OURS)} molecules, {sum(len(v) for v in OURS.values())} candidates, {time.time()-_t0:.0f}s')
     assert IS_RERUN or OURS, 'OURS channel produced nothing on the commit run: fix before submitting'
+    dump('ours', OURS)                        # stage cache: lets fusion weights be replayed offline
 '''
 
 
@@ -84,6 +86,7 @@ def main():
     ap.add_argument("--max-lib", type=float, default=0.7)
     ap.add_argument("--id", default="senanuretin/casmi26-fusion-ours")
     ap.add_argument("--meta", help="kernel-metadata.json of the source notebook")
+    ap.add_argument("--validation", action="store_true", help="commit-run validation: hold out enveda-np-examples (class-2-like), fold-safe FPNet")
     ap.add_argument("--add", action="append", default=[], help="extra dataset source (e.g. a re-uploaded copy of one of ours); repeatable")
     ap.add_argument("--drop", action="append", default=[], help="dataset source to remove (validation-only inputs); repeatable")
     args = ap.parse_args()
@@ -101,6 +104,9 @@ def main():
     cfg = "".join(cells[4]["source"])
     cfg += (f"\nCFG.update({{'OURS_BETA': {args.beta}, 'OURS_MAX_LIB': {args.max_lib}, 'OURS_KRR': 3.0, 'OURS_DEPTH': 25}})"
             "   # our own pipeline as a third list; OURS_BETA 0 = off\n")
+    if args.validation:
+        cfg += ("CFG.update({'VALIDATION': True, 'VAL_SET': 'np_examples', 'VAL_PURGE': 'all', 'FP_BANK': 'fold0'})"
+                "   # validation run: never submit this version\n")
     cells[4]["source"] = cfg.splitlines(keepends=True)
 
     idx = next(i for i, c in enumerate(cells) if c["cell_type"] == "code" and "fusion_core.build_submission(" in "".join(c["source"]))
