@@ -1,4 +1,4 @@
-# CASMI26 hand-off (state at 2026-10-06 12:45 UTC)
+# CASMI26 hand-off (first written 2026-10-06; update 2026-10-07 12:05 UTC at the end)
 
 Goal: climb the public leaderboard of
 [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra)
@@ -50,3 +50,35 @@ only apply to a NEW session. Do not route around the policy.
    DreaMS tail channel (dataset `hengck23/hengck23-dreams-enveda-casmi26`). One change per submission; the public LB is the only
    reliable judge (the notebook's own validation mode is optimistic because the public models were trained on all of train.parquet).
 3. Top 3 needs ~0.45-0.47: beyond all public recipes. Do not promise it.
+
+## Update 2026-10-07 12:05 UTC
+
+### Public LB results (all on the plain public base, public datasets only)
+| submission | public LB |
+|---|---|
+| BASE (copy of huseyinemreaksoy v4n fusion + PubChem join) | **0.420** |
+| BASE + GL_MH_ONLY | 0.419 |
+| BASE + POP_MU 0.35 (base uses 0.25) | 0.414 |
+| BASE + FILL_25 | pending (ref 56908669) |
+| OURS (our ranker as 3rd RRF list), 4 tries | all ERROR "A system error" |
+
+### Why OURS failed, and the fix being tested
+Kaggle log of a control commit: `ERRORED_MOUNTING_DATASET ... senanuretin/casmi-models ... dataset loading failed`;
+one failure came mid-run, consistent with lazy reads of our datasets failing. Byte-identical fresh copies were
+uploaded as `senanuretin/casmi-{code,models,coconut,pubchemlite}-b` (private, they hold train-derived artifacts) and
+`senanuretin/casmi26-fusion-ours-d` uses only those (`notebooks/build_fusion_notebook.py --drop ... --add ...`).
+`notebooks/build_knob_notebook.py` builds CFG-only variants of the base with public datasets.
+
+### Research findings (web, unverified rules text: a human should read the Rules page)
+- Public LB is ~33% of the hidden test (~130 molecules, SE ~0.035); private ~270 molecules. Public-LB differences
+  under ~0.02 are noise, and the top-5 public order is about 1 SE wide. Choose the 2 final submissions by a
+  validation that mirrors the test, plus one differently-risked hedge.
+- External data: standard Kaggle wording (publicly available, free to all) per search snippets. Keep datasets
+  derived from train private. Max 5 submissions/day, 2 final picks, team merge deadline 2026-12-07.
+- Public design space saturates near 0.42 (Class 3 ~0). Best next ideas, gains are guesses: listwise
+  same-formula-decoy head on an existing spectrum embedding (~1 day), candidate-InfoNCE head on frozen DreaMS +
+  ChemBERTa (MSAlign recipe, ~3 days), NP prior from `dmitriigluzdov/casmi26-natural-product-knowledge-table`
+  (LOTUS/NPAtlas, CC0/CC BY). Beware shortcut features (SMILES format, library membership).
+- Useful public datasets: `hengck23/hengck23-dreams-enveda-casmi26` (DreaMS weights + Enveda-180 embeddings),
+  `prvsiyan/casmi26-fp-models-v4`, `dmitriigluzdov/casmi26-natural-product-panel-benchmark`,
+  `dmitriigluzdov/casmi26-fold-safe-fpnet` (needed to validate the public pipeline without leakage).
