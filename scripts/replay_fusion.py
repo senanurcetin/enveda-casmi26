@@ -93,6 +93,7 @@ def main():
     ap.add_argument("--pop-dir", help="folder with pool_lsid.npy and pool_lpmid.npy (POP_MU > 0)")
     ap.add_argument("--grid", action="append", default=[], metavar="KEY=v1,v2,...")
     ap.add_argument("--boot", type=int, default=2000)
+    ap.add_argument("--head", help="head_scores.json from the DreaMS head; grid HEAD_LAM=... re-ranks same-formula groups")
     args = ap.parse_args()
 
     st = lambda n: json.load(open(os.path.join(args.stage_dir, f"{n}.json"))) \
@@ -108,6 +109,7 @@ def main():
         pool_pop = np.load(os.path.join(args.pop_dir, "pool_lsid.npy")).astype(np.float64) + \
             np.load(os.path.join(args.pop_dir, "pool_lpmid.npy")).astype(np.float64)
     score_key, formula = make_keys()
+    head = json.load(open(args.head)) if args.head else {}
 
     grid = []
     for g in args.grid:
@@ -119,10 +121,23 @@ def main():
     print(f"molecules {len(labels)} | our lists {len(ours)} | grid {len(combos)}")
     results = []
     for over in combos:
+        over = dict(over); head_lam = float(over.pop("HEAD_LAM", 0.0)); head_max_lib = float(over.pop("HEAD_MAX_LIB", 9.0))
         cfg = dict(meta["cfg"]); cfg.update(over)
         sub, stats = fc.build_submission(base, pc, eng, ice, gl, cfg, meta["mol_order"], meta["sample_ids"],
                                          ice_fuse=ice_fuse, gl_fuse=gl_fuse, score_key=score_key, formula=formula,
                                          log=lambda *a: None, pool_pop=pool_pop, frag_scores=frag, ours=ours)
+        if head_lam > 0:                      # same-formula re-rank of the final list, as ICEBERG/GLACIER do
+            fused = []
+            for mid, s in zip(sub.molecule_id, sub.smiles):
+                smis = [x for x in s.split(";") if x]
+                h = head.get(str(mid), {})
+                if len(smis) > 1 and h and lib.get(mid, 0.0) < head_max_lib:   # library hits can be left alone
+                    o = gl_fuse.rerank_multi(smis, [score_key(x) or x for x in smis], [float(len(smis) - i) for i in range(len(smis))],
+                                             [formula(x) for x in smis], [h], [head_lam], top_n=len(smis))
+                    smis = [smis[i] for i in o]
+                fused.append(";".join(smis))
+            sub = sub.assign(smiles=fused)
+        over["HEAD_LAM"] = head_lam; over["HEAD_MAX_LIB"] = head_max_lib
         rr = reciprocal_ranks(sub, labels, score_key)
         mids = sorted(rr)
         row = {"cfg": over, "mrr": np.mean([rr[m] for m in mids]), "top1": np.mean([rr[m] == 1 for m in mids]),

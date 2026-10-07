@@ -211,10 +211,12 @@ def embed_spectra(mod, model, rows, batch=64, device="cpu"):
 
 def embed(args):
     """Embed a test-format parquet (molecule_id, ms2_mzs, ms2_normalized_intensities, precursor_mz, ionization_mode)."""
-    mod, model = load_dreams(args.dreams)
+    import torch
+    dev = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
+    mod, model = load_dreams(args.dreams, device=dev)
     df = pd.read_parquet(args.parquet)
     t0 = time.time()
-    e = embed_spectra(mod, model, zip(df.ms2_mzs, df.ms2_normalized_intensities, df.precursor_mz))
+    e = embed_spectra(mod, model, zip(df.ms2_mzs, df.ms2_normalized_intensities, df.precursor_mz), device=dev)
     np.save(args.out, e)
     df[["molecule_id", "spectrum_id", "adduct", "ionization_mode"]].to_parquet(str(args.out).replace(".npy", "_meta.parquet"), index=False)
     print(f"embedded {len(df):,} spectra in {time.time() - t0:.0f}s -> {args.out}")
@@ -272,7 +274,7 @@ def main():
         p.add_argument("--max-cands", type=int, default=200); p.add_argument("--weights")
         p.add_argument("--fp-in-ram", action="store_true", help="hold all fingerprints as float32 in RAM (~1.5 GB)")
     p = sub.add_parser("embed"); p.add_argument("--dreams", required=True); p.add_argument("--parquet", required=True)
-    p.add_argument("--out", required=True)
+    p.add_argument("--out", required=True); p.add_argument("--device")
     p = sub.add_parser("score"); p.add_argument("--weights", required=True); p.add_argument("--emb", required=True)
     p.add_argument("--stage", required=True); p.add_argument("--out", required=True)
     args = ap.parse_args()
