@@ -99,7 +99,10 @@ def main():
     st = lambda n: json.load(open(os.path.join(args.stage_dir, f"{n}.json"))) \
         if os.path.exists(os.path.join(args.stage_dir, f"{n}.json")) else {}
     base, pc, eng, ice, gl, frag, meta, ours = (st(n) for n in ("base", "pc", "eng", "ice", "gl", "frag", "meta", "ours"))
-    labels = pd.read_csv(os.path.join(args.stage_dir, "val_labels.csv")).set_index("molecule_id").smiles.to_dict()
+    lab = pd.read_csv(os.path.join(args.stage_dir, "val_labels.csv")).set_index("molecule_id")
+    labels = lab.smiles.to_dict()
+    stratum = lab.stratum.to_dict() if "stratum" in lab else {}     # test_like validation: 'np' / 'pc'
+    strata = sorted(set(stratum.values()))
     fc = load_fusion_core(args.notebook)
     sys.path.insert(0, args.fuse_dir)
     ice_fuse, gl_fuse = load_module(os.path.join(args.fuse_dir, "fuse.py"), "fuse"), \
@@ -145,6 +148,9 @@ def main():
         for b, f in bins.items():
             sel = [rr[m] for m in mids if f(lib.get(m, 0.0))]
             row[b] = (np.mean(sel) if sel else float("nan"), len(sel))
+        for z in strata:
+            sel = [rr[m] for m in mids if stratum.get(m) == z]
+            row[z] = (np.mean(sel) if sel else float("nan"), len(sel))
         row["ours_changed_top1"] = stats.get("ours", {}).get("top1_changed", 0)
         results.append((row, np.array([rr[m] for m in mids])))
     ref = results[0][1]
@@ -154,7 +160,7 @@ def main():
         d = (v - ref)[idx].mean(1)
         lo, hi = np.percentile(d, [2.5, 97.5])
         print(f"{json.dumps(row['cfg']):40s} MRR {row['mrr']:.4f} top1 {row['top1']:.3f} hit25 {row['hit25']:.3f} | "
-              + " ".join(f"{b} {row[b][0]:.3f}(n={row[b][1]})" for b in bins)
+              + " ".join(f"{b} {row[b][0]:.3f}(n={row[b][1]})" for b in [*bins, *strata])
               + f" | top1 changed by ours {row['ours_changed_top1']} | vs ref {v.mean() - ref.mean():+.4f} [{lo:+.4f}, {hi:+.4f}]")
 
 

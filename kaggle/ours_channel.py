@@ -23,9 +23,11 @@ def _find(pattern):
     return Path(hits[0])
 
 
-def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print, data_dir=None):
+def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print, data_dir=None, fp_keep=None):
     """data_dir: folder with the train.parquet to build the library from (validation runs pass the host
-    notebook's purged copy, so held-out structures are not in our library either). None = competition data."""
+    notebook's purged copy, so held-out structures are not in our library either). None = competition data.
+    fp_keep: names of the fp_fold*.pt models to use (validation: only the one that is out-of-fold for the
+    held-out structures). None = all."""
     t0 = time.time()
     say = lambda m: log(f"[ours {time.time() - t0:6.0f}s] {m}")
     out_csv = Path(out_csv)
@@ -57,7 +59,11 @@ def run_ours(test_parquet, out_csv, ranker="ranker-v16-gen2", log=print, data_di
             say(f"library built from {data_dir}")
         (artifacts / "models").mkdir(parents=True, exist_ok=True)
         for f in models_src.iterdir():
+            if fp_keep is not None and f.name.startswith("fp_fold") and f.name not in fp_keep:
+                continue
             shutil.copy(f, artifacts / "models" / f.name)
+        if fp_keep is not None:
+            say(f"fp models: {sorted(x.name for x in (artifacts / 'models').glob('fp_fold*'))}")
         env = {**os.environ, "CASMI_ARTIFACTS": str(artifacts), "CASMI_COCONUT": str(coconut),
                "CASMI_PUBCHEMLITE": str(pcl), "CASMI_POOL_TAG": "_pcl", "PYTHONUNBUFFERED": "1"}
         if data_dir is not None:

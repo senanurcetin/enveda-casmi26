@@ -45,7 +45,8 @@ if CFG['OURS_BETA'] > 0:
     _spec = _ilu.spec_from_file_location('ours_channel', os.path.join(OURS_DIR, 'ours_channel.py'))
     _mod = _ilu.module_from_spec(_spec); _spec.loader.exec_module(_mod)
     _csv = _mod.run_ours(os.path.join(COMP, 'test.parquet'), os.path.join(WORK, 'ours_submission.csv'), log=print,
-                         data_dir=COMP if CFG['VALIDATION'] else None)   # validation: library from the purged train
+                         data_dir=COMP if CFG['VALIDATION'] else None,   # validation: library from the purged train
+                         fp_keep=('fp_fold0.pt',) if CFG['VALIDATION'] and CFG['VAL_SET'] == 'test_like' else None)
     if _csv is not None and os.path.exists(_csv):
         _o = pd.read_csv(_csv)
         OURS = {str(m): [x for x in str(s).split(';') if x and x != 'CCO'] for m, s in zip(_o.molecule_id, _o.smiles)}
@@ -54,6 +55,77 @@ if CFG['OURS_BETA'] > 0:
     dump('ours', OURS)                        # stage cache: lets fusion weights be replayed offline
 '''
 
+
+TEST_LIKE_FN = '''
+def test_like_keys(n_np, n_pc, seed, max_mass=1170.0, min_mass=150.0):
+    """Test-like hold-out (added by casmi26 build_fusion_notebook.py --val-set test_like): structures that NEITHER
+    pipeline trained on, with answers reachable the way hidden-test answers are.
+      * in the fold-safe FPNet's 'hold' fold (host FP_BANK 'fold0' never saw them),
+      * skeleton fold 1 of our 2-fold split (md5(skeleton) % 2), so our fp_fold0 model is out-of-fold for them,
+      * in the host pool through an external source (src bit 2), not only because they are training structures,
+      * one eligible spectrum at least (test adduct, base peak >= 1000), mass in the test window.
+    Two strata: 'np' = in a natural-product catalogue (pool_np > 0), 'pc' = external but not an NP catalogue.
+    With the v2 pool the external source is COCONUT, so 'pc' is empty: a PubChem-only answer cannot be simulated
+    fairly here (every training structure stays in the host pool through src bit 1). Returns {inchikey14: stratum}."""
+    import numpy as np, hashlib as _h
+    from rdkit import Chem
+    def _skel(smi):
+        m = Chem.MolFromSmiles(smi) if isinstance(smi, str) else None
+        if m is None:
+            return None
+        rw = Chem.RWMol(Chem.RemoveHs(m, sanitize=False))
+        for a in rw.GetAtoms():
+            a.SetFormalCharge(0); a.SetIsAromatic(False); a.SetNoImplicit(True); a.SetNumExplicitHs(0)
+            a.SetChiralTag(Chem.ChiralType.CHI_UNSPECIFIED)
+        for b in rw.GetBonds():
+            b.SetBondType(Chem.BondType.SINGLE); b.SetIsAromatic(False); b.SetStereo(Chem.BondStereo.STEREONONE)
+        return Chem.MolToSmiles(rw, canonical=True)
+    sp = pd.read_parquet(find('casmi26-fold-safe-fpnet/**/split.parquet'))
+    pm = pd.read_parquet(os.path.join(POOL_DIR, 'pool_meta.parquet'), columns=['key', 'pid', 'src'])
+    npf = np.load(find('casmi26-pubchem-popularity-prior/**/pool_np.npy'))
+    ext = pm[(pm.src.values & 2) > 0]
+    nat = set(ext.key.values[npf[ext.pid.values] > 0]); ext = set(ext.key.values)
+    st = pd.read_parquet(os.path.join(POOL_DIR, 'train_structs.parquet'), columns=['inchikey14', 'key', 'smiles', 'mass'])
+    st = st[st.inchikey14.isin(set(sp.inchikey14[sp.fold == 'hold'])) & st.key.isin(ext) & st.mass.between(min_mass, max_mass)]
+    import pyarrow.parquet as _pq
+    m = _pq.read_table(os.path.join(COMP, 'train.parquet'), columns=['inchikey14', 'adduct', 'base_peak_intensity']).to_pandas()
+    m = m[m.adduct.isin(TEST_ADDUCTS) & (m.base_peak_intensity.isna() | (m.base_peak_intensity >= 1000))]
+    st = st[st.inchikey14.isin(set(m.inchikey14))]
+    rng = np.random.RandomState(seed)
+    st = st.iloc[rng.permutation(len(st))]
+    out, seen, cnt, want = {}, set(), {'np': 0, 'pc': 0}, {'np': n_np, 'pc': n_pc}
+    for ik, key, smi in zip(st.inchikey14, st.key, st.smiles):
+        s_ = 'np' if key in nat else 'pc'
+        if cnt[s_] >= want[s_] or key in seen:
+            continue
+        sk = _skel(smi)
+        if sk is None or int(_h.md5(sk.encode()).hexdigest(), 16) % 2 != 1:
+            continue
+        out[ik] = s_; seen.add(key); cnt[s_] += 1
+        if cnt == want:
+            break
+    log(f'test_like: {cnt} structures from {len(st)} eligible')
+    return out
+
+'''
+
+
+def patch_validation_cell(src):
+    a = "def build_validation("
+    assert a in src
+    src = src.replace(a, TEST_LIKE_FN.lstrip("\n") + "\n" + a, 1)
+    b = "    if CFG['VAL_SET'] == 'fold0_np':"
+    assert b in src
+    src = src.replace(b, (
+        "    if CFG['VAL_SET'] == 'test_like':\n"
+        "        _tl = test_like_keys(CFG['VAL_N_NP'], CFG['VAL_N'] - CFG['VAL_N_NP'], CFG['VAL_SEED'])\n"
+        "        _nm, _ns = build_validation(COMP, os.path.join(WORK, 'val_comp'), None, len(_tl), CFG['VAL_SEED'],\n"
+        "                                    CFG['VAL_MAX_SPEC'], 'all', only=set(_tl))\n"
+        "        _lab = pd.read_csv(os.path.join(STAGE, 'val_labels.csv'))\n"
+        "        _lab['stratum'] = _lab.inchikey14.map(_tl)\n"
+        "        _lab.to_csv(os.path.join(STAGE, 'val_labels.csv'), index=False)\n"
+        "    el" + b.lstrip()), 1)
+    return src
 
 
 def patch_fusion_core(src):
@@ -86,7 +158,11 @@ def main():
     ap.add_argument("--max-lib", type=float, default=0.7)
     ap.add_argument("--id", default="senanuretin/casmi26-fusion-ours")
     ap.add_argument("--meta", help="kernel-metadata.json of the source notebook")
-    ap.add_argument("--validation", action="store_true", help="commit-run validation: hold out enveda-np-examples (class-2-like), fold-safe FPNet")
+    ap.add_argument("--validation", action="store_true", help="commit-run validation (class-2-like), fold-safe FPNet")
+    ap.add_argument("--val-set", choices=["np_examples", "test_like"], default="np_examples",
+                    help="np_examples: famous NPs (all in COCONUT, optimistic for our channel); test_like: structures "
+                         "neither pipeline trained on, NP-catalogue and PubChem-type strata")
+    ap.add_argument("--val-n", type=int, default=250); ap.add_argument("--val-n-np", type=int, default=250)
     ap.add_argument("--add", action="append", default=[], help="extra dataset source (e.g. a re-uploaded copy of one of ours); repeatable")
     ap.add_argument("--drop", action="append", default=[], help="dataset source to remove (validation-only inputs); repeatable")
     args = ap.parse_args()
@@ -104,9 +180,15 @@ def main():
     cfg = "".join(cells[4]["source"])
     cfg += (f"\nCFG.update({{'OURS_BETA': {args.beta}, 'OURS_MAX_LIB': {args.max_lib}, 'OURS_KRR': 3.0, 'OURS_DEPTH': 25}})"
             "   # our own pipeline as a third list; OURS_BETA 0 = off\n")
-    if args.validation:
+    if args.validation and args.val_set == "np_examples":
         cfg += ("CFG.update({'VALIDATION': True, 'VAL_SET': 'np_examples', 'VAL_PURGE': 'all', 'FP_BANK': 'fold0'})"
                 "   # validation run: never submit this version\n")
+    elif args.validation:
+        cfg += (f"CFG.update({{'VALIDATION': True, 'VAL_SET': 'test_like', 'VAL_PURGE': 'all', 'FP_BANK': 'fold0', "
+                f"'VAL_N': {args.val_n}, 'VAL_N_NP': {args.val_n_np}, 'VAL_MAX_SPEC': 6}})"
+                "   # validation run: never submit this version\n")
+        vi = next(i for i, c in enumerate(cells) if "def build_validation(" in "".join(c["source"]))
+        cells[vi]["source"] = patch_validation_cell("".join(cells[vi]["source"])).splitlines(keepends=True)
     cells[4]["source"] = cfg.splitlines(keepends=True)
 
     idx = next(i for i, c in enumerate(cells) if c["cell_type"] == "code" and "fusion_core.build_submission(" in "".join(c["source"]))
