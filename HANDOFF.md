@@ -1,4 +1,11 @@
-# CASMI26 hand-off (first written 2026-10-06; update 2026-10-07 12:05 UTC at the end)
+# CASMI26 hand-off
+
+**Project closed 2026-10-08.** Best public LB 0.422 (`casmi26-fusion-ours-d`, rank 348 / 2,791). No further work
+is planned. If nothing else is selected, Kaggle uses the two best public submissions for the final ranking:
+OURS-d 0.422 (with our channel) and the plain base 0.420 (without it), which is a reasonable hedge pair.
+Everything below is the working log, oldest first.
+
+## Log (first written 2026-10-06; update 2026-10-07 12:05 UTC at the end)
 
 Goal: climb the public leaderboard of
 [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra)

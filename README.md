@@ -4,7 +4,11 @@ Kaggle competition: [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle
 Given the tandem mass spectra of an unknown natural product, rank up to 25 candidate structures;
 scored by MRR@25 on the tautomer-canonical InChIKey (first block).
 
-**Best public leaderboard: 0.309** (`ranker-v16-gen2`, notebook `casmi26-probe-gen3`).
+**Status: closed on 8 October 2026.** Best public leaderboard **0.422** (rank 348 of 2,791): the public v4n
+fusion notebook with our own pipeline (`ranker-v16-gen2`, below) fused in as a third ranked list
+(`casmi26-fusion-ours-d`). Our pipeline alone reached 0.309. Work stopped because the remaining ideas did not
+transfer to the leaderboard and a prize place (≈0.46 public) was out of reach; the hand-off and every result
+are in [HANDOFF.md](HANDOFF.md).
 
 ## Approach in one paragraph
 
@@ -31,17 +35,26 @@ four channels, and a LightGBM LambdaRank model trained on knockout-simulated que
 | + D4 fragment explanation + Class-3 generated candidates | 0.298 |
 | + extended transformations, 2× training queries | **0.309** |
 
+| public v4n fusion notebook (huseyinemreaksoy et al.) as the base | 0.420 |
+| + our pipeline as a third reciprocal-rank list (β 0.4, weak library matches only) | **0.422** |
+
 Just as informative are the changes that lost on the leaderboard: bigger pools (ChEBI, LIPID MAPS,
 PubChem literature), up-weighting Class 3, NP-likeness, tuned LightGBM, a larger D3, a learned bond
 model and a learned spectral similarity. Each one is logged with its numbers in
-[EXPERIMENTS.md](EXPERIMENTS.md).
+[EXPERIMENTS.md](EXPERIMENTS.md). After the move to the fusion base: a heavier weight on our list (0.413),
+fusion knobs of the base (0.414–0.420), and an isomer-ranking head on frozen DreaMS embeddings, which reached
+MRR 0.69 on held-out Enveda-180 structures but no better than chance on real candidates, so it never shipped
+([HANDOFF.md](HANDOFF.md)).
 
 ## Validation
 
 Two held-out query sets, both at structure (skeleton) level and never used for training:
 **V-in** (the 250 instrument-matched `enveda-np-examples`) and **V-real** (600 harder, held-out
 library structures). V-real tracks the leaderboard's direction for pool and channel changes;
-effects below ~0.01 are beyond what either set resolves. Details and every decision in
+effects below ~0.01 are beyond what either set resolves. For the fusion notebook,
+`notebooks/build_fusion_notebook.py --validation [--val-set test_like]` runs the whole notebook on a held-out
+set and `scripts/replay_fusion.py` re-fuses its stage dumps offline; both sets ranked the fusion weights in a
+different order than the leaderboard did, so they were used for direction only. Details and every decision in
 [EXPERIMENTS.md](EXPERIMENTS.md); the design in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Reproduce
