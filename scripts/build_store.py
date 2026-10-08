@@ -40,6 +40,8 @@ def main():
 
     for rg in range(pf.num_row_groups):
         tbl = pf.read_row_group(rg, columns=META_COLS + ["ms2_mzs", "ms2_normalized_intensities", "collision_energy_ev"])
+        if tbl.num_rows == 0:            # a filtered train.parquet (validation hold-out) can carry empty row groups
+            continue
         meta = tbl.select(META_COLS).to_pandas()
         mz_v, mz_o = _flat(tbl.column("ms2_mzs"))
         it_v, it_o = _flat(tbl.column("ms2_normalized_intensities"))
