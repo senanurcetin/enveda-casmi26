@@ -134,3 +134,13 @@ smaller than np_examples' (+0.079 for OURS-e). Known remaining differences to th
 test, where every setting scores ~0), no PubChem-only answers, non-timsTOF spectra, and the host's engine-1 fp
 models (`prvsiyan/casmi26-fp-models-v2`) are not fold-safe. Use it for direction on re-rankers, not for weights.
 Its stage cache (`$S/val_tl_out/stage_cache`) lets any new re-ranker be scored offline without another 3 h run.
+
+### DreaMS head v3 (`casmi26-dreams-head-v3`, pool decoys): REJECTED
+Prep: 312,935 molecules (133,242 COCONUT/PubChemLite decoy-only structures with Enveda-180 formulas; 81.5% of
+Enveda structures have pool isomers, median 14). 6 epochs, pool-frac 0.5. Synthetic hold-out, Enveda + pool
+isomers (median 46): MRR 0.686 (ep5), blank-spectrum 0.211 vs chance 0.167 (a small membership shortcut).
+Test-like validation (`casmi26-score-head-v3`, PARITY 1.00000): head alone within same-formula groups MRR 0.089 vs
+chance 0.094, i.e. no signal; as a re-rank term it loses at every weight (HEAD_LAM 0.1 −0.016 [−0.030, −0.003],
+0.25 −0.084). Reading: a head trained on Enveda-180 spectra (one library, timsTOF, ik14-level hold-out) learns
+that library, not spectrum-structure rules that transfer. A real retry needs DreaMS embeddings of every training
+library and a skeleton-disjoint hold-out.
