@@ -82,3 +82,32 @@ uploaded as `senanuretin/casmi-{code,models,coconut,pubchemlite}-b` (private, th
 - Useful public datasets: `hengck23/hengck23-dreams-enveda-casmi26` (DreaMS weights + Enveda-180 embeddings),
   `prvsiyan/casmi26-fp-models-v4`, `dmitriigluzdov/casmi26-natural-product-panel-benchmark`,
   `dmitriigluzdov/casmi26-fold-safe-fpnet` (needed to validate the public pipeline without leakage).
+
+## Update 2026-10-08 04:30 UTC
+
+### Public LB
+FILL_25 0.420; `casmi26-fusion-ours-d` (our ranker as 3rd RRF list, OURS_BETA 0.4, OURS_MAX_LIB 0.7) **0.422** = best.
+
+### Validation of the fusion notebook (`casmi26-val-ours` v2: enveda-np-examples held out, purge all, FP bank fold0)
+250 molecules, `scripts/replay_fusion.py` on its stage_cache. Kernel line: `VALIDATION MRR@25 = 0.6355` (beta 0.4 / 0.7).
+| OURS_BETA / OURS_MAX_LIB | MRR | vs beta 0 (95% CI) |
+|---|---|---|
+| 0 | 0.612 | — |
+| 0.4 / 0.7 (submitted) | 0.636 | +0.023 [+0.008, +0.042] |
+| 0.4 / 0.9 | 0.649 | +0.037 [+0.017, +0.059] |
+| 0.8 / 0.9 | 0.691 | +0.079 [+0.047, +0.113] |
+| 1.5 / 0.9 | 0.701 | +0.089 [+0.044, +0.133] |
+Strongly biased toward OURS: every V-in answer is in COCONUT (our pool) and our ranker was selected on V-in.
+Transfer check: 0.4 / 0.7 predicted +0.023, public LB gave +0.002 (within noise). A beta 0.8 / 0.9 LB probe is the
+cheapest test of whether more weight pays; needs the user's go.
+
+### DreaMS isomer head (`scripts/dreams_head.py`): REJECTED as is
+- Synthetic hold-out (unseen Enveda-180 structures, Enveda-180 isomer decoys): v1 3 ep MRR 0.674; v2
+  (`casmi26-dreams-head-v2`, 6 ep, per-mol 3) best ep5 0.697; blank-spectrum control = chance in both.
+- Real candidates (`casmi26-score-head`, v1 weights; PARITY cosine to published embeddings 1.00000): head alone
+  ranks the truth within its same-formula group (median 84 COCONUT/PubChem candidates) at MRR 0.103 vs chance
+  0.075; mean score truth 0.223 vs decoys 0.196. As a same-formula re-rank term it loses at every weight:
+  HEAD_LAM 0.25 −0.051 [−0.083, −0.019], 2.0 −0.307.
+- Reading: trained only against Enveda-180 decoys, the head does not transfer to external candidate
+  distributions. A retry would need decoys drawn from the inference pool (COCONUT + PubChemLite isomers) with
+  a membership-shortcut control; not started.
