@@ -111,3 +111,9 @@ cheapest test of whether more weight pays; needs the user's go.
 - Reading: trained only against Enveda-180 decoys, the head does not transfer to external candidate
   distributions. A retry would need decoys drawn from the inference pool (COCONUT + PubChemLite isomers) with
   a membership-shortcut control; not started.
+
+### OURS-e result (2026-10-08 09:15 UTC)
+`casmi26-fusion-ours-e` (OURS_BETA 0.8, OURS_MAX_LIB 0.9, otherwise identical to OURS-d): public LB **0.413** vs
+OURS-d 0.422. Validation had predicted +0.056 over OURS-d; the LB moved −0.009 (within noise, wrong direction).
+Conclusion: the np-examples validation cannot be used to tune the OURS weight (all its answers are in our COCONUT
+pool and our ranker was selected on it). Keep OURS-d (0.4 / 0.7) as the OURS setting.
