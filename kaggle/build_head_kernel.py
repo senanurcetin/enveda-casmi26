@@ -24,9 +24,17 @@ DREAMS = os.path.dirname(sorted(glob.glob("/kaggle/input/**/Enveda180_DreaMS_ind
 ART = "/kaggle/working/head_art"
 open("/kaggle/working/dreams_head.py", "w").write({src!r})
 run = lambda *a: subprocess.run([sys.executable, "/kaggle/working/dreams_head.py", *a], check=True)
-log("prep"); run("prep", "--dreams", DREAMS, "--out", ART)
+POOLS = []
+if {pool}:                                    # v3: same-formula decoys from the inference pools (COCONUT, PubChemLite)
+    POOLS = [sorted(glob.glob(f"/kaggle/input/**/{{p}}", recursive=True))[0]
+             for p in ("coconut_csv_lite-*.csv", "PubChemLite_CCSbase_*.csv")]
+EXCL = []
+if {exclude!r}:                               # validation structures kept out of training
+    open("/kaggle/working/exclude.csv", "w").write({exclude!r}); EXCL = ["--exclude", "/kaggle/working/exclude.csv"]
+log(f"pools {{POOLS}} | exclude {{EXCL}}")
+log("prep"); run("prep", "--dreams", DREAMS, "--out", ART, *[a for p in POOLS for a in ("--pool", p)], *EXCL)
 log("train"); run("train", "--dreams", DREAMS, "--art", ART, "--epochs", "{epochs}", "--fp-in-ram", "--per-mol", "{per_mol}",
-                  "--decoys", "{decoys}", "--batch", "{batch}", "--lr", "{lr}")
+                  "--decoys", "{decoys}", "--batch", "{batch}", "--lr", "{lr}", "--pool-frac", "{pool_frac}")
 for f in ("mol_fp.npy", "isomers.json", "spectra.parquet", "mols.parquet"):      # keep the output small
     os.remove(os.path.join(ART, f))
 log("done")
@@ -43,14 +51,22 @@ def main():
     ap.add_argument("--decoys", type=int, default=31)
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("--lr", type=float, default=3e-4)
+    ap.add_argument("--pool-frac", type=float, default=0.0, help="> 0: add COCONUT / PubChemLite decoys (v3)")
+    ap.add_argument("--exclude", help="local CSV with inchikey14 (e.g. a validation stage's val_labels.csv)")
     a = ap.parse_args()
+    excl = ""
+    if a.exclude:
+        import pandas as pd
+        excl = pd.read_csv(a.exclude)[["inchikey14"]].to_csv(index=False)
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
     (out / "train_head.py").write_text(KERNEL.format(src=HEAD_SRC, epochs=a.epochs, per_mol=a.per_mol,
-                                                    decoys=a.decoys, batch=a.batch, lr=a.lr))
+                                                    decoys=a.decoys, batch=a.batch, lr=a.lr,
+                                                    pool_frac=a.pool_frac, pool=a.pool_frac > 0, exclude=excl))
     base = json.load(open(a.docker_from))
     meta = dict(id=a.id, title=a.id.split("/")[1], code_file="train_head.py", language="python", kernel_type="script",
                 is_private=True, enable_gpu=True, enable_tpu=False, enable_internet=False,
-                dataset_sources=["hengck23/hengck23-dreams-enveda-casmi26", "metric/rdkit-2026-3-3-wheel"],
+                dataset_sources=["hengck23/hengck23-dreams-enveda-casmi26", "metric/rdkit-2026-3-3-wheel"]
+                + (["senanuretin/casmi-coconut-b", "senanuretin/casmi-pubchemlite-b"] if a.pool_frac > 0 else []),
                 competition_sources=[], kernel_sources=[], model_sources=[],
                 docker_image=base.get("docker_image"), machine_shape=base.get("machine_shape", "NvidiaTeslaT4"))
     json.dump(meta, open(out / "kernel-metadata.json", "w"), indent=1)

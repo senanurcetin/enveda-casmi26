@@ -28,7 +28,7 @@ sys.path.insert(0, "/kaggle/working")
 import dreams_head as H
 first = lambda pat: sorted(glob.glob(pat, recursive=True), key=len)[0]
 DREAMS = os.path.dirname(first("/kaggle/input/**/Enveda180_DreaMS_index.parquet"))
-WEIGHTS = first("/kaggle/input/**/head_art/{weights}")
+WEIGHTS = [first(f"/kaggle/input/**/head_art/{{w}}") for w in {weights!r}.split(",")]
 STAGE = os.path.dirname(first("/kaggle/input/**/stage_cache/val_labels.csv"))
 TEST = first("/kaggle/input/**/val_comp/test.parquet")
 TRAIN = first("/kaggle/input/**/enveda-CASMI26-molecule-id-mass-spectra/train.parquet")
@@ -57,8 +57,10 @@ log(f"PARITY cosine to the published embeddings: min {{cos.min():.5f}} median {{
 # 2. embed the held-out spectra, 3. score every candidate list of the stage dump
 subprocess.run([sys.executable, "/kaggle/working/dreams_head.py", "embed", "--dreams", DREAMS, "--parquet", TEST,
                 "--out", "/kaggle/working/val_emb.npy", "--device", "cuda"], check=True)
-subprocess.run([sys.executable, "/kaggle/working/dreams_head.py", "score", "--weights", WEIGHTS,
-                "--emb", "/kaggle/working/val_emb.npy", "--stage", STAGE, "--out", "/kaggle/working/head_scores.json"], check=True)
+for w in WEIGHTS:                              # one score file per weight file: head_scores.json, or head_scores_<ep>.json
+    tag = "" if len(WEIGHTS) == 1 else "_" + os.path.basename(w)[len("head_"):-len(".pt")]
+    subprocess.run([sys.executable, "/kaggle/working/dreams_head.py", "score", "--weights", w,
+                    "--emb", "/kaggle/working/val_emb.npy", "--stage", STAGE, "--out", f"/kaggle/working/head_scores{{tag}}.json"], check=True)
 log("done")
 '''
 
@@ -70,7 +72,7 @@ def main():
     ap.add_argument("--id", default="senanuretin/casmi26-score-head")
     ap.add_argument("--head-kernel", default="senanuretin/casmi26-dreams-head")
     ap.add_argument("--val-kernel", default="senanuretin/casmi26-val-ours")
-    ap.add_argument("--weights", default="head_ep2.pt")
+    ap.add_argument("--weights", default="head_ep2.pt", help="comma-separated weight files of the head kernel's head_art")
     a = ap.parse_args()
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
     (out / "score_head.py").write_text(KERNEL.format(src=HEAD_SRC, weights=a.weights))

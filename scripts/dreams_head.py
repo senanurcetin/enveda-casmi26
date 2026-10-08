@@ -12,8 +12,14 @@ candidates (COCONUT / PubChem) are never used as decoys in training: with synthe
 Data: hengck23/hengck23-dreams-enveda-casmi26 (DreaMS embeddings of the Enveda-180 spectra, row-aligned with
 Enveda180_DreaMS_index.parquet). Only test adducts are used (no [2M+...] dimers).
 
-  python scripts/dreams_head.py prep  --dreams DIR --out ART
-  python scripts/dreams_head.py train --dreams DIR --art ART [--epochs 3]
+  python scripts/dreams_head.py prep  --dreams DIR --out ART [--pool COCONUT.csv --pool PubChemLite.csv --exclude LABELS.csv]
+  python scripts/dreams_head.py train --dreams DIR --art ART [--epochs 3] [--pool-frac 0.5]
+
+v3 (pool decoys): the v1/v2 head, trained only against Enveda-180 isomers, ranked real COCONUT / PubChem candidates
+barely above chance (validation MRR 0.103 vs chance 0.075). --pool adds same-formula structures of the inference
+pools as decoys; --pool-frac sets the share of decoys drawn from them. Truths stay Enveda-180 structures, so a
+"looks like Enveda-180" shortcut is possible: the blank-spectrum control on pool candidates must stay at chance.
+--exclude drops the structures of a validation set (CSV with inchikey14) from training and hold-out.
 """
 import argparse
 import hashlib
@@ -47,6 +53,23 @@ def holdout(key, frac=0.05):
     return int(hashlib.md5(key.encode()).hexdigest()[:8], 16) / 0xFFFFFFFF < frac
 
 
+def load_pool(path):
+    """COCONUT csv-lite or PubChemLite CSV -> DataFrame(inchikey14, smiles, molecular_formula), neutral single-fragment."""
+    head = pd.read_csv(path, nrows=0).columns
+    if "FirstBlock" in head:                                   # PubChemLite
+        c = pd.read_csv(path, usecols=["FirstBlock", "SMILES", "MolecularFormula"])
+        c = c.rename(columns={"FirstBlock": "inchikey14", "SMILES": "smiles", "MolecularFormula": "molecular_formula"})
+    else:                                                      # COCONUT
+        c = pd.read_csv(path, usecols=["canonical_smiles", "standard_inchi_key", "molecular_formula", "formal_charge"],
+                        low_memory=False)
+        c = c[c.formal_charge == 0]
+        c = pd.DataFrame({"inchikey14": c.standard_inchi_key.str[:14], "smiles": c.canonical_smiles,
+                          "molecular_formula": c.molecular_formula})
+    c = c.dropna()
+    c = c[~c.smiles.str.contains(".", regex=False) & ~c.molecular_formula.str.contains(r"[+-]", regex=True)]
+    return c.drop_duplicates("inchikey14")
+
+
 def prep(args):
     t0 = time.time()
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -56,9 +79,22 @@ def prep(args):
     spec = idx[idx.adduct.isin(TEST_ADDUCTS)].copy()
     mols = spec.drop_duplicates("inchikey14")[["inchikey14", "normalized_smiles", "molecular_formula"]].reset_index(drop=True)
     mols["mol_id"] = np.arange(len(mols))
-    mols["holdout"] = mols.inchikey14.map(holdout)
+    mols["holdout"] = mols.inchikey14.map(holdout).astype(np.int8)
+    if args.exclude:                                      # validation structures: neither trained on nor held out
+        ex = set(pd.read_csv(args.exclude).inchikey14)
+        mols.loc[mols.inchikey14.isin(ex), "holdout"] = 2
+        print(f"excluded {int((mols.holdout == 2).sum())} structures of {args.exclude}", flush=True)
+    n_e = len(mols)
+    if args.pool:                                         # pool-only structures with an Enveda-180 formula: decoys only
+        forms = set(mols.molecular_formula)
+        pool = pd.concat([load_pool(f) for f in args.pool]).drop_duplicates("inchikey14")
+        pool = pool[pool.molecular_formula.isin(forms) & ~pool.inchikey14.isin(set(mols.inchikey14))]
+        pool = pool.rename(columns={"smiles": "normalized_smiles"})
+        pool["mol_id"] = np.arange(n_e, n_e + len(pool)); pool["holdout"] = np.int8(-1)
+        mols = pd.concat([mols, pool[mols.columns]], ignore_index=True)
+        print(f"pool decoys {len(pool):,} structures | {time.time() - t0:.0f}s", flush=True)
     print(f"spectra with test adducts {len(spec):,} of {len(idx):,} | structures {len(mols):,} "
-          f"(hold-out {mols.holdout.sum():,}) | {time.time() - t0:.0f}s", flush=True)
+          f"(hold-out {int((mols.holdout == 1).sum()):,}) | {time.time() - t0:.0f}s", flush=True)
     fp = morgan_counts(mols.normalized_smiles.tolist())
     np.save(out / "mol_fp.npy", fp)
     print(f"fingerprints {fp.shape}, empty {int((fp.sum(1) == 0).sum())} | {time.time() - t0:.0f}s", flush=True)
@@ -66,8 +102,19 @@ def prep(args):
     spec["neg"] = (spec.ionization_mode == "negative").astype(np.int8)
     spec[["row", "mol_id", "holdout", "neg"]].to_parquet(out / "spectra.parquet", index=False)
     mols.to_parquet(out / "mols.parquet", index=False)
-    grp = mols.groupby("molecular_formula").mol_id.apply(list)
+    e = mols.iloc[:n_e]
+    grp = e.groupby("molecular_formula").mol_id.apply(list)
     iso = {int(m): [int(x) for x in g if x != m] for g in grp for m in g}
+    # pool isomers per formula (CSR): fid of each Enveda structure, members = pool-only mol_ids of that formula
+    pg = mols.iloc[n_e:].groupby("molecular_formula").mol_id.apply(np.asarray)
+    fid = {f: i for i, f in enumerate(pg.index)}
+    mol_fid = np.array([fid.get(f, -1) for f in e.molecular_formula], np.int64)
+    sizes = np.array([len(v) for v in pg.values], np.int64)
+    members = np.concatenate(list(pg.values)) if len(pg) else np.zeros(0, np.int64)
+    np.savez(out / "pool_groups.npz", mol_fid=mol_fid, start=np.concatenate([[0], np.cumsum(sizes)[:-1]]).astype(np.int64)
+             if len(sizes) else np.zeros(0, np.int64), size=sizes, members=members.astype(np.int64))
+    has = mol_fid >= 0
+    print(f"Enveda structures with pool isomers: {has.mean():.3f}, median pool isomers {np.median(sizes[mol_fid[has]]) if has.any() else 0:.0f}")
     n_iso = np.array([len(v) for v in iso.values()])
     json.dump({str(k): v for k, v in iso.items()}, open(out / "isomers.json", "w"))
     print(f"isomers per structure: median {np.median(n_iso):.0f}, share with none {np.mean(n_iso == 0):.3f} "
@@ -106,14 +153,35 @@ def load_art(args):
     fp = np.load(art / "mol_fp.npy", mmap_mode="r")
     iso = {int(k): np.asarray(v, np.int64) for k, v in json.load(open(art / "isomers.json")).items()}
     emb = np.load(Path(args.dreams) / "Enveda180_DreaMS_embeddings.npy", mmap_mode="r")
+    pg = art / "pool_groups.npz"
+    iso = {"e": iso, "p": dict(np.load(pg)) if pg.exists() else None}
     return spec, fp, iso, emb
 
 
-def sample_decoys(rng, mol_id, iso, n_mols, k):
-    pool = iso.get(int(mol_id), np.zeros(0, np.int64))
-    if len(pool) == 0:                                   # no isomer in the library: random structures
-        return rng.integers(0, n_mols, k)
+def pool_isomers(iso, mol_id):
+    p = iso["p"]
+    if p is None or mol_id >= len(p["mol_fid"]) or p["mol_fid"][mol_id] < 0:
+        return np.zeros(0, np.int64)
+    f = p["mol_fid"][mol_id]
+    return p["members"][p["start"][f]:p["start"][f] + p["size"][f]]
+
+
+def _draw(rng, pool, k):
     return pool[rng.integers(0, len(pool), k)] if len(pool) < k else rng.choice(pool, k, replace=False)
+
+
+def sample_decoys(rng, mol_id, iso, n_mols, k, pool_frac=0.0):
+    """k same-formula decoys: about pool_frac of them from the inference pools, the rest Enveda-180 isomers; when
+    one side has none the other fills in; with neither, random structures."""
+    e = iso["e"].get(int(mol_id), np.zeros(0, np.int64))
+    p = pool_isomers(iso, int(mol_id)) if pool_frac > 0 else np.zeros(0, np.int64)
+    kp = int(rng.binomial(k, pool_frac)) if len(p) and len(e) else (k if len(p) else 0)
+    parts = []
+    if kp:
+        parts.append(_draw(rng, p, kp))
+    if k - kp:
+        parts.append(_draw(rng, e, k - kp) if len(e) else rng.integers(0, n_mols, k - kp))
+    return np.concatenate(parts)
 
 
 def train(args):
@@ -137,7 +205,7 @@ def train(args):
         model.train(); tot, n = 0.0, 0
         for st in range(0, len(ep_rows) - B + 1, B):
             b = ep_rows.iloc[st:st + B]
-            cands = np.stack([np.concatenate([[m], sample_decoys(rng, m, iso, n_mols, K)]) for m in b.mol_id.values])
+            cands = np.stack([np.concatenate([[m], sample_decoys(rng, m, iso, n_mols, K, args.pool_frac)]) for m in b.mol_id.values])
             x = torch.from_numpy(np.asarray(emb[np.sort(b.row.values)], dtype=np.float32))
             order = np.argsort(np.argsort(b.row.values)); x = x[torch.from_numpy(order)]       # back to batch order
             x = x.to(dev); neg = torch.from_numpy(b.neg.values.astype(np.float32)).to(dev)
@@ -165,11 +233,22 @@ def evaluate(args, model=None, spec=None, fp=None, iso=None, emb=None, tag="eval
     model.eval()
     ho = spec[spec.holdout == 1]
     ho = ho.groupby("mol_id", group_keys=False).apply(lambda g: g.head(2))         # <= 2 spectra per structure
+    out = _eval_set(args, model, ho, fp, emb, lambda m: iso["e"].get(int(m), np.zeros(0, np.int64)), f"{tag} | Enveda isomers")
+    if iso["p"] is not None:                              # the inference situation: same-formula pool structures
+        rng = np.random.default_rng(2)
+        def mixed(m):
+            c = np.concatenate([iso["e"].get(int(m), np.zeros(0, np.int64)), pool_isomers(iso, int(m))])
+            return rng.permutation(c)
+        out = _eval_set(args, model, ho, fp, emb, mixed, f"{tag} | Enveda + pool isomers")
+    return out
+
+
+def _eval_set(args, model, ho, fp, emb, cands_of, tag):
+    import torch
     rr, rr_blank, rr_rand, ncand = [], [], [], []
-    rng = np.random.default_rng(1)
     with torch.no_grad():
         for r in ho.itertuples():
-            pool = iso.get(int(r.mol_id), np.zeros(0, np.int64))
+            pool = cands_of(r.mol_id)
             if len(pool) == 0:
                 continue
             cands = np.concatenate([[r.mol_id], pool[:args.max_cands - 1]])
@@ -265,6 +344,8 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("prep"); p.add_argument("--dreams", required=True); p.add_argument("--out", required=True)
+    p.add_argument("--pool", action="append", default=[], help="COCONUT / PubChemLite CSV: same-formula decoys; repeatable")
+    p.add_argument("--exclude", help="CSV with an inchikey14 column: structures kept out of training and hold-out")
     for name in ("train", "eval"):
         p = sub.add_parser(name)
         p.add_argument("--dreams", required=True); p.add_argument("--art", required=True)
@@ -273,6 +354,7 @@ def main():
         p.add_argument("--lr", type=float, default=3e-4); p.add_argument("--threads", type=int, default=4)
         p.add_argument("--max-cands", type=int, default=200); p.add_argument("--weights")
         p.add_argument("--fp-in-ram", action="store_true", help="hold all fingerprints as float32 in RAM (~1.5 GB)")
+        p.add_argument("--pool-frac", type=float, default=0.0, help="share of decoys drawn from the pool structures")
     p = sub.add_parser("embed"); p.add_argument("--dreams", required=True); p.add_argument("--parquet", required=True)
     p.add_argument("--out", required=True); p.add_argument("--device")
     p = sub.add_parser("score"); p.add_argument("--weights", required=True); p.add_argument("--emb", required=True)
