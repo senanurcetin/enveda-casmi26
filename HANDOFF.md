@@ -117,3 +117,20 @@ cheapest test of whether more weight pays; needs the user's go.
 OURS-d 0.422. Validation had predicted +0.056 over OURS-d; the LB moved −0.009 (within noise, wrong direction).
 Conclusion: the np-examples validation cannot be used to tune the OURS weight (all its answers are in our COCONUT
 pool and our ranker was selected on it). Keep OURS-d (0.4 / 0.7) as the OURS setting.
+
+### Test-like validation (`casmi26-val-testlike`, 2026-10-08)
+`--val-set test_like`: 250 ordinary NPs (COCONUT members) from the fold-safe FPNet's 'hold' fold and our skeleton
+fold 1, our channel run with fp_fold0.pt only (out-of-fold); 1,107 spectra from any library, purge all.
+Kernel line `VALIDATION MRR@25 = 0.5788` (0.4 / 0.7). The 'pc' (PubChem-only) stratum cannot be built fairly: the
+host pool keeps every training structure (src bit 1), so it would find such answers through train membership.
+| OURS_BETA / MAX_LIB | MRR | vs 0 (95% CI) | public LB |
+|---|---|---|---|
+| 0 | 0.547 | — | 0.420 |
+| 0.4 / 0.7 (OURS-d) | 0.579 | +0.032 [+0.017, +0.047] | 0.422 |
+| 0.4 / 0.9 | 0.583 | +0.035 [+0.019, +0.052] | — |
+| 0.8 / 0.9 (OURS-e) | 0.597 | +0.049 [+0.022, +0.076] | 0.413 |
+Calibration FAILS: it still ranks OURS-e above OURS-d (+0.014) where the LB gave −0.009, though its bias is
+smaller than np_examples' (+0.079 for OURS-e). Known remaining differences to the test: no Class 3 (~39% of the
+test, where every setting scores ~0), no PubChem-only answers, non-timsTOF spectra, and the host's engine-1 fp
+models (`prvsiyan/casmi26-fp-models-v2`) are not fold-safe. Use it for direction on re-rankers, not for weights.
+Its stage cache (`$S/val_tl_out/stage_cache`) lets any new re-ranker be scored offline without another 3 h run.
