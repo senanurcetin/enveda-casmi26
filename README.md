@@ -1,5 +1,10 @@
 # Enveda CASMI 2026 — molecule identification from MS/MS spectra
 
+![CASMI 2026 mass spectrum molecule identification workflow](docs/casmi-molecule-pipeline.svg)
+
+> This is a schematic workflow illustration, **not** a competition submission image or a claim about current leaderboard rank.
+
+
 Kaggle competition: [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra).
 Given the tandem mass spectra of an unknown natural product, rank up to 25 candidate structures;
 scored by MRR@25 on the tautomer-canonical InChIKey (first block).
