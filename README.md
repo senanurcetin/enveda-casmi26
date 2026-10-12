@@ -4,9 +4,9 @@ Kaggle competition: [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle
 Given the tandem mass spectra of an unknown natural product, rank up to 25 candidate structures;
 scored by MRR@25 on the tautomer-canonical InChIKey (first block).
 
-**Status: closed on 8 October 2026.** Best public leaderboard **0.422** (rank 348 of 2,791): the public v4n
+**Project work stopped on 8 October 2026; the Kaggle competition remains open until 14 December 2026.** Best public leaderboard score **0.422**: the public v4n
 fusion notebook with our own pipeline (`ranker-v16-gen2`, below) fused in as a third ranked list
-(`casmi26-fusion-ours-d`). Our pipeline alone reached 0.309. Work stopped because the remaining ideas did not
+(`casmi26-fusion-ours-d`). Our pipeline alone reached 0.309. The portfolio records a **public leaderboard snapshot dated 8 October 2026: 353 of 2,797 teams**; an undated earlier README snapshot recorded **348 of 2,791**. Both are historical, non-final ranks, not competing model scores. Work stopped because the remaining ideas did not
 transfer to the leaderboard and a prize place (≈0.46 public) was out of reach; the hand-off and every result
 are in [HANDOFF.md](HANDOFF.md).
 
