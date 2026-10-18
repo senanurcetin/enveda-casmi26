@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Scientific integrity update — D2 analog shortlisting (2026-10-18)
+
+The [D2 knockout and prefilter audit](docs/D2_PREFILTER_KNOCKOUT_AUDIT.md) documents a second validation flaw: excluded self/reference spectra were removed **after** approximate top-k selection, so invalid hits could crowd out eligible independent analogs. The corrected algorithm applies knockout, adduct and mass eligibility **before** top-k and is covered by numerical plus direct `AnalogIndex.search` regression tests. Historical competition metrics remain unchanged. No new Kaggle run, submission or product work is implied.
+
 ## Scientific evaluation update — C1 reference leakage (2026-10-18)
 
 The [non-commercial research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) identifies and fixes a C1 holdout flaw: when only a subset of a molecule's source spectra was used as a simulated query, its *unselected* same-structure reference spectra could remain in the search index. New exclusion bookkeeping now hides every same-library reference, including tautomer-equivalent standard keys, while retaining legitimately independent cross-library references. Query signatures have been versioned to `casmi-query-spectra-v2`, and regression tests cover sampled queries.
