@@ -8,6 +8,7 @@ on:
       - "sql/**"
       - "scripts/audit_submission.py"
       - "scripts/compare_runs.py"
+      - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "src/casmi/validate/run_alignment.py"
       - "scripts/render_bigquery_sql.py"
@@ -20,6 +21,7 @@ on:
       - "sql/**"
       - "scripts/audit_submission.py"
       - "scripts/compare_runs.py"
+      - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "src/casmi/validate/run_alignment.py"
       - "scripts/render_bigquery_sql.py"
@@ -42,4 +44,4 @@ jobs:
       - name: Run offline audit, analytics, and branding smoke tests
         run: python -m unittest discover -s tests -p '*_stdlib.py' -v
       - name: Validate Python syntax
-        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/run_validation.py src/casmi/validate/run_alignment.py
+        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py src/casmi/validate/run_alignment.py
