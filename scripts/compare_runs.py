@@ -6,7 +6,9 @@ Usage:
       --allow-unverified-legacy-order
 
 Only records containing matching query IDs and spectra/knockout fingerprints
-can support an ACCEPT/REJECT conclusion. Legacy reports are exploratory.
+can support an ACCEPT/REJECT conclusion. The novelty-mixture intervals
+are approximately simultaneous across the fixed grid (not post-selection
+corrected). Legacy reports are exploratory.
 """
 from __future__ import annotations
 
@@ -20,6 +22,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from casmi.validate.paired_bootstrap import paired_difference  # noqa: E402
 from casmi.validate.run_alignment import CLASSES, align_runs  # noqa: E402
+from casmi.validate.simultaneous_ci import compare_mixtures  # noqa: E402
 
 GRID = [(f1, f3) for f1 in (0.15, 0.20, 0.25, 0.30)
         for f3 in (0.2, 0.3, 0.4)]
@@ -52,25 +55,25 @@ def main(a_path, b_path, n_boot=4000, seed=0,
         print(f"{cls}: MRR {rr(ar).mean():.4f} -> {rr(br).mean():.4f}   "
               f"delta {m:+.4f} [{lo:+.4f}, {hi:+.4f}]  {verdict}")
 
-    rng = np.random.default_rng(seed)
-    n = aligned["n"]
-    idx = rng.integers(0, n, size=(n_boot, n))
-    lows, highs, means = [], [], []
-    for f1, f3 in GRID:
-        per_query = f1 * d["C1"] + (1 - f1 - f3) * d["C2"] + f3 * d["C3"]
-        boots = per_query[idx].mean(axis=1)
-        means.append(float(per_query.mean()))
-        lows.append(float(np.quantile(boots, 0.025)))
-        highs.append(float(np.quantile(boots, 0.975)))
-
-    statistical = ("ACCEPT" if min(lows) > 0 else
-                   "REJECT" if max(highs) < 0 else "NOT PROVEN")
-    verdict = statistical if aligned["verified"] else "UNVERIFIED"
-    print(f"\nExpected mixture delta (C1/C2/C3 grid): "
-          f"{min(means):+.4f} to {max(means):+.4f}; "
-          f"95% CI lower bounds {min(lows):+.4f} to {max(lows):+.4f}.")
+    result = compare_mixtures(
+        aligned["a"], aligned["b"], n_boot=n_boot, seed=seed,
+    )
+    verdict = result["verdict"] if aligned["verified"] else "UNVERIFIED"
+    means = [item["delta_mrr"] for item in result["scenarios"]]
+    lows = [item["ci_low"] for item in result["scenarios"]]
+    highs = [item["ci_high"] for item in result["scenarios"]]
+    print(f"\nNovelty-mixture effect range: {min(means):+.4f} to {max(means):+.4f}")
+    print(
+        f"Approximate simultaneous {result['confidence']:.0%} confidence "
+        f"bounds across {len(means)} fixed mixture scenarios: "
+        f"lower {min(lows):+.4f} to {max(lows):+.4f}; "
+        f"upper {min(highs):+.4f} to {max(highs):+.4f}"
+    )
+    print("CAUTION: the interval does not correct for repeated model selection "
+          "or Kaggle distribution shift.")
     print(f"VERDICT: {verdict}"
-          + (" (legacy numerical result: " + statistical + ")" if not aligned["verified"] else ""))
+          + (" (unverified historical row ordering, numerical verdict: "
+             + result["verdict"] + ")" if not aligned["verified"] else ""))
     return verdict
 
 
