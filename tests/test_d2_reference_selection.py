@@ -101,6 +101,48 @@ def test_balanced_cache_separated_from_historical_index_and_revalidated():
             assert 0 in z["rows"]
 
 
+def test_corrupted_balanced_cache_is_rebuilt_without_touching_legacy():
+    t = meta()
+    store = DummyStore(t)
+    keys = t.train_ik14.to_numpy()
+    cfg = AnalogConfig(per_structure_adduct=2, reference_policy="source_balanced")
+    with TemporaryDirectory() as directory:
+        old_cache = Path(directory) / "analog_index.npz"
+        AnalogIndex(store, keys, AnalogConfig(per_structure_adduct=2), cache=old_cache)
+        old_bytes = old_cache.read_bytes()
+        expected = AnalogIndex(store, keys, cfg, cache=old_cache)
+        balanced_cache = Path(directory) / "analog_index_source_balanced_v1.npz"
+        balanced_cache.write_bytes(b"corrupt-cache")
+        rebuilt = AnalogIndex(store, keys, cfg, cache=old_cache)
+        np.testing.assert_array_equal(rebuilt.rows, expected.rows)
+        assert balanced_cache.stat().st_size > len(b"corrupt-cache")
+        assert old_cache.read_bytes() == old_bytes
+
+
+def test_balanced_cache_invalidates_changed_config_without_row_changes():
+    t = meta()
+    keys = t.train_ik14.to_numpy()
+    with TemporaryDirectory() as directory:
+        cache = Path(directory) / "analog_index.npz"
+        first = AnalogIndex(
+            DummyStore(t), keys,
+            AnalogConfig(reference_policy="source_balanced", per_structure_adduct=2),
+            cache=cache,
+        )
+        changed = AnalogIndex(
+            DummyStore(t), keys,
+            AnalogConfig(reference_policy="source_balanced", per_structure_adduct=2,
+                         tol_da=0.03),
+            cache=cache,
+        )
+        np.testing.assert_array_equal(first.rows, changed.rows)
+        path = Path(directory) / "analog_index_source_balanced_v1.npz"
+        with np.load(path, allow_pickle=False) as z:
+            assert str(z["selection_digest"]) == changed._cache_stamp(
+                changed.store, keys, changed.rows
+            )
+
+
 def test_balanced_policy_invalid_inputs():
     t = meta()
     keys = t.train_ik14.to_numpy()
