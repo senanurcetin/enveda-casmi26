@@ -81,6 +81,14 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - [CASMI26: Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool)
 - [CASMI26: A Bigger Candidate Pool Lowered My Score](https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score)
 
+
+### Research reliability update (18 October 2026)
+
+- The scientific run comparator now reports **approximately simultaneous paired-bootstrap confidence intervals** over the fixed C1/C2/C3 novelty-mixture grid, rather than interpreting several pointwise 95% confidence intervals as one joint 95% statement. The correction does **not** address repeated experiment selection or distribution shift; see [the original experiment log and caveat](EXPERIMENTS.md).
+- Invalid or blank SMILES rank slots are preserved in local MRR scoring, with independent regression tests; no malformed candidate can be silently removed to improve its rank.
+- Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
+- These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
+
 ## NEXUS Research Intelligence (2026-10-18 extension)
 
 A [NEXUS 2.0 research dashboard](site/index.html) now presents the **historical 8 October** model results, experimental provenance, and the source-library profile in `reports/data_profile.json`. It uses the approved NEXUS SVG and works locally with `python -m http.server 8000` (open `/site/`). **It does not represent live Kaggle or BigQuery results and does not change the frozen model or leaderboard claims.**
