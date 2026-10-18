@@ -24,10 +24,6 @@ from casmi.validate.paired_bootstrap import paired_difference  # noqa: E402
 from casmi.validate.run_alignment import CLASSES, align_runs  # noqa: E402
 from casmi.validate.simultaneous_ci import compare_mixtures  # noqa: E402
 
-GRID = [(f1, f3) for f1 in (0.15, 0.20, 0.25, 0.30)
-        for f3 in (0.2, 0.3, 0.4)]
-
-
 def rr(ranks):
     r = np.asarray(ranks, dtype=int)
     return np.where(r > 0, 1.0 / np.maximum(r, 1), 0.0)
@@ -46,12 +42,10 @@ def main(a_path, b_path, n_boot=4000, seed=0,
         "UNVERIFIED legacy ordering; numbers cannot support a scientific verdict"
     )
     print(f"A = {a['tag']}   B = {b['tag']}   n = {aligned['n']}   {label}\n")
-    d = {}
     for cls in CLASSES:
         ar, br = aligned["a"][cls], aligned["b"][cls]
-        d[cls] = rr(br) - rr(ar)
         m, lo, hi = paired_difference(ar, br, n_boot=n_boot, seed=seed)
-        verdict = "better" if lo > 0 else "worse" if hi < 0 else "within noise"
+        verdict = ("better" if lo > 0 else "worse" if hi < 0 else "within noise")\n        if not aligned["verified"]:\n            verdict = "unverified"
         print(f"{cls}: MRR {rr(ar).mean():.4f} -> {rr(br).mean():.4f}   "
               f"delta {m:+.4f} [{lo:+.4f}, {hi:+.4f}]  {verdict}")
 
@@ -72,7 +66,7 @@ def main(a_path, b_path, n_boot=4000, seed=0,
     print("CAUTION: the interval does not correct for repeated model selection "
           "or Kaggle distribution shift.")
     print(f"VERDICT: {verdict}"
-          + (" (unverified historical row ordering, numerical verdict: "
+          + (" (unverified legacy run; exploratory numerical pattern: "
              + result["verdict"] + ")" if not aligned["verified"] else ""))
     return verdict
 
