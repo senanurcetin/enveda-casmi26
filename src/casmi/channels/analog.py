@@ -10,8 +10,11 @@ analog spectra in two stages and propagate their structures onto the candidates:
   2. refine: the top hits are rescored with mass-shifted entropy similarity;
   3. propagate: candidate score = max over analogs a of  sim(a)^p · Tanimoto(fp_c, fp_a).
 """
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
+import hashlib
+import json
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -19,6 +22,7 @@ import scipy.sparse as sp
 
 from casmi.spectra.clean import CleanConfig, clean_peaks_fast
 from casmi.channels.prefilter import eligible_top_k
+from casmi.channels.reference_selection import select_reference_rows, SELECTION_VERSION
 from casmi.spectra.similarity import entropy_similarity
 
 BIN_DA = 0.05
@@ -32,6 +36,7 @@ class AnalogConfig:
     prefilter_top: int = 200
     keep_structures: int = 100
     per_structure_adduct: int = 3
+    reference_policy: str = "legacy"  # opt-in: source_balanced (requires new index cache)
     tol_da: float = 0.02
     powers: tuple = (1.0, 2.0, 4.0)
     clean: CleanConfig = CleanConfig(min_rel_intensity=0.01, top_k_per_window=6, window_da=50, max_peaks=64)
@@ -56,31 +61,94 @@ class AnalogIndex:
         self.store, self.cfg = store, cfg
         self._clean_cache = {}
         meta = store.meta
+        expected = None
+        stamp = None
+        if cfg.reference_policy != "legacy":
+            # A policy-specific cache never overwrites the frozen leaderboard
+            # baseline's analog_index.npz. Nonlegacy loads are fail-closed.
+            expected = self._select(meta, key_of_row)
+            stamp = self._cache_stamp(store, key_of_row, expected)
+            if cache is not None:
+                path = Path(cache)
+                cache = path.with_name(
+                    f"{path.stem}_{cfg.reference_policy}_v1{path.suffix}"
+                )
+        loaded = False
         if cache is not None and Path(cache).exists():
-            z = np.load(cache, allow_pickle=True)
-            self.rows = z["rows"]
-            self.matrix = sp.csr_matrix((z["data"], z["indices"], z["indptr"]), shape=tuple(z["shape"]))
-        else:
-            self.rows = self._select(meta, key_of_row)
+            try:
+                with np.load(cache, allow_pickle=False) as z:
+                    if expected is not None and (
+                        str(z["selection_version"].item()) != SELECTION_VERSION
+                        or str(z["selection_digest"].item()) != stamp
+                        or not np.array_equal(z["rows"], expected)
+                    ):
+                        raise ValueError("Cached D2 selection provenance mismatch")
+                    cached_rows = z["rows"]
+                    cached_matrix = sp.csr_matrix(
+                        (z["data"], z["indices"], z["indptr"]),
+                        shape=tuple(z["shape"]),
+                    )
+                    if cached_matrix.shape != (len(cached_rows), 2 * N_BINS):
+                        raise ValueError("Cached D2 matrix shape is invalid")
+                    if len(cached_rows) and (cached_rows.min() < 0 or cached_rows.max() >= len(meta)):
+                        raise ValueError("Cached D2 reference row index out of range")
+                    self.rows, self.matrix = cached_rows, cached_matrix
+                    loaded = True
+            except (KeyError, OSError, ValueError, zipfile.BadZipFile):
+                if expected is None:
+                    raise  # fail closed on malformed frozen legacy caches
+        if not loaded:
+            self.rows = expected if expected is not None else self._select(meta, key_of_row)
             self.matrix = self._build(self.rows)
             if cache is not None:
-                np.savez(cache, rows=self.rows, data=self.matrix.data, indices=self.matrix.indices,
-                         indptr=self.matrix.indptr, shape=np.array(self.matrix.shape))
+                output = dict(rows=self.rows, data=self.matrix.data,
+                              indices=self.matrix.indices, indptr=self.matrix.indptr,
+                              shape=np.array(self.matrix.shape))
+                if expected is not None:
+                    output.update(selection_version=np.array(SELECTION_VERSION),
+                                  selection_digest=np.array(stamp))
+                np.savez(cache, **output)
         self.key = key_of_row[self.rows]
         self.prec = meta.precursor_mz.to_numpy()[self.rows]
         self.adduct = meta.adduct.astype(str).to_numpy()[self.rows]
         self.nmass = meta.neutral_mass.to_numpy()[self.rows]
 
     def _select(self, meta, key_of_row):
-        ok = (meta.test_adduct.to_numpy() & (np.abs(meta.ppm.to_numpy()) <= 20)
-              & (meta.n_peaks.to_numpy() >= 5))
-        t = pd.DataFrame({"row": np.flatnonzero(ok)})
-        t["key"] = key_of_row[t.row]
-        t["adduct"] = meta.adduct.to_numpy()[t.row]
-        t["prio"] = meta.is_timstof.to_numpy()[t.row] * 1000 + meta.n_peaks.to_numpy()[t.row].clip(0, 999)
-        t = t.sort_values("prio", ascending=False, kind="stable")
-        t = t.groupby(["key", "adduct"], observed=True, sort=False).head(self.cfg.per_structure_adduct)
-        return np.sort(t.row.to_numpy())
+        return select_reference_rows(
+            meta, key_of_row,
+            per_structure_adduct=self.cfg.per_structure_adduct,
+            policy=self.cfg.reference_policy,
+        )
+
+    def _cache_stamp(self, store, keys, rows):
+        """Hash selected metadata, source-array file stamps and index config.
+
+        The selected rows are recomputed on every nonlegacy cache load, so
+        updated eligibility or changes in available libraries invalidate the
+        cached index even if the number of spectra is unchanged.
+        """
+        digest = hashlib.sha256()
+        digest.update(SELECTION_VERSION.encode())
+        digest.update(json.dumps(asdict(self.cfg), sort_keys=True).encode())
+        digest.update(np.asarray(rows, dtype=np.int64).tobytes())
+        selected = store.meta.iloc[rows][[
+            "ingest_lib", "adduct", "precursor_mz", "neutral_mass",
+            "ppm", "n_peaks", "is_timstof", "test_adduct",
+        ]]
+        digest.update(pd.util.hash_pandas_object(selected, index=False).values.tobytes())
+        digest.update(pd.util.hash_pandas_object(
+            pd.Series(np.asarray(keys)[rows], dtype="string"), index=False,
+        ).values.tobytes())
+        for field in ("mz", "it", "offsets"):
+            ref = getattr(store, field, None)
+            filename = getattr(ref, "filename", None)
+            if filename is None:
+                continue
+            stat = Path(filename).stat()
+            digest.update(
+                f"{field}:{stat.st_size}:{stat.st_mtime_ns}".encode()
+            )
+        return digest.hexdigest()
 
     def _clean(self, row):
         hit = self._clean_cache.get(row)
