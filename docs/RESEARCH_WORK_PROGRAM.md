@@ -58,6 +58,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Pending:** run the metadata audit against actual licensed CASMI store data, rerun model validation on one fixed query set, then determine whether any MRR improvement is statistically supported. No new competition-data experiments have been run for this change.
 - See [predeclared D2 protocol](D2_SOURCE_BALANCED_EXPERIMENT.md). Do not mix cached index variants, claim new Kaggle results, or commercialize the scientific work.
 
+## P1 spectral negative controls — 2026-10-18
+
+- **Implemented:** `blank` and `intensity_shuffle` diagnostics for selected query spectra, preserving source metadata, molecule sampling and novelty-class reference knockout.
+- **Implemented:** deterministic per-molecule seed, original-versus-perturbed spectral signatures in run reports, and a fail-closed gate that prohibits scientific model-improvement ACCEPT/REJECT judgments for control runs.
+- **CI:** synthetic controls and unverified-verdict tests, not real MS/MS data execution.
+- **Pending:** run controls on approved real datasets, audit residual C1/C2/C3 scores and investigate library/pool membership bias. See [negative-control protocol](SPECTRAL_NEGATIVE_CONTROLS.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

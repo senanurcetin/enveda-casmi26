@@ -42,6 +42,20 @@ class RunAlignmentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Spectrum/knockout mismatch"):
             align_runs(a, b)
 
+    def test_negative_control_never_receives_model_verdict(self):
+        baseline, controlled = run(["a", "b"]), run(["a", "b"])
+        controlled["spectral_control"] = {
+            "mode": "blank",
+            "seed": 0,
+            "source_query_signatures": baseline["query_signatures"],
+        }
+        # Deliberately keep identical spectra signatures in the fixture.
+        # Even malformed control provenance must not bypass this guard.
+        with self.assertRaisesRegex(ValueError, "diagnostic only"):
+            align_runs(baseline, controlled)
+        with self.assertRaisesRegex(ValueError, "diagnostic only"):
+            align_runs(baseline, controlled, allow_unverified_legacy_order=True)
+
     def test_signature_algorithm_versions_must_agree(self):
         a, b = run(["a"]), run(["a"])
         a["query_signature_version"] = "casmi-query-spectra-v1"

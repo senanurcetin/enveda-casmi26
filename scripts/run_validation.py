@@ -26,6 +26,7 @@ from casmi.validate.knockout import (  # noqa: E402
 )
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
+from casmi.validate.spectral_controls import perturb_spectra, MODES  # noqa: E402
 
 
 def equivalent_keys(query, pool, keys: MetricKeys, cfg):
@@ -54,10 +55,16 @@ def main():
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
     ap.add_argument("--analog-selection-policy", choices=("legacy", "source_balanced"),
                     default="legacy", help="D2 index reference selection; legacy keeps historical baseline")
+    ap.add_argument("--spectral-control", choices=MODES, default="none",
+                    help="diagnostic only: suppress or perturb fragments, not a model setting")
+    ap.add_argument("--control-seed", type=int, default=0,
+                    help="per-molecule deterministic negative-control seed")
     args = ap.parse_args()
 
     if any(n is not None and n < 1 for n in (args.max_queries, args.max_spectra)):
         ap.error("--max-queries and --max-spectra must be positive")
+    if args.control_seed < 0:
+        ap.error("--control-seed must be nonnegative")
     if args.analog_selection_policy != "legacy" and not args.analog:
         ap.error("--analog-selection-policy requires --analog")
     cfg = EngineConfig()
@@ -78,6 +85,7 @@ def main():
     # finalized. Otherwise runs with different knockout rules might be paired.
     query_ids = [str(q.qid) for q in queries]
     query_signatures = []
+    source_query_signatures = []
     # Some tautomers share the official metric key while having distinct
     # standard pool keys. C1 must also hide these structures in the query's
     # own library. Do not use the filtered D1 index to infer all raw rows.
@@ -100,6 +108,12 @@ def main():
     for qi, q in enumerate(queries):
         truth, same = equivalent_keys(q, pool, keys, cfg)
         include_equivalent_source_rows(q, same, source_idx, key_of_row)
+        source_query_signatures.append(query_signature(q))
+        if args.spectral_control != "none":
+            q = replace(q, spectra=perturb_spectra(
+                q.spectra, mode=args.spectral_control, seed=args.control_seed,
+                query_id=str(q.qid),
+            ))
         query_signatures.append(query_signature(q))
         n_equiv.append(len(same))
         per_class = {}
@@ -120,13 +134,19 @@ def main():
 
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
+              "spectral_control": {
+                  "mode": args.spectral_control, "seed": args.control_seed,
+                  "interpretation": "negative-control diagnostic, not submission/model improvement",
+              },
               "n_queries": len(queries), "query_ids": query_ids,
               "query_signatures": query_signatures,
               "query_signature_version": SIGNATURE_VERSION,
               "query_sampling": {"library": args.library,
                                  "max_queries": args.max_queries,
                                  "max_spectra": args.max_spectra,
-                                 "seed": args.query_seed},
+                                 "seed": args.query_seed,
+                                 "spectral_control": args.spectral_control,
+                                 "control_seed": args.control_seed},
               "median_candidates": float(np.median(n_cand)),
               "queries_with_tautomer_duplicates": int(np.sum(np.array(n_equiv) > 1)), "classes": {}}
     print(f"\nmedian candidates per molecule: {np.median(n_cand):.0f} | "
@@ -137,7 +157,12 @@ def main():
         print(f"{cls}: {s}  pool recall {np.mean(recall[cls]):.3f}")
     grid = mixture_grid({c: report["classes"][c]["mrr"] for c in CLASSES})
     report["mixture"] = grid.to_dict("records")
-    print("\nexpected LB over plausible class mixes (rows f1, columns f3):\n"
+    if args.spectral_control != "none":
+        report["spectral_control"]["source_query_signatures"] = source_query_signatures
+        print("NEGATIVE CONTROL: transformed fragments; diagnostic scores are NOT predicted leaderboard performance.")
+    print("\n" + ("DIAGNOSTIC control mixture" if args.spectral_control != "none"
+                   else "expected LB over plausible class mixes")
+          + " (rows f1, columns f3):\n"
           + grid.pivot(index="f1", columns="f3", values="score").round(4).to_string())
 
     manifest = {"config": report["config"], "query_sampling": report["query_sampling"],
