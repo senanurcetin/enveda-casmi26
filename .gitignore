@@ -19,4 +19,5 @@ artifacts/
 runs/*.json
 !runs/.gitkeep
 runs/*.log
+runs/*.sql
 runs/*.done
