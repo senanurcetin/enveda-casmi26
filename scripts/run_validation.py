@@ -21,7 +21,9 @@ from casmi.chem.keys import MetricKeys  # noqa: E402
 from casmi.engine import BaselineEngine, EngineConfig, molecule_mass  # noqa: E402
 from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
-from casmi.validate.knockout import CLASSES, build_queries, knockout_for, mixture_grid  # noqa: E402
+from casmi.validate.knockout import (  # noqa: E402
+    CLASSES, build_queries, knockout_for, mixture_grid, include_equivalent_source_rows,
+)
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 
@@ -74,7 +76,6 @@ def main():
     # standard pool keys. C1 must also hide these structures in the query's
     # own library. Do not use the filtered D1 index to infer all raw rows.
     source_idx = np.flatnonzero((store.meta.ingest_lib == args.library).to_numpy())
-    source_keys = key_of_row[source_idx]
     analog = fps = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
@@ -92,11 +93,7 @@ def main():
     n_cand, n_equiv = [], []
     for qi, q in enumerate(queries):
         truth, same = equivalent_keys(q, pool, keys, cfg)
-        if len(same) > 1:
-            variant_rows = source_idx[np.isin(source_keys, list(same))]
-            q.source_library_rows = np.union1d(
-                q.source_library_rows, variant_rows,
-            )
+        include_equivalent_source_rows(q, same, source_idx, key_of_row)
         query_signatures.append(query_signature(q))
         n_equiv.append(len(same))
         per_class = {}
