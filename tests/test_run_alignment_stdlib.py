@@ -42,6 +42,13 @@ class RunAlignmentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Spectrum/knockout mismatch"):
             align_runs(a, b)
 
+    def test_signature_algorithm_versions_must_agree(self):
+        a, b = run(["a"]), run(["a"])
+        a["query_signature_version"] = "casmi-query-spectra-v1"
+        b["query_signature_version"] = "casmi-query-spectra-v2"
+        with self.assertRaisesRegex(ValueError, "signature algorithm versions"):
+            align_runs(a, b)
+
     def test_duplicate_query_ids_rejected(self):
         a = run(["a", "a"])
         with self.assertRaisesRegex(ValueError, "duplicate query IDs"):

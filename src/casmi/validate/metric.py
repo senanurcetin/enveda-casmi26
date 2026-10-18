@@ -12,6 +12,7 @@ import pandas as pd
 
 from casmi.chem.canon import canonical_ik14, heavy_atom_key
 from casmi.validate.paired_bootstrap import paired_difference
+from casmi.validate.ranked_slots import split_ranked_guesses
 
 MAX_RANK = 25
 
@@ -30,7 +31,9 @@ def score_submission(solution: pd.DataFrame, submission: pd.DataFrame, max_rank=
     structures are accepted); `submission` has molecule_id + semicolon-joined guesses."""
     if submission["molecule_id"].duplicated().any():
         raise ValueError("Each molecule_id must appear exactly once")
-    guesses = {m: [g.strip() for g in str(s).split(";") if g.strip()]
+    # Never compress malformed empty slots: a blank candidate still occupies
+    # its original rank, even though a valid competition submission forbids it.
+    guesses = {m: split_ranked_guesses(str(s))
                for m, s in zip(submission["molecule_id"], submission["smiles"])}
     too_many = [m for m, g in guesses.items() if len(g) > max_rank]
     if too_many:

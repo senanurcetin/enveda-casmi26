@@ -59,6 +59,27 @@ def test_unparseable_guess_still_costs_its_slot():
     assert mrr(SOL, sub) == pytest.approx((0.5 + 1.0) / 2)
 
 
+
+def test_blank_submission_slot_does_not_improve_mrr():
+    # The truth in the third position must score 1/3, not 1/2.
+    # Blank entries are invalid for submission but must not be dropped by
+    # the local scorer when auditing a malformed ranking.
+    sub = pd.DataFrame({
+        "molecule_id": ["m_1", "m_2"],
+        "smiles": ["CC(=O)O;;CCO", "c1ccccc1"],
+    })
+    assert mrr(SOL, sub) == pytest.approx((1.0 / 3 + 1.0) / 2)
+
+
+def test_empty_guess_slots_count_toward_top25_limit():
+    sub = pd.DataFrame({
+        "molecule_id": ["m_1", "m_2"],
+        "smiles": [";" * 25 + "CCO", "c1ccccc1"],
+    })
+    with pytest.raises(ValueError, match="More than 25 guesses"):
+        mrr(SOL, sub)
+
+
 def test_tautomers_share_a_key():
     # 2-hydroxypyridine and 2-pyridone are the same InChIKey14 after tautomer canonicalisation
     assert canonical_ik14("Oc1ccccn1") == canonical_ik14("O=c1cccc[nH]1")

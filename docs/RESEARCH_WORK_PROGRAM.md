@@ -24,6 +24,25 @@ This is an execution plan **committed to the repository**, not a promise that a 
 
 Dates are **planned target windows**, not scheduled jobs or future autonomous execution.
 
+## Research sprint update — statistical validity and scoring (2026-10-18)
+
+- **Implemented:** A fixed-grid, approximately simultaneous 95% bootstrap
+  interval for C1/C2/C3 mixtures, preserving per-molecule pairing across
+  classes and guarding against treating 12 pointwise confidence intervals as
+  a joint 95% statement.
+- **Implemented:** Rank-slot-preserving SMILES parsing in the offline scorer.
+  Invalid and blank guesses still occupy their original rank positions, so a
+  malformed list cannot receive an artificially improved local MRR@25.
+- **Implemented:** Comparison guard for incompatible query-signature algorithm
+  versions; unverified historical comparisons retain an explicit unverified
+  verdict, including class-specific numeric summaries.
+- **Verification:** Synthetic regression tests and GitHub Actions checks
+  exercise numerical behaviors; a complete competition-data rerun and live
+  BigQuery reconciliation have **not** been performed.
+- **Unchanged:** Models, competition submissions, portfolio score of 0.422
+  dated 2026-10-08, and non-commercial scope. These changes improve research
+  validity, **not** predictive accuracy.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
