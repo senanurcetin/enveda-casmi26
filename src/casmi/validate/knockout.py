@@ -104,6 +104,27 @@ def knockout_for(query: Query, cls: str, rows_of_key, equivalent_keys) -> Knocko
     return Knockout(excluded, set(equivalent_keys) if cls == "C3" else set())
 
 
+
+def include_equivalent_source_rows(query: Query, equivalent_keys, source_rows, key_of_row):
+    """Extend the query's C1 exclusions with its same-metric-key source refs.
+
+    `source_rows` must contain only indices from the query's own library.
+    `key_of_row` maps every store index to its *standard* structure key.
+    Every equivalent-key variant must be removed, not just the sampled peaks.
+    This mutates only the optional reference exclusion field, not spectra.
+    """
+    source_rows = np.asarray(source_rows, dtype=np.int64)
+    key_of_row = np.asarray(key_of_row)
+    if np.any(source_rows < 0) or np.any(source_rows >= len(key_of_row)):
+        raise ValueError("Source-library reference row outside store")
+    if not equivalent_keys:
+        raise ValueError("Expected at least the query's own structure key")
+    matching = source_rows[np.isin(key_of_row[source_rows], list(equivalent_keys))]
+    base = query.spectrum_rows if query.source_library_rows is None else query.source_library_rows
+    query.source_library_rows = np.union1d(base, matching).astype(np.int64, copy=False)
+    return query.source_library_rows
+
+
 def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0, truth_smiles=None):
     """Metric truth and every pool key in the mass window that is the same structure under the
     metric (tautomer variants stored under another standard key). The skeleton key is an exact
