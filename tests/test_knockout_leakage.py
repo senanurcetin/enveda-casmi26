@@ -7,6 +7,7 @@ import pytest
 
 from casmi.validate.knockout import (
     build_queries, include_equivalent_source_rows, knockout_for,
+    same_library_reference_rows,
 )
 from casmi.validate.run_alignment import SIGNATURE_VERSION, query_signature
 
@@ -71,6 +72,21 @@ def test_source_scope_is_excluded_from_other_library_references():
     include_equivalent_source_rows(query, {"A", "A-tautomer"}, own, KEYS)
     c1 = knockout_for(query, "C1", {"A": np.array([0, 1, 2, 4])}, {"A"})
     assert 4 not in c1.excluded_rows
+
+
+
+def test_vin_crosslib_references_keep_only_other_library_truth():
+    library_of_row = np.array(["querylib"] * 4 + ["otherlib"])
+    refs = {"A": np.array([0, 1, 2, 4]), "A-tautomer": np.array([3])}
+    hidden = same_library_reference_rows(
+        refs, {"A", "A-tautomer"}, library_of_row, "querylib",
+    )
+    np.testing.assert_array_equal(hidden, [0, 1, 2, 3])
+    other = same_library_reference_rows(refs, {"A"}, library_of_row, "otherlib")
+    np.testing.assert_array_equal(other, [4])
+    empty = same_library_reference_rows(refs, {"no-key"}, library_of_row, "querylib")
+    assert empty.size == 0
+
 
 
 def test_reference_rows_outside_store_are_rejected():
