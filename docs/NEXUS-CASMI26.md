@@ -84,7 +84,7 @@ For production BigQuery integration, first verify dataset location, access, sour
 
 ## Scientific guardrails / important results
 
-1. **The public example test file is unusable as a true holdout.** The checked-in profile found all 1,213 public example spectra in the training data. Do not treat those matches as evidence of generalization.
+1. **The public example test file is unusable as a true holdout.** The checked-in historical profile recorded 1,213 / 1,213 matches via rounded precursor/peak-count/first-peak buckets. Such coarse matches are potential, not proven, duplicates. The updated profiler now checks full m/z and intensity arrays; rerun it before asserting exact overlap. In any event, do not use known training-overlap examples as a trustworthy holdout.
 2. **MRR@25 is evaluated by canonical 2D structure equivalence**, not SMILES-string equality or exact stereochemistry.
 3. **The hidden test has novelty classes** (library-known, known-without-spectra, novel). Validation must preserve structure-level holdouts and consider candidate-pool membership shortcuts.
 4. **Instrument shift matters.** Training data span heterogeneous libraries/instruments while hidden test spectra come from timsTOF. Analyze source/adduct/energy slices rather than only total mean rank.
