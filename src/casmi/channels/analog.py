@@ -160,6 +160,8 @@ class AnalogIndex:
         return hit
 
     def _build(self, rows):
+        if len(rows) == 0:
+            return sp.csr_matrix((0, 2 * N_BINS), dtype=np.float32)
         indptr, indices, data = [0], [], []
         prec = self.store.meta.precursor_mz.to_numpy()
         for r in rows:
