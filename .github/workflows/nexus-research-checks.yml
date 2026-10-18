@@ -13,6 +13,7 @@ on:
       - "src/casmi/validate/run_alignment.py"
       - "scripts/render_bigquery_sql.py"
       - "tests/*_stdlib.py"
+      - "tests/*_integration.py"
       - ".github/workflows/nexus-research-checks.yml"
   pull_request:
     paths:
@@ -26,6 +27,7 @@ on:
       - "src/casmi/validate/run_alignment.py"
       - "scripts/render_bigquery_sql.py"
       - "tests/*_stdlib.py"
+      - "tests/*_integration.py"
       - ".github/workflows/nexus-research-checks.yml"
   workflow_dispatch:
 
@@ -43,5 +45,9 @@ jobs:
           python-version: "3.12"
       - name: Run offline audit, analytics, and branding smoke tests
         run: python -m unittest discover -s tests -p '*_stdlib.py' -v
+      - name: Install numpy for synthetic comparisons
+        run: python -m pip install numpy==2.3.5
+      - name: Run paired-comparison integration checks
+        run: python -m unittest discover -s tests -p '*_integration.py' -v
       - name: Validate Python syntax
         run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py src/casmi/validate/run_alignment.py
