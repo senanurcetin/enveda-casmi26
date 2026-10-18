@@ -45,7 +45,9 @@ def main(a_path, b_path, n_boot=4000, seed=0,
     for cls in CLASSES:
         ar, br = aligned["a"][cls], aligned["b"][cls]
         m, lo, hi = paired_difference(ar, br, n_boot=n_boot, seed=seed)
-        verdict = ("better" if lo > 0 else "worse" if hi < 0 else "within noise")\n        if not aligned["verified"]:\n            verdict = "unverified"
+        verdict = ("better" if lo > 0 else "worse" if hi < 0 else "within noise")
+        if not aligned["verified"]:
+            verdict = "unverified"
         print(f"{cls}: MRR {rr(ar).mean():.4f} -> {rr(br).mean():.4f}   "
               f"delta {m:+.4f} [{lo:+.4f}, {hi:+.4f}]  {verdict}")
 
