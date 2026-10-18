@@ -47,6 +47,10 @@ Dates are **planned target windows**, not scheduled jobs or future autonomous ex
 
 The scientific audit found that C1 queries capped with `max_spectra` previously excluded only the sampled rows, leaving unselected same-structure library references available. `build_queries` now preserves all same-key source-library reference row IDs independently of selected query spectra, C1 also hides metric-equivalent tautomer variants, and the `vin` feature-table builder applies the same exclusion rule. The query signature format was versioned to v2. The synthetic CI regression suite verifies this behavior; historical scores **must not** be recast as corrected without a full data-dependent rerun. See [scientific assessment](CASMI26_RESEARCH_ASSESSMENT.md).
 
+## P0 correction — D2 analog shortlist (2026-10-18)
+
+A follow-up code audit identified that D2 discarded knocked-out reference rows *after* approximate top-k, potentially hiding eligible spectral analogs. A tested eligible-first prefilter now applies knockout exclusions, mass and adduct constraints before selecting candidates. This is an **evaluation selection-bias correction**, not a claim of a new model score. Remaining risk: reference subsampling during offline index construction can still favor the withheld source library; investigate by measuring cross-library index retention on the permitted local training artifacts. See [D2 scientific audit](D2_PREFILTER_KNOCKOUT_AUDIT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
