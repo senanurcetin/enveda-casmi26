@@ -18,6 +18,7 @@ import pandas as pd
 import scipy.sparse as sp
 
 from casmi.spectra.clean import CleanConfig, clean_peaks_fast
+from casmi.channels.prefilter import eligible_top_k
 from casmi.spectra.similarity import entropy_similarity
 
 BIN_DA = 0.05
@@ -108,22 +109,27 @@ class AnalogIndex:
     def search(self, query_spectra, query_mass, excluded_rows=None):
         """Best refined similarity per analog structure: dict key -> (sim, analog neutral mass)."""
         best = {}
-        excluded = set(excluded_rows.tolist()) if excluded_rows is not None and len(excluded_rows) else set()
-        mass_ok = np.abs(self.nmass - query_mass) <= self.cfg.max_shift_da
+        # A structure-level knockout must be applied BEFORE selecting the top
+        # analog hits. Previously self-references displaced allowed hits in the
+        # shortlist and were discarded only afterwards.
+        excluded = (np.asarray(excluded_rows, dtype=np.int64)
+                    if excluded_rows is not None else np.empty(0, np.int64))
+        not_excluded = (~np.isin(self.rows, excluded)
+                        if excluded.size else np.ones(len(self.rows), dtype=bool))
+        mass_ok = np.isfinite(self.nmass) & np.isfinite(query_mass) & (
+            np.abs(self.nmass - query_mass) <= self.cfg.max_shift_da
+        )
         for q in query_spectra:
             if q["mz_c"].size == 0:
                 continue
             i, v = _vector(q["mz_c"], q["it_c"], q["precursor_mz"])
-            # dense query vector: a CSR mat-vec needs no nnz-sized temporary (a sparse x sparse
-            # product allocated ~260 MB per call and ran out of memory); same scores, ~5x faster
+            # Dense CSR mat-vec avoids a large sparse x sparse temporary.
             dq = np.zeros(2 * N_BINS, np.float32)
             np.add.at(dq, i, v.astype(np.float32))
             scores = self.matrix @ dq
-            scores[~(mass_ok & (self.adduct == q["adduct"]))] = -1
-            top = np.argpartition(-scores, min(self.cfg.prefilter_top, len(scores) - 1))[: self.cfg.prefilter_top]
+            allowed = not_excluded & mass_ok & (self.adduct == q["adduct"])
+            top = eligible_top_k(scores, allowed, self.cfg.prefilter_top)
             for t in top:
-                if scores[t] <= 0 or self.rows[t] in excluded:
-                    continue
                 rm, ri = self._clean(self.rows[t])
                 sim = entropy_similarity(q["mz_c"], q["it_c"], rm, ri, self.cfg.tol_da,
                                          float(q["precursor_mz"] - self.prec[t]))
