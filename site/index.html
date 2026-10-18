@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0B0F19">
+<meta name="description" content="NEXUS research intelligence for Enveda CASMI 2026. Evidence, dataset diagnostics, experiment history and validation risks.">
+<title>NEXUS / CASMI26 — Research Intelligence</title>
+<style>
+:root{color-scheme:dark;--bg:#0B0F19;--bg2:#061524;--card:#101b2d;--card2:#111b29;--line:#29384d;--muted:#98abc0;--light:#eaf4ff;--cyan:#00E0FF;--blue:#4EA8FF;--lav:#8F9BFF;--vio:#6E55C6;--warn:#ffd08a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font:15px/1.55 Inter,"Space Grotesk",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 80% -10%,#102849 0,transparent 32%),var(--bg);color:var(--light)}a{color:inherit;text-decoration:none}a:hover{color:var(--cyan)}.shell{display:grid;grid-template-columns:254px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;border-right:1px solid #203149;padding:30px 23px;display:flex;flex-direction:column;background:linear-gradient(180deg,#0b1423,#0b0f19)}.logo{width:182px;max-width:100%;display:block;margin:0 0 23px -6px}.micro{color:#6d88a7;font-size:10px;letter-spacing:2px;font-weight:800;text-transform:uppercase}.brand-meta{border-top:1px solid var(--line);padding-top:19px}.brand-meta strong{display:block;font-size:13px;letter-spacing:.3px;margin-top:7px}.menu{display:grid;gap:7px;margin:46px 0}.menu a{padding:12px 13px;border:1px solid transparent;color:#a4b9d0;border-radius:11px;font-weight:600;font-size:13px}.menu a:hover,.menu a:focus{border-color:#275c7b;background:#12273a;color:#eaffff}.menu a span{font:700 10px/1 monospace;color:var(--cyan);margin-right:15px}.sidebar-foot{margin-top:auto;color:#8197b0;font-size:11px;border-top:1px solid var(--line);padding-top:20px}.point{display:inline-block;width:7px;height:7px;border-radius:50%;background:#f2b96a;margin-right:8px}.main{max-width:1510px;padding:0 clamp(22px,4.2vw,76px) 76px;width:100%;margin:auto}.topbar{min-height:83px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:20px}.crumb{font-size:11px;letter-spacing:1.5px;color:#8ba5c4}.crumb b{color:var(--cyan)}.toplink{border:1px solid #2a4a68;border-radius:999px;padding:9px 16px;font-size:11px;white-space:nowrap}.hero{position:relative;overflow:hidden;min-height:365px;display:flex;align-items:center;padding:43px 0 34px;gap:20px}.hero-copy{position:relative;z-index:1;max-width:720px}.overline{color:var(--cyan);font-weight:750;letter-spacing:2.8px;font-size:11px;text-transform:uppercase}.hero h1{font-size:clamp(36px,4.3vw,65px);font-weight:750;line-height:1.06;letter-spacing:-2.5px;margin:19px 0 19px}.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--cyan),var(--blue) 50%,var(--lav) 78%,var(--vio));background-clip:text;-webkit-background-clip:text;color:transparent}.hero p{max-width:650px;color:#abc0d4;font-size:15px;margin:0}.hero-art{width:min(30vw,370px);height:260px;flex-shrink:0;position:relative;opacity:.90}.hero-art svg{width:100%;height:100%}.hero-art:before{content:"";position:absolute;inset:22%;border-radius:50%;box-shadow:0 0 100px 45px #15477342}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:35px}.kpi{padding:23px;border:1px solid var(--line);background:linear-gradient(145deg,#13243a,#0d1625);border-radius:15px;min-height:150px}.kpi .eyebrow{font-size:10px;letter-spacing:1.6px;color:#99afc7;text-transform:uppercase;font-weight:800}.kpi .value{font-size:clamp(27px,3vw,40px);line-height:1.15;letter-spacing:-1.7px;margin:13px 0 9px;font-weight:750;font-variant-numeric:tabular-nums}.kpi .value.accent{color:var(--cyan)}.kpi .sub{font-size:11px;color:#88a0b8}.section{padding-top:24px;scroll-margin-top:10px;margin-bottom:26px}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 17px}.section-head h2{font-size:23px;letter-spacing:-.7px;margin:0}.section-head p{max-width:500px;font-size:12px;color:#93a9c2;margin:0}.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,1fr);gap:16px}.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(140deg,#111f32,#101826);padding:25px;min-width:0}.panel h3{font-size:14px;margin:0 0 7px}.panel-desc{font-size:11px;color:#93a9c2;margin:0 0 21px}.score-row{display:grid;grid-template-columns:minmax(125px,1fr) 50px;align-items:center;gap:13px;margin:14px 0}.score-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;color:#c6d6e7;font-size:11px;gap:15px}.score-info strong{font-variant-numeric:tabular-nums;color:#ecfaff}.track{width:100%;height:9px;background:#1c2d43;border-radius:99px;overflow:hidden}.fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#13567f,#31a0db,#00e0ff);min-width:2px}.score-row.fused .fill{background:linear-gradient(90deg,var(--blue),var(--lav),var(--vio))}.score-row.fused .score-info strong{color:var(--lav)}.score-row .tag{font-size:9px;color:#83a1be;text-align:right;white-space:nowrap}.callout{padding:18px;border:1px solid #495066;border-left:3px solid var(--warn);border-radius:10px;background:#161e2b;margin-top:19px}.callout strong{font-size:12px;color:#ffe2b1}.callout p{font-size:11px;margin:7px 0 0;color:#aec1d3}.channel{padding:14px 0;border-bottom:1px solid var(--line);display:flex;gap:14px}.channel:last-child{border:0}.channel-mark{font:800 12px/1 monospace;color:var(--cyan);border:1px solid #285a77;border-radius:8px;width:41px;height:34px;display:grid;place-items:center;flex-shrink:0}.channel strong{display:block;font-size:12px}.channel small{display:block;color:#90a9c1;font-size:11px;margin-top:2px}.library-row{display:grid;grid-template-columns:135px minmax(0,1fr) 65px;gap:12px;align-items:center;margin:14px 0;font-size:11px;color:#a6bbd0}.library-row .bar{height:8px;background:#1b3046;border-radius:7px;overflow:hidden}.library-row .bar span{display:block;height:100%;background:linear-gradient(90deg,#2b9cc4,#7f85dc);border-radius:7px}.library-row b{text-align:right;color:#dfefff;font-variant-numeric:tabular-nums}.pill{display:inline-block;padding:4px 9px;border:1px solid #2b5571;border-radius:999px;font-size:10px;color:#89e9fc;letter-spacing:.4px}.risk{display:flex;gap:14px;border-bottom:1px solid var(--line);padding:15px 0}.risk:last-child{border-bottom:0}.risk-num{font-size:20px;color:#ffd18b;line-height:1.2}.risk strong{font-size:12px;display:block}.risk p{font-size:11px;color:#a4bacf;margin:4px 0}.footlinks{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.footlinks a{font-size:11px;border:1px solid #305071;padding:10px 14px;border-radius:9px;color:#cde7f9}.footlinks a:hover{background:#1c3850}.provenance{font-size:11px;color:#849eb6;margin-top:16px}.data-state{color:#ffc77a;font-size:11px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.statline{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);font-size:12px}.statline:last-child{border:0}.statline span{color:#94acc4}.statline strong{font-variant-numeric:tabular-nums}.footer{border-top:1px solid var(--line);padding:26px 0;color:#768ea7;font-size:10px;display:flex;justify-content:space-between;gap:12px}.muted{color:#91a9c1}.span2{grid-column:1/-1}
+@media(max-width:1200px){.hero-art{width:200px}.kpis{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.shell{display:block}.sidebar{position:relative;height:auto;padding:18px 24px;display:block}.logo{width:138px;margin-bottom:10px}.brand-meta,.sidebar-foot{display:none}.menu{display:flex;overflow:auto;margin:10px 0 0;gap:4px}.menu a{white-space:nowrap;padding:8px}.main{padding:0 20px 40px}.hero-art{display:none}.grid,.two{grid-template-columns:1fr}}@media(max-width:480px){.kpis{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:15px;min-height:128px}.hero{min-height:280px}.hero h1{letter-spacing:-1.5px}.topbar{min-height:67px}.toplink{display:none}.score-row{grid-template-columns:minmax(100px,1fr) 40px}.library-row{grid-template-columns:105px minmax(0,1fr) 54px;gap:7px}.panel{padding:18px}.footer{display:block}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar" aria-label="Project navigation">
+  <a href="#overview" aria-label="NEXUS CASMI26 overview"><img class="logo" src="assets/nexus-official.svg" alt="NEXUS official logo"></a>
+  <div class="brand-meta"><div class="micro">NEXUS / DATA SCIENCE</div><strong>CASMI26 Intelligence</strong><span class="pill" style="margin-top:12px">Research archive</span></div>
+  <nav class="menu">
+    <a href="#overview"><span>01</span>Overview</a>
+    <a href="#models"><span>02</span>Model evidence</a>
+    <a href="#data"><span>03</span>Data intelligence</a>
+    <a href="#quality"><span>04</span>Validation &amp; risk</a>
+    <a href="#sources"><span>05</span>Sources</a>
+  </nav>
+  <div class="sidebar-foot"><span class="point"></span> Historical snapshot, not live Kaggle or BigQuery data<br><br>© NEXUS · CASMI26</div>
+</aside>
+<main class="main">
+  <header class="topbar"><span class="crumb">RESEARCH <b>/</b> MOLECULAR INTELLIGENCE <b>/</b> 2026</span><a class="toplink" href="https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra" target="_blank" rel="noopener noreferrer">Competition ↗</a></header>
+  <section class="hero" id="overview">
+    <div class="hero-copy"><div class="overline">Evidence-led molecular identification</div><h1>Turning spectra into<br><em>structural intelligence.</em></h1><p>Enveda CASMI 2026 · An auditable retrieval, fingerprint, fragment and ranking research program. Explore the recorded experiments, training data composition and limits of offline validation.</p></div>
+    <div class="hero-art" aria-hidden="true"><svg viewBox="0 0 380 280"><defs><linearGradient id="glow" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#00e0ff"/><stop offset=".6" stop-color="#4ea8ff"/><stop offset="1" stop-color="#8f9bff"/></linearGradient></defs><g fill="none" stroke="url(#glow)" stroke-width="1.7" opacity=".56"><path d="M190 15L311 85V196L190 265 69 196V85Z"/><path d="M190 15V265M69 85L311 196M311 85L69 196"/><path d="M130 50L250 230M250 50L130 230"/></g><g stroke="url(#glow)" stroke-linecap="round" opacity=".9"><path d="M34 230V184M53 230V146M74 230V202M94 230V99M114 230V171M135 230V120M155 230V211M177 230V76M199 230V165M221 230V125M242 230V193M263 230V60M282 230V179M304 230V140M325 230V210M347 230V190" stroke-width="3"/></g></svg></div>
+  </section>
+
+  <section class="kpis" aria-label="Historical evidence metrics">
+    <div class="kpi"><div class="eyebrow">Best recorded public MRR@25</div><div class="value accent">0.422</div><div class="sub">Fusion + own channel · 08 Oct 2026</div></div>
+    <div class="kpi"><div class="eyebrow">Own pipeline public MRR@25</div><div class="value">0.309</div><div class="sub">Independent candidate-ranking system</div></div>
+    <div class="kpi"><div class="eyebrow">Training MS/MS spectra</div><div class="value" id="spectra-kpi">2.54M</div><div class="sub">Historical data profile · train.parquet</div></div>
+    <div class="kpi"><div class="eyebrow">Distinct training structures</div><div class="value" id="structures-kpi">275.8K</div><div class="sub">Labels aggregated by 2D structure</div></div>
+  </section>
+
+  <section class="section" id="models">
+    <div class="section-head"><div><div class="micro">02 / EXPERIMENTS</div><h2>Model performance &amp; research channels</h2></div><p>Recorded public leaderboard experiments, not confidence intervals or a prediction of the final private score.</p></div>
+    <div class="grid">
+      <article class="panel"><h3>Public score progression</h3><p class="panel-desc">MRR@25 · All results drawn from the dated README experiment summary. Purple bars involve the external v4n fusion base.</p>
+        <div id="scores">
+          <div class="score-row"><div><div class="score-info"><span>Library + analog</span><strong>0.190</strong></div><div class="track"><span class="fill" style="width:38%"></span></div></div><span class="tag">OWN</span></div>
+          <div class="score-row"><div><div class="score-info"><span>Learned ranker (clean priors)</span><strong>0.258</strong></div><div class="track"><span class="fill" style="width:52%"></span></div></div><span class="tag">OWN</span></div>
+          <div class="score-row"><div><div class="score-info"><span>+ PubChemLite</span><strong>0.273</strong></div><div class="track"><span class="fill" style="width:55%"></span></div></div><span class="tag">OWN</span></div>
+          <div class="score-row"><div><div class="score-info"><span>+ Fragments &amp; generation</span><strong>0.298</strong></div><div class="track"><span class="fill" style="width:60%"></span></div></div><span class="tag">OWN</span></div>
+          <div class="score-row"><div><div class="score-info"><span>Extended generation</span><strong>0.309</strong></div><div class="track"><span class="fill" style="width:62%"></span></div></div><span class="tag">OWN</span></div>
+          <div class="score-row fused"><div><div class="score-info"><span>External v4n base</span><strong>0.420</strong></div><div class="track"><span class="fill" style="width:84%"></span></div></div><span class="tag">BASE</span></div>
+          <div class="score-row fused"><div><div class="score-info"><span>v4n + NEXUS rank-list fusion</span><strong>0.422</strong></div><div class="track"><span class="fill" style="width:84.4%"></span></div></div><span class="tag">FUSION</span></div>
+        </div>
+        <div class="provenance">Source: README.md and HANDOFF.md · Last recorded result 2026-10-08 · Scores shown on a 0–0.50 visual scale.</div>
+      </article>
+      <article class="panel"><h3>Four independent evidence channels</h3><p class="panel-desc">The system retrieves mass-compatible structures, scores candidates, then aggregates per molecule.</p>
+        <div class="channel"><div class="channel-mark">D1</div><div><strong>Direct library search</strong><small>Measured MS/MS entropy similarity to known reference spectra.</small></div></div>
+        <div class="channel"><div class="channel-mark">D2</div><div><strong>Analog propagation</strong><small>Mass-shifted spectra and molecular fingerprint similarity.</small></div></div>
+        <div class="channel"><div class="channel-mark">D3</div><div><strong>Spectrum → fingerprint</strong><small>Learned molecular fingerprint likelihood from spectral evidence.</small></div></div>
+        <div class="channel"><div class="channel-mark">D4</div><div><strong>Fragment explanation</strong><small>Bond-cleavage-derived explanatory signal for candidate ranking.</small></div></div>
+        <div class="callout"><strong>Interpret the +0.002 fusion difference cautiously</strong><p>0.422 vs 0.420 is a recorded public leaderboard difference, not demonstrated generalization. The public subset is small and validation did not reliably rank fusion weights.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="data">
+    <div class="section-head"><div><div class="micro">03 / DATA PROFILE</div><h2>Dataset intelligence</h2></div><p>Source-composition and acquisition differences influence generalization between libraries and the hidden evaluation set.</p></div>
+    <div class="grid">
+      <article class="panel"><h3>Training spectra by source library</h3><p class="panel-desc">Absolute spectra counts; unique-structure counts by library are not additive. Data are read from the repository's recorded profile.</p>
+        <div id="libraries" aria-live="polite"><div class="data-state">Loading historical profile…</div></div>
+        <div class="provenance" id="profile-note">Source: reports/data_profile.json</div>
+      </article>
+      <article class="panel"><h3>Distribution &amp; test-domain shift</h3><p class="panel-desc">Key properties that affect model selection and interpretation.</p>
+        <div class="statline"><span>Train positive ionization</span><strong id="positive-share">74.8%</strong></div>
+        <div class="statline"><span>Train spectra matching test adduct set</span><strong id="adduct-share">85.7%</strong></div>
+        <div class="statline"><span>Public example test spectra</span><strong id="public-test">1,213</strong></div>
+        <div class="statline"><span>Public example molecules</span><strong id="public-molecules">400</strong></div>
+        <div class="statline"><span>Public example instrument</span><strong>timsTOF</strong></div>
+        <div class="callout"><strong>Do not evaluate on the public example file</strong><p>All 1,213 example spectra were located in the provided training set according to the stored profile. This is a data-leakage control, not a valid model-quality holdout.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="quality">
+    <div class="section-head"><div><div class="micro">04 / METHODOLOGY</div><h2>Validation &amp; quality gates</h2></div><p>Data science controls are as important as the ranker architecture when evidence is scarce and the distribution shifts.</p></div>
+    <div class="two">
+      <article class="panel"><h3>Validation threat register</h3>
+        <div class="risk"><div class="risk-num">01</div><div><strong>Structure-level leakage</strong><p>Split by tautomer-canonical InChIKey14, and purge the held-out structure's spectral references from candidate channels.</p></div></div>
+        <div class="risk"><div class="risk-num">02</div><div><strong>Instrument and library shift</strong><p>Measure by source, adduct and collision-energy settings; public examples are not representative of hidden novelty classes.</p></div></div>
+        <div class="risk"><div class="risk-num">03</div><div><strong>Validation / leaderboard discordance</strong><p>Use matched-molecule paired bootstrap deltas and record losses, not just successful hyperparameter probes.</p></div></div>
+        <div class="risk"><div class="risk-num">04</div><div><strong>Submission integrity</strong><p>Check exact molecule coverage, duplicate IDs, nonempty ranked slots, 25-candidate maximum and optional chemistry-level duplicates.</p></div></div>
+      </article>
+      <article class="panel"><h3>Audit workflow</h3><p class="panel-desc">New non-mutating pre-submission CLI complements the existing scorer and production pipeline.</p>
+        <div class="statline"><span>Submission target</span><strong>1 row / molecule</strong></div>
+        <div class="statline"><span>Candidate budget</span><strong>1–25 ranked SMILES</strong></div>
+        <div class="statline"><span>Official comparison unit</span><strong>Canonical InChIKey14</strong></div>
+        <div class="statline"><span>Structural audit</span><strong>Dependency-free</strong></div>
+        <div class="statline"><span>Optional chemistry audit</span><strong>RDKit</strong></div>
+        <div class="footlinks"><a href="../scripts/audit_submission.py">Inspect audit script ↗</a><a href="../tests/test_submission_audit_stdlib.py">Inspect regression tests ↗</a></div>
+        <div class="provenance">The audit is a stricter preflight; only Kaggle's official evaluation determines competition MRR.</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="sources">
+    <div class="section-head"><div><div class="micro">05 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
+    <div class="panel"><h3>Review underlying artifacts</h3><p class="panel-desc">All conclusions link back to named source files. The published brand identity is the approved Google Drive NEXUS SVG.</p>
+      <div class="footlinks"><a href="../README.md">Project README ↗</a><a href="../EXPERIMENTS.md">Experiment log ↗</a><a href="../HANDOFF.md">Handoff &amp; caveats ↗</a><a href="../ARCHITECTURE.md">Architecture ↗</a><a href="../reports/data_profile.json">Dataset profile JSON ↗</a><a href="https://github.com/senanurcetin/enveda-casmi26" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
+      <p class="provenance">Run via <code>python -m http.server 8000</code> in the repository root, then open <code>http://localhost:8000/site/</code>. The profile graph requires an HTTP server because browser file:// access can block JSON fetches.</p>
+    </div>
+  </section>
+  <div class="footer"><span>NEXUS / CASMI26 · SCIENTIFIC RESEARCH INTELLIGENCE</span><span>HISTORICAL SNAPSHOT: 08 OCTOBER 2026 · NOT LIVE DATA</span></div>
+</main>
+</div>
+<script>
+"use strict";
+function compact(n){return new Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:2}).format(n);}
+function number(n){return new Intl.NumberFormat("en").format(n);}
+function pct(n){return (n*100).toFixed(1)+"%";}
+function safeNode(text){const el=document.createElement("span");el.textContent=String(text);return el;}
+async function renderProfile(){
+  const target=document.getElementById("libraries");
+  try{
+    const response=await fetch("../reports/data_profile.json",{cache:"no-store"});
+    if(!response.ok)throw Error("HTTP "+response.status);
+    const data=await response.json();
+    const train=data.train;
+    if(!train||!train.by_library||!Number.isFinite(train.spectra))throw Error("Invalid source data");
+    document.getElementById("spectra-kpi").textContent=compact(train.spectra);
+    document.getElementById("structures-kpi").textContent=compact(train.structures);
+    document.getElementById("positive-share").textContent=pct(train.ionization_mode.positive/train.spectra);
+    document.getElementById("adduct-share").textContent=pct(train.share_with_test_adducts);
+    document.getElementById("public-test").textContent=number(data.test_public.spectra);
+    document.getElementById("public-molecules").textContent=number(data.test_public.molecules);
+    target.textContent="";
+    const libraries=Object.entries(train.by_library).sort(function(a,b){return b[1].spectra-a[1].spectra;});
+    const largest=libraries[0][1].spectra;
+    for(const item of libraries){
+      const name=item[0],count=item[1].spectra;
+      const row=document.createElement("div");row.className="library-row";
+      const label=safeNode(name);label.title=name;
+      const track=document.createElement("div");track.className="bar";
+      const fill=document.createElement("span");fill.style.width=(count/largest*100).toFixed(3)+"%";
+      track.appendChild(fill);
+      const val=document.createElement("b");val.textContent=compact(count);
+      row.append(label,track,val);
+      target.appendChild(row);
+    }
+    document.getElementById("profile-note").textContent="Read-only: reports/data_profile.json · "+number(train.spectra)+" spectra across "+number(libraries.length)+" source libraries.";
+  }catch(error){
+    target.textContent="";
+    const notice=document.createElement("div");notice.className="data-state";
+    notice.textContent="Source JSON could not be loaded. Serve the repository root with python -m http.server 8000. "+error.message;
+    target.appendChild(notice);
+  }
+}
+renderProfile();
+</script>
+</body>
+</html>
