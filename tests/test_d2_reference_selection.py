@@ -164,5 +164,21 @@ def test_non_tims_source_reservation_beats_second_tims_library():
     assert list(result[:2]) == [0, 2]
 
 
+def test_empty_eligible_reference_library_builds_valid_index():
+    t = meta()
+    t["test_adduct"] = False
+    with TemporaryDirectory() as directory:
+        index = AnalogIndex(
+            DummyStore(t),
+            t.train_ik14.to_numpy(),
+            AnalogConfig(reference_policy="source_balanced"),
+            cache=Path(directory) / "analog_index.npz",
+        )
+        assert index.rows.size == 0
+        assert index.matrix.shape[0] == 0
+        assert index.search([], 300.0) == {}
+
+
+
 def test_config_default_is_legacy_for_frozen_baseline():
     assert AnalogConfig().reference_policy == "legacy"
