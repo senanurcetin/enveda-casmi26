@@ -125,6 +125,27 @@ def include_equivalent_source_rows(query: Query, equivalent_keys, source_rows, k
     return query.source_library_rows
 
 
+
+def same_library_reference_rows(rows_of_key, equivalent_keys, lib_of_row, library):
+    """D1/analog-indexed same-structure references in the query's library.
+
+    Use alongside full source-library exclusions on build_queries outputs.
+    The caller decides which novelty class requires this cross-library
+    knockout; do not affect intentionally retained legacy training modes.
+    """
+    arrays = [np.asarray(rows_of_key.get(k, []), dtype=np.int64)
+              for k in equivalent_keys]
+    arrays = [arr for arr in arrays if len(arr)]
+    if not arrays:
+        return np.empty(0, dtype=np.int64)
+    refs = np.concatenate(arrays)
+    libraries = np.asarray(lib_of_row)
+    if np.any(refs < 0) or np.any(refs >= len(libraries)):
+        raise ValueError("Reference row outside library metadata")
+    return np.unique(refs[libraries[refs] == library])
+
+
+
 def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0, truth_smiles=None):
     """Metric truth and every pool key in the mass window that is the same structure under the
     metric (tautomer variants stored under another standard key). The skeleton key is an exact
