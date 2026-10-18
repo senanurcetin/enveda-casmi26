@@ -23,6 +23,7 @@ from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
 from casmi.validate.knockout import CLASSES, build_queries, knockout_for, mixture_grid  # noqa: E402
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
+from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 
 
 def equivalent_keys(query, pool, keys: MetricKeys, cfg):
@@ -43,11 +44,16 @@ def equivalent_keys(query, pool, keys: MetricKeys, cfg):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-queries", type=int, default=None)
+    ap.add_argument("--library", default="enveda-np-examples", help="query library")
+    ap.add_argument("--max-spectra", type=int, default=None, help="spectra sampled per molecule")
+    ap.add_argument("--query-seed", type=int, default=0, help="query/spectrum sampling seed")
     ap.add_argument("--tag", default="d1-baseline")
     ap.add_argument("--offset-ppm", type=float, default=0.0)
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
     args = ap.parse_args()
 
+    if any(n is not None and n < 1 for n in (args.max_queries, args.max_spectra)):
+        ap.error("--max-queries and --max-spectra must be positive")
     cfg = replace(EngineConfig(), mass_offset_ppm=args.offset_ppm)
     t0 = time.time()
     store = SpectrumStore(ARTIFACT_DIR / "store")
@@ -55,7 +61,15 @@ def main():
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     library = LibraryIndex(store, key_of_row, cfg.library)
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
-    queries = build_queries(store, key_of_row, max_queries=args.max_queries)
+    queries = build_queries(store, key_of_row, library=args.library,
+                            max_queries=args.max_queries, max_spectra=args.max_spectra,
+                            seed=args.query_seed)
+    if not queries:
+        raise ValueError('No eligible query molecules for validation')
+    # Persist identity and actual input fingerprints. Paired bootstraps must
+    # never pair different molecules or resampled spectra by list position.
+    query_ids = [str(q.qid) for q in queries]
+    query_signatures = [query_signature(q) for q in queries]
     analog = fps = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
@@ -92,7 +106,14 @@ def main():
 
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
-              "n_queries": len(queries), "median_candidates": float(np.median(n_cand)),
+              "n_queries": len(queries), "query_ids": query_ids,
+              "query_signatures": query_signatures,
+              "query_signature_version": SIGNATURE_VERSION,
+              "query_sampling": {"library": args.library,
+                                 "max_queries": args.max_queries,
+                                 "max_spectra": args.max_spectra,
+                                 "seed": args.query_seed},
+              "median_candidates": float(np.median(n_cand)),
               "queries_with_tautomer_duplicates": int(np.sum(np.array(n_equiv) > 1)), "classes": {}}
     print(f"\nmedian candidates per molecule: {np.median(n_cand):.0f} | "
           f"queries whose structure also sits in the pool under another key: {report['queries_with_tautomer_duplicates']}")
@@ -105,9 +126,13 @@ def main():
     print("\nexpected LB over plausible class mixes (rows f1, columns f3):\n"
           + grid.pivot(index="f1", columns="f3", values="score").round(4).to_string())
 
-    h = hashlib.sha1(json.dumps(report["config"], sort_keys=True).encode()).hexdigest()[:8]
-    out = PROJECT_ROOT / "runs" / f"{time.strftime('%Y%m%d-%H%M')}_{args.tag}_{h}.json"
-    out.write_text(json.dumps(report, indent=2))
+    manifest = {"config": report["config"], "query_sampling": report["query_sampling"],
+                "query_ids": query_ids, "query_signatures": query_signatures}
+    h = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()[:12]
+    out = PROJECT_ROOT / "runs" / f"{time.strftime('%Y%m%d-%H%M%S')}_{args.tag}_{h}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("x", encoding="utf-8") as file:
+        json.dump(report, file, indent=2)
     print(f"\nlogged runs/{out.name} ({time.time() - t0:.0f}s)")
 
 

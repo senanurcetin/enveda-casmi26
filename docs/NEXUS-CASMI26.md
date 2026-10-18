@@ -84,12 +84,16 @@ For production BigQuery integration, first verify dataset location, access, sour
 
 ## Scientific guardrails / important results
 
-1. **The public example test file is unusable as a true holdout.** The checked-in profile found all 1,213 public example spectra in the training data. Do not treat those matches as evidence of generalization.
+1. **The public example test file is unusable as a true holdout.** The checked-in historical profile recorded 1,213 / 1,213 matches via rounded precursor/peak-count/first-peak buckets. Such coarse matches are potential, not proven, duplicates. The updated profiler now checks full m/z and intensity arrays; rerun it before asserting exact overlap. In any event, do not use known training-overlap examples as a trustworthy holdout.
 2. **MRR@25 is evaluated by canonical 2D structure equivalence**, not SMILES-string equality or exact stereochemistry.
 3. **The hidden test has novelty classes** (library-known, known-without-spectra, novel). Validation must preserve structure-level holdouts and consider candidate-pool membership shortcuts.
 4. **Instrument shift matters.** Training data span heterogeneous libraries/instruments while hidden test spectra come from timsTOF. Analyze source/adduct/energy slices rather than only total mean rank.
 5. **Leaderboard increments can be noise.** The recorded 0.422 vs 0.420 fusion difference is historical; don't claim it is statistically significant without an appropriate independent test.
 6. **Never retroactively rewrite experiment history.** Compare independent query-level paired bootstrap confidence intervals and log rejected changes too.
+
+## Research-only continuation (2026-10-18)
+
+This repository is an open scientific research/portfolio project, **not** a commercial product. See [the committed research work program](RESEARCH_WORK_PROGRAM.md) for dated priorities, scientific gates, completed code changes and evidence-dependent stages. Future validation runs now carry query identity, actual spectrum-input signatures and reproducible query sampling; the paired comparison tool refuses unverified legacy pairing by default. The new metadata-only BigQuery reconciliation CLI can test source-library counts after a genuine read-only warehouse export, without inventing connection state.
 
 ## Next science sprint (evidence gate before retraining)
 

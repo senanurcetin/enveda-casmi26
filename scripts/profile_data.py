@@ -7,12 +7,16 @@ Usage:  python scripts/profile_data.py            (data dir from $CASMI_DATA)
 """
 import json
 import os
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
 import numpy as np
 import pyarrow.compute as pc
 import pyarrow.parquet as pq
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from casmi.validate.spectrum_overlap import coarse_spectrum_bucket, full_spectrum_match  # noqa: E402
 
 DATA = Path(os.environ.get("CASMI_DATA", "C:/Users/MONSTER/kaggle-data/casmi26"))
 OUT = Path(__file__).resolve().parents[1] / "reports" / "data_profile.json"
@@ -43,9 +47,14 @@ test_profile = {
     "ce_values_per_spectrum": test.collision_energy_ev.map(lambda x: 0 if x is None else len(x)).value_counts().to_dict(),
     "base_peak_intensity": q(test.base_peak_intensity),
 }
-# fingerprint used to find the public test spectra inside train (it is sampled from train)
-test_keys = {(round(r.precursor_mz, 4), len(r.ms2_mzs), round(float(r.ms2_mzs[0]), 4)): r.spectrum_id
-             for r in test.itertuples()}
+# A rounded precursor/first-peak bucket is only a retrieval accelerator.
+# Always check full fragment and intensity arrays before claiming overlap.
+test_keys = defaultdict(list)
+for row in test.itertuples():
+    bucket = coarse_spectrum_bucket(row.precursor_mz, row.ms2_mzs)
+    if bucket is not None:
+        test_keys[bucket].append((row.spectrum_id, row.precursor_mz,
+                                  row.ms2_mzs, row.ms2_normalized_intensities))
 test_prec = {k[0] for k in test_keys}
 
 # ------------------------------------------------------------------ train, streamed
@@ -60,6 +69,8 @@ struct_spectra = Counter()
 ppm_by_lib, peaks_by_lib, prec_timstof = defaultdict(list), defaultdict(list), []
 n_test_adduct = 0
 matches = {}
+coarse_candidates_checked = 0
+coarse_false_matches = 0
 
 for rg in range(pf.num_row_groups):
     t = pf.read_row_group(rg, columns=LIGHT).to_pandas()
@@ -79,15 +90,26 @@ for rg in range(pf.num_row_groups):
         peaks_by_lib[lib].extend(take.num_peaks.tolist())
     prec_timstof.extend(t.loc[t.ingest_lib.isin(TIMSTOF_LIBS), "precursor_mz"].sample(frac=.05, random_state=rg).tolist())
 
-    # locate public-test spectra: filter on precursor first, read peaks only for those rows
+    # A 3-field coarse key can collide: verify every fragment and intensity.
     cand = t.index[t.precursor_mz.round(4).isin(test_prec)]
     if len(cand):
-        peaks = pf.read_row_group(rg, columns=["ms2_mzs"]).column(0)
+        peaks = pf.read_row_group(
+            rg, columns=["ms2_mzs", "ms2_normalized_intensities"]
+        )
+        peak_mzs, peak_intensities = peaks.column(0), peaks.column(1)
         for i in cand:
-            mzs = peaks[int(i)].as_py()
-            key = (round(t.precursor_mz.iat[i], 4), len(mzs), round(float(mzs[0]), 4))
-            if key in test_keys:
-                matches[test_keys[key]] = (t.ingest_lib.iat[i], t.inchikey14.iat[i])
+            precursor = float(t.precursor_mz.iat[i])
+            mzs = peak_mzs[int(i)].as_py()
+            bucket = coarse_spectrum_bucket(precursor, mzs)
+            if bucket not in test_keys:
+                continue
+            it = peak_intensities[int(i)].as_py()
+            for sid, test_p, test_mzs, test_it in test_keys[bucket]:
+                coarse_candidates_checked += 1
+                if full_spectrum_match(precursor, mzs, it, test_p, test_mzs, test_it):
+                    matches[sid] = (t.ingest_lib.iat[i], t.inchikey14.iat[i])
+                else:
+                    coarse_false_matches += 1
     print(f"row group {rg + 1}/{pf.num_row_groups} done", flush=True)
     del t
 
@@ -125,6 +147,9 @@ profile = {
     "test_public": test_profile,
     "test_public_located_in_train": {
         "matched_spectra": len(matched),
+        "matching_method": "exact full precursor, m/z and normalized intensity arrays",
+        "coarse_candidates_checked": coarse_candidates_checked,
+        "coarse_bucket_false_matches": coarse_false_matches,
         "of": len(test),
         "by_library": test.lib.value_counts(dropna=False).to_dict(),
         "molecules_fully_matched": int(test.groupby("molecule_id").lib.apply(lambda s: s.notna().all()).sum()),
