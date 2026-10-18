@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Controlled D2 cross-library index experiment (2026-10-18)
+
+The [source-balanced D2 experiment protocol](docs/D2_SOURCE_BALANCED_EXPERIMENT.md) introduces an **opt-in** reference sampler that preserves the highest-quality spectrum while reserving independent source-library coverage when the index cap permits. The baseline policy is unchanged. A distinct, provenance-checked cache keeps the new experiment separate from historical inference artifacts; the metadata audit can compare both index-selection policies. This is a validation and reproducibility improvement, **not** a new MRR result. Productization remains excluded.
+
 ## Scientific integrity update — D2 analog shortlisting (2026-10-18)
 
 The [D2 knockout and prefilter audit](docs/D2_PREFILTER_KNOCKOUT_AUDIT.md) documents a second validation flaw: excluded self/reference spectra were removed **after** approximate top-k selection, so invalid hits could crowd out eligible independent analogs. The corrected algorithm applies knockout, adduct and mass eligibility **before** top-k and is covered by numerical plus direct `AnalogIndex.search` regression tests. Historical competition metrics remain unchanged. No new Kaggle run, submission or product work is implied.

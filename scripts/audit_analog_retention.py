@@ -23,6 +23,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+from casmi.channels.reference_selection import select_reference_rows, POLICIES  # noqa: E402
+
 EXPECTED_COLUMNS = (
     "train_ik14", "ingest_lib", "adduct", "test_adduct",
     "ppm", "n_peaks", "is_timstof",
@@ -30,7 +33,8 @@ EXPECTED_COLUMNS = (
 
 
 def audit_retention(meta: pd.DataFrame, query_library: str,
-                    per_structure_adduct: int = 3) -> dict:
+                    per_structure_adduct: int = 3,
+                    policy: str = "legacy") -> dict:
     """Compare cross-library feasible (key, adduct) pairs before/after indexing.
 
     Pair counts reflect index-coverage limitations, not molecular retrieval
@@ -65,11 +69,13 @@ def audit_retention(meta: pd.DataFrame, query_library: str,
     t = t[(t.key != "") & (t.adduct != "")]
     if t.empty:
         raise ValueError("No eligible reference spectra")
-    # Mirrors AnalogIndex._select exactly: highest priority then stable row order
-    # with at most N spectra retained per standard-key/adduct.
-    ranked = t.sort_values("prio", ascending=False, kind="stable")
-    kept = ranked.groupby(["key", "adduct"], observed=True,
-                          sort=False).head(per_structure_adduct)
+    # Use the real index selector: audit results cannot drift from the
+    # implementation being evaluated.
+    chosen_rows = select_reference_rows(
+        meta, meta.train_ik14.to_numpy(),
+        per_structure_adduct=per_structure_adduct, policy=policy,
+    )
+    kept = t[t.row.isin(chosen_rows)]
     pairs = lambda frame: set(zip(frame.key, frame.adduct))
     all_other = pairs(t[t.lib != query_library])
     selected_other = pairs(kept[kept.lib != query_library])
@@ -79,7 +85,8 @@ def audit_retention(meta: pd.DataFrame, query_library: str,
     lost = cross_possible - cross_indexed
     return {
         "status": "GAP_FOUND" if lost else "NO_GAP_FOUND",
-        "method": "metadata-only emulation of AnalogIndex._select",
+        "method": "metadata-only shared AnalogIndex._select implementation",
+        "selection_policy": policy,
         "query_library": query_library,
         "per_structure_adduct": per_structure_adduct,
         "eligible_reference_spectra": int(len(t)),
@@ -105,11 +112,21 @@ def main() -> int:
                         help="Existing SpectrumStore meta.parquet")
     parser.add_argument("--query-library", default="enveda-np-examples")
     parser.add_argument("--per-structure-adduct", type=int, default=3)
+    parser.add_argument("--selection-policy", choices=POLICIES, default="legacy")
+    parser.add_argument("--compare-policies", action="store_true",
+                        help="Include alternative sampling-policy retention counts")
     parser.add_argument("--json-out", type=Path)
     args = parser.parse_args()
     try:
         meta = pd.read_parquet(args.meta, columns=list(EXPECTED_COLUMNS))
-        report = audit_retention(meta, args.query_library, args.per_structure_adduct)
+        report = audit_retention(meta, args.query_library, args.per_structure_adduct,
+                                 policy=args.selection_policy)
+        if args.compare_policies:
+            alternative = next(p for p in POLICIES if p != args.selection_policy)
+            report["alternative_policy"] = audit_retention(
+                meta, args.query_library, args.per_structure_adduct,
+                policy=alternative,
+            )
         sha = hashlib.sha256()
         with args.meta.open("rb") as file:
             for chunk in iter(lambda: file.read(1024 * 1024), b""):

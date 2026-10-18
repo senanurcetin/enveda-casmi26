@@ -51,6 +51,13 @@ The scientific audit found that C1 queries capped with `max_spectra` previously 
 
 A follow-up code audit identified that D2 discarded knocked-out reference rows *after* approximate top-k, potentially hiding eligible spectral analogs. A tested eligible-first prefilter now applies knockout exclusions, mass and adduct constraints before selecting candidates. This is an **evaluation selection-bias correction**, not a claim of a new model score. Remaining risk: reference subsampling during offline index construction can still favor the withheld source library; investigate by measuring cross-library index retention on the permitted local training artifacts. See [D2 scientific audit](D2_PREFILTER_KNOCKOUT_AUDIT.md).
 
+## P0 research extension — D2 cross-source index coverage (2026-10-18)
+
+- **Implemented:** opt-in `source_balanced` D2 index selection, selecting a high-quality reference plus qualified cross-library spectra before filling remaining per-structure/adduct slots; the historical `legacy` default remains unchanged.
+- **Implemented:** independent, provenance-checked cache for the alternative index; reference selection shared with the metadata-retention audit; same-population experimental CLI flags and synthetic regression tests.
+- **Pending:** run the metadata audit against actual licensed CASMI store data, rerun model validation on one fixed query set, then determine whether any MRR improvement is statistically supported. No new competition-data experiments have been run for this change.
+- See [predeclared D2 protocol](D2_SOURCE_BALANCED_EXPERIMENT.md). Do not mix cached index variants, claim new Kaggle results, or commercialize the scientific work.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
