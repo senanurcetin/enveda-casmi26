@@ -91,6 +91,10 @@ For production BigQuery integration, first verify dataset location, access, sour
 5. **Leaderboard increments can be noise.** The recorded 0.422 vs 0.420 fusion difference is historical; don't claim it is statistically significant without an appropriate independent test.
 6. **Never retroactively rewrite experiment history.** Compare independent query-level paired bootstrap confidence intervals and log rejected changes too.
 
+## Research-only continuation (2026-10-18)
+
+This repository is an open scientific research/portfolio project, **not** a commercial product. See [the committed research work program](RESEARCH_WORK_PROGRAM.md) for dated priorities, scientific gates, completed code changes and evidence-dependent stages. Future validation runs now carry query identity, actual spectrum-input signatures and reproducible query sampling; the paired comparison tool refuses unverified legacy pairing by default. The new metadata-only BigQuery reconciliation CLI can test source-library counts after a genuine read-only warehouse export, without inventing connection state.
+
 ## Next science sprint (evidence gate before retraining)
 
 - Confirm BigQuery/Kaggle credential **access** without revealing keys; inventory authoritative source tables and training-to-evaluation lineage.
