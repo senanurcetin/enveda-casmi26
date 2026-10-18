@@ -81,6 +81,20 @@ def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = 
     same ID->spectrum-signature mapping. Older runs can only be compared with
     an explicit unsafe override, and should not justify acceptance claims.
     """
+    # Paired improvement inference requires identical *actual* MS/MS inputs.
+    # Negative controls intentionally change spectra, so they must never
+    # receive model-improvement ACCEPT/REJECT judgments from this comparator.
+    for run in (a, b):
+        control = run.get("spectral_control")
+        if control is not None:
+            if not isinstance(control, Mapping):
+                raise ValueError("Malformed spectral-control provenance")
+            if control.get("mode", "none") != "none":
+                raise ValueError(
+                    "Negative-control reports are diagnostic only; cannot "
+                    "be compared as model-improvement runs"
+                )
+
     n_a, n_b = a.get("n_queries"), b.get("n_queries")
     if type(n_a) is not int or type(n_b) is not int or n_a < 1 or n_a != n_b:
         raise ValueError("Runs must contain the same positive number of queries")
