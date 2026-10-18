@@ -12,20 +12,25 @@ import math
 from collections.abc import Mapping, Sequence
 
 CLASSES = ("C1", "C2", "C3")
-SIGNATURE_VERSION = "casmi-query-spectra-v1"
+SIGNATURE_VERSION = "casmi-query-spectra-v2"
 
 
 def query_signature(query) -> str:
     """Fingerprint *actual* source spectra and exclusion rows for one query.
 
     Signatures are validation provenance, not a tamper-proof dataset checksum.
-    This prevents pairing runs that re-sample spectra or change store row order.
+    This prevents pairing runs that resample spectra, change source-library
+    exclusion scope, or change store row order. Version the signature recipe.
     """
     payload = {
         "version": SIGNATURE_VERSION,
         "qid": str(query.qid),
         "pool_key": str(query.pool_key),
-        "excluded_source_rows": sorted(int(i) for i in query.spectrum_rows),
+        "selected_query_rows": sorted(int(i) for i in query.spectrum_rows),
+        "source_library_excluded_rows": (
+            sorted(int(i) for i in query.source_library_rows)
+            if getattr(query, "source_library_rows", None) is not None else None
+        ),
         "spectra": [
             {
                 "mz": [float(x).hex() for x in spec["mz"]],
