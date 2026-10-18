@@ -23,7 +23,8 @@ class Query:
     qid: str
     pool_key: str                 # the structure's pool key (standard InChIKey14)
     spectra: list                 # list of dicts: mz, it, precursor_mz, adduct, ce_ev, mode
-    spectrum_rows: np.ndarray     # store rows of the query's own spectra (always excluded)
+    spectrum_rows: np.ndarray     # selected source spectra used as query input
+    source_library_rows: np.ndarray | None = None  # ALL same-key source-library spectra for C1 exclusion
 
 
 @dataclass
@@ -36,7 +37,9 @@ class Knockout:
 def build_queries(store, key_of_row, library="enveda-np-examples", keys_subset=None,
                   max_spectra=None, max_queries=None, seed=0):
     """Group one library's test-adduct spectra by structure into molecule-like queries.
-    `keys_subset` restricts the structures; `max_spectra` subsamples each query (test median is 3)."""
+    `keys_subset` restricts the structures; `max_spectra` subsamples each query (test median is 3).
+    A subsampled query still excludes ALL of that structure's reference rows in its own
+    source library. Otherwise an unselected duplicate spectrum leaks into C1 scoring."""
     meta = store.meta
     rng = np.random.default_rng(seed)
     rows = np.flatnonzero((meta.ingest_lib == library).to_numpy() & meta.test_adduct.to_numpy()
@@ -52,6 +55,17 @@ def build_queries(store, key_of_row, library="enveda-np-examples", keys_subset=N
     groups = list(zip(starts, ends))
     if max_queries and len(groups) > max_queries:
         groups = [groups[i] for i in sorted(rng.choice(len(groups), max_queries, replace=False))]
+    # Collect all source-library rows for the selected query keys, not only
+    # test-adduct/peak-filtered inputs. Reference indices have their own
+    # filtering rules and cannot safely be inferred from sampled inputs.
+    wanted = {str(keys[s_]) for s_, _ in groups}
+    source_rows = np.flatnonzero((meta.ingest_lib == library).to_numpy())
+    reference_rows = {key: [] for key in wanted}
+    for index in source_rows:
+        key = str(key_of_row[index])
+        if key in reference_rows:
+            reference_rows[key].append(int(index))
+
     queries = []
     for s_, e_ in groups:
         r = rows[s_:e_]
@@ -63,18 +77,73 @@ def build_queries(store, key_of_row, library="enveda-np-examples", keys_subset=N
             m = meta.iloc[i]
             spectra.append(dict(mz=mz, it=it, precursor_mz=float(m.precursor_mz), adduct=str(m.adduct),
                                 ce_ev=float(m.ce_ev), mode=str(m.ionization_mode)))
-        queries.append(Query(qid=f"{library}:{keys[s_]}", pool_key=keys[s_], spectra=spectra, spectrum_rows=r))
+        own_rows = np.asarray(reference_rows[str(keys[s_])], dtype=np.int64)
+        queries.append(Query(
+            qid=f"{library}:{keys[s_]}", pool_key=keys[s_],
+            spectra=spectra, spectrum_rows=r,
+            source_library_rows=own_rows,
+        ))
     return queries
 
 
 def knockout_for(query: Query, cls: str, rows_of_key, equivalent_keys) -> Knockout:
     """`equivalent_keys`: every pool key whose metric key equals the truth's (tautomer variants
     stored under a different standard key). Knocking out only the query's own key would leak."""
+    if cls not in CLASSES:
+        raise ValueError(f"Unknown knockout class: {cls}")
+    query_rows = np.asarray(query.spectrum_rows, dtype=np.int64)
+    own_rows = (query_rows if query.source_library_rows is None
+                else np.union1d(query_rows, query.source_library_rows))
     if cls == "C1":
-        return Knockout(query.spectrum_rows)
+        return Knockout(own_rows)
     rows = [rows_of_key.get(k, np.empty(0, np.int64)) for k in equivalent_keys]
-    excluded = np.union1d(np.concatenate(rows) if rows else np.empty(0, np.int64), query.spectrum_rows)
+    excluded = np.union1d(
+        np.concatenate(rows) if rows else np.empty(0, np.int64),
+        own_rows,
+    )
     return Knockout(excluded, set(equivalent_keys) if cls == "C3" else set())
+
+
+
+def include_equivalent_source_rows(query: Query, equivalent_keys, source_rows, key_of_row):
+    """Extend the query's C1 exclusions with its same-metric-key source refs.
+
+    `source_rows` must contain only indices from the query's own library.
+    `key_of_row` maps every store index to its *standard* structure key.
+    Every equivalent-key variant must be removed, not just the sampled peaks.
+    This mutates only the optional reference exclusion field, not spectra.
+    """
+    source_rows = np.asarray(source_rows, dtype=np.int64)
+    key_of_row = np.asarray(key_of_row)
+    if np.any(source_rows < 0) or np.any(source_rows >= len(key_of_row)):
+        raise ValueError("Source-library reference row outside store")
+    if not equivalent_keys:
+        raise ValueError("Expected at least the query's own structure key")
+    matching = source_rows[np.isin(key_of_row[source_rows], list(equivalent_keys))]
+    base = query.spectrum_rows if query.source_library_rows is None else query.source_library_rows
+    query.source_library_rows = np.union1d(base, matching).astype(np.int64, copy=False)
+    return query.source_library_rows
+
+
+
+def same_library_reference_rows(rows_of_key, equivalent_keys, lib_of_row, library):
+    """D1/analog-indexed same-structure references in the query's library.
+
+    Use alongside full source-library exclusions on build_queries outputs.
+    The caller decides which novelty class requires this cross-library
+    knockout; do not affect intentionally retained legacy training modes.
+    """
+    arrays = [np.asarray(rows_of_key.get(k, []), dtype=np.int64)
+              for k in equivalent_keys]
+    arrays = [arr for arr in arrays if len(arr)]
+    if not arrays:
+        return np.empty(0, dtype=np.int64)
+    refs = np.concatenate(arrays)
+    libraries = np.asarray(lib_of_row)
+    if np.any(refs < 0) or np.any(refs >= len(libraries)):
+        raise ValueError("Reference row outside library metadata")
+    return np.unique(refs[libraries[refs] == library])
+
 
 
 def equivalent_keys(query_key, query_mass, pool, keys, window_ppm=30.0, truth_smiles=None):

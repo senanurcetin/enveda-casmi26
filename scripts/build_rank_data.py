@@ -29,7 +29,9 @@ from casmi.engine import BaselineEngine, EngineConfig, molecule_mass  # noqa: E4
 from casmi.pool.pool import SOURCE_BITS, CandidatePool  # noqa: E402
 from casmi.rank.features import add_context, add_priors  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
-from casmi.validate.knockout import Query, build_queries, equivalent_keys, knockout_for  # noqa: E402
+from casmi.validate.knockout import (  # noqa: E402
+    Query, build_queries, equivalent_keys, knockout_for, same_library_reference_rows,
+)
 
 TRAIN_LIBS = ["riken", "gnps", "massbank", "mona", "msdial", "spectraverse", "pluskal_ms2"]
 TEST_MASS = (150.0, 1170.0)
@@ -293,13 +295,20 @@ def main():
                 # PubChemLite, ...): a V-real truth known only from the training libraries leaves the pool
                 src = pool.table.sources.to_numpy()
                 ko.excluded_keys = {k for k in same if src[pool.row_of[k]] & ~(SOURCE_BITS["train"] | SOURCE_BITS["enveda180_only"]) == 0}
+            if cls == "C1" and (args.set == "vin" or (
+                args.set in ("train", "e180", "vreal") and args.c1_mode == "crosslib"
+            )):
+                # V-in also needs a complete query-library knockout. Keeping
+                # a tautomer-equivalent spectrum in the same library silently
+                # inflates D1 and can leak through D2 analog references.
+                qlib = q.qid.split(":", 1)[0]
+                own = same_library_reference_rows(
+                    library.rows_of, same | {q.pool_key}, lib_of_row, qlib,
+                )
+                ko.excluded_rows = np.union1d(ko.excluded_rows, own)
             if cls == "C1" and args.set in ("train", "e180", "vreal") and args.c1_mode == "crosslib":
-                # Test Class-1 matches are always cross-library (timsTOF query vs another instrument's
-                # reference). So remove every spectrum of the structure from the query's own library,
-                # and skip the query when no other library has one — then it is not Class 1 at all.
-                qlib = q.qid.split(":")[0]
-                own = [r for k in same | {q.pool_key} for r in library.rows_of.get(k, []) if lib_of_row[r] == qlib]
-                ko.excluded_rows = np.union1d(ko.excluded_rows, np.asarray(own, np.int64))
+                # Cross-instrument Class 1 must retain some other-library
+                # reference; otherwise this is not a valid Class 1 query.
                 refs = [r for k in same | {q.pool_key} for r in library.rows_of.get(k, []) if lib_of_row[r] != qlib]
                 if not refs:
                     skipped_c1 += 1

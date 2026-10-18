@@ -21,7 +21,9 @@ from casmi.chem.keys import MetricKeys  # noqa: E402
 from casmi.engine import BaselineEngine, EngineConfig, molecule_mass  # noqa: E402
 from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
-from casmi.validate.knockout import CLASSES, build_queries, knockout_for, mixture_grid  # noqa: E402
+from casmi.validate.knockout import (  # noqa: E402
+    CLASSES, build_queries, knockout_for, mixture_grid, include_equivalent_source_rows,
+)
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 
@@ -66,10 +68,14 @@ def main():
                             seed=args.query_seed)
     if not queries:
         raise ValueError('No eligible query molecules for validation')
-    # Persist identity and actual input fingerprints. Paired bootstraps must
-    # never pair different molecules or resampled spectra by list position.
+    # Persist identities and input fingerprints after C1 exclusion metadata is
+    # finalized. Otherwise runs with different knockout rules might be paired.
     query_ids = [str(q.qid) for q in queries]
-    query_signatures = [query_signature(q) for q in queries]
+    query_signatures = []
+    # Some tautomers share the official metric key while having distinct
+    # standard pool keys. C1 must also hide these structures in the query's
+    # own library. Do not use the filtered D1 index to infer all raw rows.
+    source_idx = np.flatnonzero((store.meta.ingest_lib == args.library).to_numpy())
     analog = fps = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
@@ -87,6 +93,8 @@ def main():
     n_cand, n_equiv = [], []
     for qi, q in enumerate(queries):
         truth, same = equivalent_keys(q, pool, keys, cfg)
+        include_equivalent_source_rows(q, same, source_idx, key_of_row)
+        query_signatures.append(query_signature(q))
         n_equiv.append(len(same))
         per_class = {}
         for cls in ("C1", "C2"):

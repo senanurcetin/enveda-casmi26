@@ -89,6 +89,12 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Scientific evaluation update — C1 reference leakage (2026-10-18)
+
+The [non-commercial research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) identifies and fixes a C1 holdout flaw: when only a subset of a molecule's source spectra was used as a simulated query, its *unselected* same-structure reference spectra could remain in the search index. New exclusion bookkeeping now hides every same-library reference, including tautomer-equivalent standard keys, while retaining legitimately independent cross-library references. Query signatures have been versioned to `casmi-query-spectra-v2`, and regression tests cover sampled queries.
+
+**Existing public and historical validation scores have not been recomputed.** This is a methodology fix, not a newly demonstrated model-score increase. Project scope remains scientific research only; no productization.
+
 ## NEXUS Research Intelligence (2026-10-18 extension)
 
 A [NEXUS 2.0 research dashboard](site/index.html) now presents the **historical 8 October** model results, experimental provenance, and the source-library profile in `reports/data_profile.json`. It uses the approved NEXUS SVG and works locally with `python -m http.server 8000` (open `/site/`). **It does not represent live Kaggle or BigQuery results and does not change the frozen model or leaderboard claims.**
