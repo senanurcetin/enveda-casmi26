@@ -52,11 +52,17 @@ def main():
     ap.add_argument("--tag", default="d1-baseline")
     ap.add_argument("--offset-ppm", type=float, default=0.0)
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
+    ap.add_argument("--analog-selection-policy", choices=("legacy", "source_balanced"),
+                    default="legacy", help="D2 index reference selection; legacy keeps historical baseline")
     args = ap.parse_args()
 
     if any(n is not None and n < 1 for n in (args.max_queries, args.max_spectra)):
         ap.error("--max-queries and --max-spectra must be positive")
-    cfg = replace(EngineConfig(), mass_offset_ppm=args.offset_ppm)
+    if args.analog_selection_policy != "legacy" and not args.analog:
+        ap.error("--analog-selection-policy requires --analog")
+    cfg = EngineConfig()
+    cfg = replace(cfg, mass_offset_ppm=args.offset_ppm,
+                  analog=replace(cfg.analog, reference_policy=args.analog_selection_policy))
     t0 = time.time()
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
