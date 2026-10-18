@@ -43,6 +43,10 @@ Dates are **planned target windows**, not scheduled jobs or future autonomous ex
   dated 2026-10-08, and non-commercial scope. These changes improve research
   validity, **not** predictive accuracy.
 
+## Additional P0 research correction — 2026-10-18
+
+The scientific audit found that C1 queries capped with `max_spectra` previously excluded only the sampled rows, leaving unselected same-structure library references available. `build_queries` now preserves all same-key source-library reference row IDs independently of selected query spectra, C1 also hides metric-equivalent tautomer variants, and the `vin` feature-table builder applies the same exclusion rule. The query signature format was versioned to v2. The synthetic CI regression suite verifies this behavior; historical scores **must not** be recast as corrected without a full data-dependent rerun. See [scientific assessment](CASMI26_RESEARCH_ASSESSMENT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
