@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.validate.metric import paired_difference  # noqa: E402
+from casmi.validate.paired_bootstrap import paired_difference  # noqa: E402
 from casmi.validate.run_alignment import CLASSES, align_runs  # noqa: E402
 
 GRID = [(f1, f3) for f1 in (0.15, 0.20, 0.25, 0.30)
