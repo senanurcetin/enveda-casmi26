@@ -80,3 +80,9 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 
 - [CASMI26: Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool)
 - [CASMI26: A Bigger Candidate Pool Lowered My Score](https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score)
+
+## NEXUS Research Intelligence (2026-10-18 extension)
+
+A [NEXUS 2.0 research dashboard](site/index.html) now presents the **historical 8 October** model results, experimental provenance, and the source-library profile in `reports/data_profile.json`. It uses the approved NEXUS SVG and works locally with `python -m http.server 8000` (open `/site/`). **It does not represent live Kaggle or BigQuery results and does not change the frozen model or leaderboard claims.**
+
+New quality utilities include [`scripts/audit_submission.py`](scripts/audit_submission.py) for submission shape, exact test molecule coverage, candidate budget and optional canonical structure checks; a read-only [BigQuery data quality SQL template](sql/bigquery/library_quality.sql) with a safe renderer; and dependency-free regression tests in GitHub Actions. See [implementation details and limitations](docs/NEXUS-CASMI26.md).
