@@ -8,9 +8,11 @@ on:
       - "sql/**"
       - "scripts/audit_submission.py"
       - "scripts/compare_runs.py"
+      - "scripts/profile_data.py"
       - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "src/casmi/validate/run_alignment.py"
+      - "src/casmi/validate/spectrum_overlap.py"
       - "scripts/render_bigquery_sql.py"
       - "tests/*_stdlib.py"
       - "tests/*_integration.py"
@@ -22,9 +24,11 @@ on:
       - "sql/**"
       - "scripts/audit_submission.py"
       - "scripts/compare_runs.py"
+      - "scripts/profile_data.py"
       - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "src/casmi/validate/run_alignment.py"
+      - "src/casmi/validate/spectrum_overlap.py"
       - "scripts/render_bigquery_sql.py"
       - "tests/*_stdlib.py"
       - "tests/*_integration.py"
@@ -50,4 +54,4 @@ jobs:
       - name: Run paired-comparison integration checks
         run: python -m unittest discover -s tests -p '*_integration.py' -v
       - name: Validate Python syntax
-        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py src/casmi/validate/run_alignment.py
+        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py scripts/profile_data.py src/casmi/validate/run_alignment.py src/casmi/validate/spectrum_overlap.py
