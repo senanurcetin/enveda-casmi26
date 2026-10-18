@@ -6,6 +6,24 @@ pipeline-matched labelled data), mixture score over the class-share grid
 f₁ ∈ {0.15 … 0.30}, f₃ ∈ {0.2, 0.3, 0.4}.
 **ACCEPT** = the 95% CI lower bound of the expected-LB difference is > 0 at every grid point.
 
+## Statistical interpretation note (2026-10-18)
+
+The historical ACCEPT/REJECT labels below used 95% **pointwise** paired-bootstrap
+intervals at each novelty-class mixture. Requiring all lower bounds to exceed
+zero is useful evidence, but the collection of twelve pointwise intervals is
+**not itself a simultaneous 95% confidence statement**. These labels are
+preserved as dated historical decisions rather than silently rewritten.
+
+The current research comparator now uses an approximately simultaneous 95%
+paired-bootstrap confidence band over the predeclared 12-point novelty grid
+(maximum absolute bootstrap deviation), alongside class-specific paired
+intervals. This adjustment accounts for the fixed **mixture grid**, not for
+trying many model candidates, selecting hyperparameters on the same validation
+data, library/instrument domain shift, or repeated leaderboard probing.
+Claims of transferable improvements require a separate untouched validation
+population and contamination checks. No new experiments or leaderboard
+submissions are implied by this statistical-method update.
+
 ## Results
 
 | # | Change | C1 MRR | C2 MRR | Expected-LB Δ (CI lower bounds) | Verdict |
