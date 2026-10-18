@@ -28,7 +28,7 @@ WITH quality_by_source AS (
       '[M+CH2O2-H]-', '[M+Cl]-'
     )) AS spectra_with_test_adduct,
     COUNTIF(ionization_mode = 'positive') AS positive_ion_mode_spectra
-  FROM \`{{PROJECT_ID}}.{{DATASET_ID}}.{{TABLE_NAME}}\`
+  FROM `{{PROJECT_ID}}.{{DATASET_ID}}.{{TABLE_NAME}}`
   GROUP BY 1
 )
 SELECT
