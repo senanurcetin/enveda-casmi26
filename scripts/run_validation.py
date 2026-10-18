@@ -23,6 +23,7 @@ from casmi.pool.pool import CandidatePool  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
 from casmi.validate.knockout import CLASSES, build_queries, knockout_for, mixture_grid  # noqa: E402
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
+from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 
 
 def equivalent_keys(query, pool, keys: MetricKeys, cfg):
@@ -56,6 +57,12 @@ def main():
     library = LibraryIndex(store, key_of_row, cfg.library)
     keys = MetricKeys(ARTIFACT_DIR / "metric_keys.parquet")
     queries = build_queries(store, key_of_row, max_queries=args.max_queries)
+    if not queries:
+        raise ValueError('No eligible query molecules for validation')
+    # Persist identity and actual input fingerprints. Paired bootstraps must
+    # never pair different molecules or resampled spectra by list position.
+    query_ids = [str(q.qid) for q in queries]
+    query_signatures = [query_signature(q) for q in queries]
     analog = fps = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
@@ -92,7 +99,10 @@ def main():
 
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
-              "n_queries": len(queries), "median_candidates": float(np.median(n_cand)),
+              "n_queries": len(queries), "query_ids": query_ids,
+              "query_signatures": query_signatures,
+              "query_signature_version": SIGNATURE_VERSION,
+              "median_candidates": float(np.median(n_cand)),
               "queries_with_tautomer_duplicates": int(np.sum(np.array(n_equiv) > 1)), "classes": {}}
     print(f"\nmedian candidates per molecule: {np.median(n_cand):.0f} | "
           f"queries whose structure also sits in the pool under another key: {report['queries_with_tautomer_duplicates']}")
