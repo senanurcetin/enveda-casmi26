@@ -43,6 +43,19 @@ class IndexRetentionAuditTests(unittest.TestCase):
         self.assertEqual(result["structures_with_lost_cross_library_pairs"], 1)
         self.assertEqual(result["cross_library_pair_loss_fraction"], 0.5)
 
+    def test_balanced_policy_recovers_lost_other_library_at_same_budget(self):
+        baseline = audit_retention(metadata(), "querylib", per_structure_adduct=2)
+        balanced = audit_retention(
+            metadata(), "querylib", per_structure_adduct=2,
+            policy="source_balanced",
+        )
+        self.assertEqual(baseline["cross_library_pairs_lost_by_index"], 1)
+        self.assertEqual(balanced["cross_library_pairs_lost_by_index"], 0)
+        self.assertEqual(balanced["status"], "NO_GAP_FOUND")
+        self.assertEqual(balanced["indexed_reference_spectra"],
+                         baseline["indexed_reference_spectra"])
+        self.assertEqual(balanced["selection_policy"], "source_balanced")
+
     def test_higher_reference_cap_recovers_cross_library_pair(self):
         result = audit_retention(metadata(), "querylib", per_structure_adduct=3)
         self.assertEqual(result["status"], "NO_GAP_FOUND")
