@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 
 from casmi.chem.canon import canonical_ik14, heavy_atom_key
+from casmi.validate.paired_bootstrap import paired_difference
 
 MAX_RANK = 25
 
@@ -86,11 +87,3 @@ def summarize(ranks, n_boot=2000, seed=0) -> Summary:
                    float((ranks > 0).mean()), len(rr))
 
 
-def paired_difference(ranks_a, ranks_b, n_boot=4000, seed=0):
-    """Bootstrap CI of MRR(b) - MRR(a) on the same queries. Pairing removes query-difficulty noise,
-    which is what makes small but real improvements detectable on a few hundred molecules."""
-    to_rr = lambda r: np.where(np.asarray(r) > 0, 1.0 / np.maximum(np.asarray(r), 1), 0.0)
-    d = to_rr(ranks_b) - to_rr(ranks_a)
-    rng = np.random.default_rng(seed)
-    boots = d[rng.integers(0, len(d), size=(n_boot, len(d)))].mean(axis=1)
-    return float(d.mean()), float(np.quantile(boots, .025)), float(np.quantile(boots, .975))
