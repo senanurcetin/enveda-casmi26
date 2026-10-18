@@ -34,7 +34,7 @@ def full_spectrum_match(
     """
     if mz_a is None or mz_b is None or intensities_a is None or intensities_b is None:
         return False
-    if not mz_a or not mz_b:
+    if len(mz_a) == 0 or len(mz_b) == 0:
         return False
     if len(mz_a) != len(mz_b) or len(intensities_a) != len(intensities_b):
         return False
