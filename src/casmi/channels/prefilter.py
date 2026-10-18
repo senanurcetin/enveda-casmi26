@@ -22,8 +22,9 @@ def eligible_top_k(scores, allowed, k: int) -> np.ndarray:
     allowed = np.asarray(allowed)
     if scores.ndim != 1 or allowed.ndim != 1 or scores.shape != allowed.shape:
         raise ValueError("scores and allowed must be aligned 1D vectors")
-    if not np.issubdtype(scores.dtype, np.number):
-        raise ValueError("scores must be numeric")
+    if not (np.issubdtype(scores.dtype, np.floating)
+            or np.issubdtype(scores.dtype, np.integer)):
+        raise ValueError("scores must be real numeric values")
     if allowed.dtype != np.dtype(bool):
         raise ValueError("allowed must be a boolean vector")
     if type(k) is not int or k < 0:
