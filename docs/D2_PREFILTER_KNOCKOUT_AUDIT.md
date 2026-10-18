@@ -18,6 +18,27 @@ This is a **false-negative / evaluation selection bias**, not direct reference l
 - Tests reproduce the old failure with synthetic high-scoring self-reference rows: valid analogs are now selected even when the excluded rows have better approximate scores.
 - GitHub Actions includes lightweight NumPy algorithm checks and a direct `AnalogIndex.search` regression suite under a pinned scientific environment.
 
+## Metadata-only index-retention audit
+
+The scientific pipeline can now quantify the remaining offline selection bias
+without reading MS/MS spectra, private labels or Kaggle answers:
+
+```sh
+python scripts/audit_analog_retention.py \
+  --meta artifacts/store/meta.parquet \
+  --query-library enveda-np-examples \
+  --per-structure-adduct 3 \
+  --json-out runs/analog_retention_audit.json
+```
+
+The output estimates how many **standard-key/adduct** pairs have at least one
+qualified reference in the query library and in another library, but lose
+every cross-library alternative during index subsampling. This reports
+eligible spectra, indexed spectra, pairs lost, the loss fraction, unique
+structures affected and a SHA-256 of the metadata file. These are **data
+quality counts**, not per-molecule recall or MRR. The audit is currently
+code- and fixture-tested; no real-store output has been collected.
+
 ## Known remaining limits
 
 1. The on-disk index is itself constructed by retaining the best `per_structure_adduct` reference rows **before a validation knockout exists**. If those indexed rows all belong to the withheld library, cross-library references omitted during index construction cannot be recovered by a correct runtime prefilter. Fixing this would require an explicitly versioned/benchmarked index-construction experiment and cache invalidation.
