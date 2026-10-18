@@ -104,6 +104,15 @@ def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = 
                any(c not in "0123456789abcdef" for c in s) for s in run_sigs):
             raise ValueError(f"Run {name}: malformed query signatures")
 
+    # A changed signature recipe makes otherwise comparable digests
+    # uninterpretable; old records without version tags remain supported.
+    version_a = a.get("query_signature_version")
+    version_b = b.get("query_signature_version")
+    if version_a != version_b:
+        raise ValueError("Query signature algorithm versions differ")
+    if version_a is not None and (not isinstance(version_a, str) or not version_a):
+        raise ValueError("Malformed query signature version")
+
     if set(a_ids) != set(b_ids):
         raise ValueError("Query identity mismatch: validation populations differ")
     a_by_id = dict(zip(a_ids, a_sig))
