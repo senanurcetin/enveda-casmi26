@@ -155,6 +155,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Tests:** synthetic generator failure/no-output guards and aggregate-quality regressions added. Local isolated RDKit and NumPy smoke checks passed; full scientific suite and GitHub CI were **not run** per instruction.
 - **Pending:** run the audit against authorized full candidate pools, rebuild only separately tagged variants, and independently evaluate C1/C2/C3. See [fingerprint quality protocol](FINGERPRINT_ZERO_VECTOR_AUDIT.md).
 
+## P0 — multi-provider source identity and immutable pool creation (2026-10-19)
+
+- **Implemented:** before grouping by standard InChIKey14, drop incomplete *whole source identity rows* and reject malformed keys, invalid present masses and serious within-key mass conflicts (threshold max[0.01 Da, 20 ppm]).
+- **Implemented:** publish the new pool Parquet only after a staged write and row-count footer check, with exclusive destination creation; old candidate pools cannot be overwritten by a racing writer.
+- **Local validation:** five focused synthetic NumPy/pandas/stdlib tests passed; a separate real Parquet readback test was blocked by missing `pyarrow` in the isolated local environment. The full suite and GitHub CI have not been run.
+- **Remaining source gate:** authorized train/COCONUT/optional-provider data must be reconciled, conflicts reviewed, and separately tagged pool/fingerprints validated before any scientific score claim. See [source audit protocol](CANDIDATE_SOURCE_RECONCILIATION.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
