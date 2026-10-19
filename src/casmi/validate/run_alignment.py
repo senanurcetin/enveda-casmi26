@@ -117,7 +117,12 @@ def _source_snapshot_verified(a: Mapping, b: Mapping) -> bool:
         count = run.get("source_manifest_file_count")
         if type(count) is not int or count < len(expected):
             raise ValueError("Invalid source artifact file count")
-    return True
+    from casmi.validate.fingerprint_evidence import verified_d2_fingerprint_evidence
+
+    # An unchanged pool/fingerprint FILE inventory does not establish that
+    # D2 vectors belong to the pool's exact SMILES, masses and row ordering.
+    # Historical D2 runs without a verified sidecar remain exploratory.
+    return verified_d2_fingerprint_evidence(a, b)
 
 
 def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = False) -> dict:
