@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## COCONUT source identity correction (2026-10-19)
+
+The [COCONUT neutral-parent identity audit](docs/COCONUT_PARENT_IDENTITY_AUDIT.md) corrects a research data-quality issue: removing salt fragments previously changed candidate SMILES and mass without updating the original compound InChIKey. Parent SMILES, standard InChIKey14, molecular formula and exact mass are now derived from one neutral molecular graph. Frozen candidate pools and leaderboard results are not modified.
+
 ## Immutable A1 spectrum-store builds (2026-10-19)
 
 A [staged research-store build safeguard](docs/A1_STORE_BUILD_IMMUTABILITY.md) now refuses to overwrite existing MS/MS peak stores. New builds are written into isolated temporary directories, structurally verified and only then published, preserving historical input artifacts and experiment reproducibility. No CI, productization or new leaderboard data is implied.
