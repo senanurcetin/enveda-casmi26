@@ -76,6 +76,24 @@ def test_cleaning_drops_above_precursor_and_noise():
     assert cit.max() == pytest.approx(1.0)
 
 
+
+def test_cleaners_discard_nonphysical_nonpositive_fragment_mz():
+    from casmi.spectra.clean import clean_peaks_fast
+    raw_mz = np.array([-50., 0., 50., 90., 180., np.nan], dtype=np.float64)
+    raw_intensity = np.array([0.8, 1., 0.25, 0.5, 0.1, 0.9], dtype=np.float64)
+    cfg = CleanConfig(merge_tol_da=0, min_rel_intensity=0)
+    expected = np.array([50., 90., 180.], dtype=np.float32)
+    for cleaner in (clean_peaks, clean_peaks_fast):
+        cleaned_mz, cleaned_it = cleaner(raw_mz, raw_intensity, 200., cfg)
+        np.testing.assert_array_equal(cleaned_mz, expected)
+        assert np.all(np.isfinite(cleaned_it))
+        assert np.all(cleaned_it > 0)
+    clean_ref = clean_peaks(raw_mz, raw_intensity, 200., cfg)
+    clean_fast = clean_peaks_fast(raw_mz, raw_intensity, 200., cfg)
+    np.testing.assert_array_equal(clean_ref[0], clean_fast[0])
+    np.testing.assert_allclose(clean_ref[1], clean_fast[1], rtol=1e-6)
+
+
 def test_windowed_top_k():
     mz = np.array([10.0, 11.0, 12.0, 60.0, 61.0])
     it = np.array([0.9, 0.5, 1.0, 0.2, 0.1])
