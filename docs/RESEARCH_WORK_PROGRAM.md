@@ -105,6 +105,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **CI:** conventional positive-intensity invariants, ordinary peak cleaning and new numerical edge cases are exercised together in the pinned Numba scientific environment.
 - **Pending:** count/quantify bad-spectrum prevalence on actual authorized datasets; diagnose source/library-specific failures and rerun corrected validation. See [numeric safety audit](SPECTRAL_SIMILARITY_NUMERIC_SAFETY.md).
 
+## P0 — optional full numeric peak-content integrity (2026-10-19)
+
+- **Implemented:** optional bounded-memory peak scan for invalid/non-finite m/z or intensity, reporting aggregate counts with a nonzero exit status when a requested scan finds bad values.
+- **Implemented:** NumPy and Numba peak cleaning now reject `m/z <= 0` to preserve physically plausible fragment bins and protect D2 sparse vectors.
+- **No automated CI requested:** changed files and synthetic tests were committed with GitHub `[skip ci]` directives; existing research workflow remains available for future deliberate verification.
+- **Data gap:** the actual large CASMI store and Kaggle/BigQuery pipelines have not been rerun. See [peak-content research audit](PEAK_CONTENT_QUALITY_AUDIT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
