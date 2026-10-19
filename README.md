@@ -15,6 +15,15 @@ fusion notebook with our own pipeline (`ranker-v16-gen2`, below) fused in as a t
 transfer to the leaderboard and a prize place (≈0.46 public) was out of reach; the hand-off and every result
 are in [HANDOFF.md](HANDOFF.md).
 
+## NEXUS research intelligence interface — 19 October 2026
+
+The [NEXUS CASMI26 research site](site/index.html) now includes a responsive
+[verification-status panel](site/evidence-status.json) covering Kaggle access,
+source/model evidence, historical MRR and intentionally unrun CI. It uses the
+official NEXUS SVG identity and does **not** query private services or claim a
+new score. See the [design and evidence QA record](docs/NEXUS_SITE_DESIGN_QA.md)
+for validation, screenshot limitations and local preview instructions.
+
 ## Approach in one paragraph
 
 Retrieve, then rank. Candidates come from a structure pool (training structures + COCONUT +
