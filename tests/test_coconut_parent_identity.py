@@ -26,10 +26,11 @@ def key(smiles):
 def test_parent_identity_recomputes_all_three_fields_consistently():
     parent = neutral_parent_identity(MIXTURE)
     assert parent is not None
-    smiles, parent_key, exact_mass = parent
+    smiles, parent_key, exact_mass, formula = parent
     assert parent_key == key(ASPIRIN)
     assert parent_key != key(MIXTURE)
     assert exact_mass == pytest.approx(ExactMolWt(Chem.MolFromSmiles(ASPIRIN)))
+    assert formula == "C9H8O4"
     assert len(Chem.GetMolFrags(Chem.MolFromSmiles(smiles))) == 1
     assert key(smiles) == parent_key
 
@@ -77,6 +78,7 @@ def test_coconut_loader_merges_salt_and_neutral_parent_by_corrected_key(
     result = build_pool.load_coconut()
     assert len(result) == 1
     assert result.iloc[0].pool_key == key(ASPIRIN)
+    assert result.iloc[0].molecular_formula == "C9H8O4"
     assert key(result.iloc[0].smiles) == result.iloc[0].pool_key
     assert result.iloc[0].mass == pytest.approx(
         ExactMolWt(Chem.MolFromSmiles(ASPIRIN)), rel=1e-8
