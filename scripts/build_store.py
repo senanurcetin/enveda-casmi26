@@ -5,6 +5,7 @@ peak memory at a few hundred MB per row group. Masses and ppm errors are recompu
 formula and adduct, because the shipped precursor_error_ppm column follows different conventions
 in different libraries (see reports/).
 """
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -19,6 +20,7 @@ from casmi.config import ARTIFACT_DIR, DATA_DIR  # noqa: E402
 from casmi.chem.masses import TEST_ADDUCTS, formula_mass, neutral_mass, parse_adduct  # noqa: E402
 from casmi.spectra.clean import CleanConfig, clean_peaks_fast  # noqa: E402
 from casmi.spectra.store_integrity import inspect_store_layout  # noqa: E402
+from casmi.spectra.build_safety import fresh_store_target  # noqa: E402
 
 STORE_CFG = CleanConfig(min_rel_intensity=0.001, max_peaks=150, top_k_per_window=0)
 META_COLS = ["ingest_lib", "inchikey14", "molecular_formula", "ionization_mode", "instrument_type",
@@ -31,10 +33,9 @@ def _flat(col):
     return arr.values.to_numpy(zero_copy_only=False), arr.offsets.to_numpy()
 
 
-def main():
-    out = ARTIFACT_DIR / "store"
-    out.mkdir(parents=True, exist_ok=True)
-    pf = pq.ParquetFile(DATA_DIR / "train.parquet")
+def _build_store(out: Path, train_file: Path):
+    """Write and validate a brand-new staging store, never the frozen one."""
+    pf = pq.ParquetFile(train_file)
     f_mz, f_it = open(out / "mz.f32", "wb"), open(out / "it.f32", "wb")
     offsets, metas, n_peaks_total = [0], [], 0
     t0 = time.time()
@@ -106,6 +107,23 @@ def main():
         raise ValueError("Builder peak total disagrees with persisted store")
     print(f"\nstore: {len(meta):,} spectra, {n_peaks_total:,} peaks "
           f"({n_peaks_total * 8 / 1e9:.2f} GB), built in {time.time() - t0:.0f}s")
+
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-dir", type=Path, default=ARTIFACT_DIR / "store",
+        help="new, nonexistent A1 store directory; existing snapshots are immutable",
+    )
+    parser.add_argument(
+        "--train", type=Path, default=DATA_DIR / "train.parquet",
+        help="authorized local training Parquet source",
+    )
+    args = parser.parse_args(argv)
+    with fresh_store_target(args.output_dir) as staging:
+        _build_store(staging, args.train)
+    print(f"Published immutable A1 store to {args.output_dir}", flush=True)
 
 
 if __name__ == "__main__":
