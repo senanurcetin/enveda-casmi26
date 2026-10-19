@@ -27,6 +27,7 @@ from casmi.validate.knockout import (  # noqa: E402
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 from casmi.validate.spectral_controls import perturb_spectra, MODES  # noqa: E402
+from casmi.validate.error_slices import describe_query  # noqa: E402
 from casmi.validate.source_manifest import (  # noqa: E402
     MANIFEST_SCHEMA, verify_manifest, require_validation_coverage,
 )
@@ -102,6 +103,7 @@ def main():
     query_ids = [str(q.qid) for q in queries]
     query_signatures = []
     source_query_signatures = []
+    query_context = []
     # Some tautomers share the official metric key while having distinct
     # standard pool keys. C1 must also hide these structures in the query's
     # own library. Do not use the filtered D1 index to infer all raw rows.
@@ -122,6 +124,7 @@ def main():
     recall = {c: [] for c in CLASSES}
     n_cand, n_equiv = [], []
     for qi, q in enumerate(queries):
+        query_context.append(describe_query(q.spectra))
         truth, same = equivalent_keys(q, pool, keys, cfg)
         include_equivalent_source_rows(q, same, source_idx, key_of_row)
         source_query_signatures.append(query_signature(q))
@@ -170,6 +173,7 @@ def main():
               },
               "n_queries": len(queries), "query_ids": query_ids,
               "query_signatures": query_signatures,
+              "query_context": query_context,
               "query_signature_version": SIGNATURE_VERSION,
               "query_sampling": {"library": args.library,
                                  "max_queries": args.max_queries,
