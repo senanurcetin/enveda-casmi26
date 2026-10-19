@@ -27,6 +27,8 @@ def fingerprint_quality_summary(pool_keys, fp_keys, fps, *, batch_rows: int = 65
         raise ValueError("Pool keys and fingerprint vectors have different row counts")
     if not np.array_equal(source, recorded):
         raise ValueError("Fingerprint key order differs from candidate pool")
+    if len(fps) == 0:
+        raise ValueError("Empty candidate pools cannot pass fingerprint quality audit")
 
     zero_rows = 0
     for start in range(0, len(fps), batch_rows):
