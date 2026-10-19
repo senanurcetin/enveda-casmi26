@@ -101,8 +101,8 @@ def scan_store_peak_content(root, *, chunk_peaks: int = 262144) -> dict:
     leave the analysis. A "clean" result is about numeric peak admissibility,
     not chemical correctness or the origin of the source files.
     """
-    if type(chunk_peaks) is not int or chunk_peaks <= 0:
-        raise ValueError("chunk_peaks must be a positive integer")
+    if type(chunk_peaks) is not int or not 1 <= chunk_peaks <= 1048576:
+        raise ValueError("chunk_peaks must be an integer from 1 to 1048576")
     root = Path(root)
     layout = inspect_store_layout(root)
     nonfinite_mz = nonpositive_mz = 0
