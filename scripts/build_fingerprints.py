@@ -21,7 +21,14 @@ from casmi.pool.fingerprint_provenance import make_fingerprint_provenance  # noq
 NBITS = 2048
 
 
-def _fp_chunk(smiles_list):
+def _fp_chunk(job):
+    """Produce packed Morgan bits, or fail on the first invalid candidate.
+
+    Do not silently turn a malformed/empty SMILES into an all-zero vector.
+    Such rows otherwise become apparently valid signed research features.
+    Report only the row number: raw licensed molecule strings stay private.
+    """
+    start, smiles_list = job
     from rdkit import Chem, DataStructs, RDLogger
     from rdkit.Chem import rdFingerprintGenerator
     RDLogger.DisableLog("rdApp.*")
@@ -29,10 +36,18 @@ def _fp_chunk(smiles_list):
     out = np.zeros((len(smiles_list), NBITS // 8), np.uint8)
     arr = np.zeros(NBITS, np.uint8)
     for i, s in enumerate(smiles_list):
-        mol = Chem.MolFromSmiles(s) if isinstance(s, str) else None
-        if mol is None:
-            continue
-        DataStructs.ConvertToNumpyArray(gen.GetFingerprint(mol), arr)
+        try:
+            mol = Chem.MolFromSmiles(s) if isinstance(s, str) else None
+            if mol is None or mol.GetNumHeavyAtoms() == 0:
+                raise ValueError("Invalid candidate SMILES")
+            arr.fill(0)
+            DataStructs.ConvertToNumpyArray(gen.GetFingerprint(mol), arr)
+            if not np.any(arr):
+                raise ValueError("Zero-vector Morgan fingerprint")
+        except (ValueError, TypeError, RuntimeError) as exc:
+            raise ValueError(
+                f"Cannot create a valid Morgan fingerprint for pool row {start + i}"
+            ) from None
         out[i] = np.packbits(arr)
     return out
 
@@ -50,16 +65,21 @@ def main():
             "Refusing to replace existing fingerprints: " + ", ".join(existing)
             + "; use a new CASMI_POOL_TAG for an independent research variant"
         )
-    # CandidatePool sorts by mass (stable) and drops duplicate keys: reproduce that order exactly
-    pool = pd.read_parquet(ARTIFACT_DIR / POOL_FILE, columns=["pool_key", "smiles", "mass"])
-    pool = pool.dropna(subset=["pool_key", "mass"]).sort_values("mass", kind="stable")
-    pool = pool.drop_duplicates("pool_key", keep="first").reset_index(drop=True)
+    # Use the actual inference pool constructor rather than maintaining a
+    # second sorting/deduplication implementation that can drift.
+    from casmi.pool.pool import CandidatePool
+    source = pd.read_parquet(
+        ARTIFACT_DIR / POOL_FILE, columns=["pool_key", "smiles", "mass"]
+    )
+    pool = CandidatePool(source).table
     if pool.empty:
         raise ValueError("Candidate pool is empty; cannot generate fingerprints")
     smiles = pool.smiles.tolist()
-    chunks = [smiles[i:i + 5000] for i in range(0, len(smiles), 5000)]
+    chunks = [(i, smiles[i:i + 5000]) for i in range(0, len(smiles), 5000)]
     with ProcessPoolExecutor(max_workers=max(1, (os.cpu_count() or 2) - 1)) as ex:
         fps = np.concatenate(list(ex.map(_fp_chunk, chunks)))
+    if not np.all(fps.any(axis=1)):
+        raise ValueError("Zero-vector candidate fingerprints are prohibited")
     provenance = make_fingerprint_provenance(pool, pool.pool_key.to_numpy(), fps)
     # Exclusive output files close the race between the initial existence
     # check and publication, protecting frozen historical arrays.
