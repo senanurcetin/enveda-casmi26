@@ -162,6 +162,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Local validation:** five focused synthetic NumPy/pandas/stdlib tests passed; a separate real Parquet readback test was blocked by missing `pyarrow` in the isolated local environment. The full suite and GitHub CI have not been run.
 - **Remaining source gate:** authorized train/COCONUT/optional-provider data must be reconciled, conflicts reviewed, and separately tagged pool/fingerprints validated before any scientific score claim. See [source audit protocol](CANDIDATE_SOURCE_RECONCILIATION.md).
 
+## P0 — generated-candidate fingerprint and identity safety (2026-10-19)
+
+- **Implemented:** D3 overlay registration requires balanced key/SMILES inputs, RDKit-valid molecular structures, the correct generated 'G'+InChIKey14 identity and nonzero packed Morgan fingerprints.
+- **Implemented:** new generated rows are staged before modifying the pool overlay; malformed later rows leave existing state unchanged. `packed_fps` validates entire source fingerprint row count and 2048-bit uint8 shape.
+- **Verification:** 5 isolated local RDKit/NumPy cases passed; additional synthetic tests committed. No GitHub CI or full licensed data rerun.
+- **Pending:** separately signed D3-enabled novelty evaluation and negative controls on authorized data. See [generated candidate integrity protocol](GENERATED_CANDIDATE_INTEGRITY.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
