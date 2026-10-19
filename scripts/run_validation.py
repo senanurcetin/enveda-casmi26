@@ -157,6 +157,7 @@ def main():
                   source_status["files_checked"] if source_status is not None else None
               ),
               "source_manifest_schema": MANIFEST_SCHEMA if source_status is not None else None,
+              "source_manifest_pool_tag": POOL_TAG if source_status is not None else None,
               "source_manifest_coverage": (
                   "required-validation-inputs-v1" if source_status is not None else None
               ),
