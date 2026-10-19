@@ -1,0 +1,55 @@
+{
+  "schema": "nexus-casmi-research-evidence-v1",
+  "reviewed_at": "2026-10-19",
+  "source": "Public GitHub repository and local connector inspection; not a live Kaggle or BigQuery feed",
+  "historical_score": {
+    "value": 0.422,
+    "metric": "public MRR@25",
+    "as_of": "2026-10-08",
+    "state": "historical"
+  },
+  "gates": [
+    {
+      "id": "brand",
+      "label": "Visual system",
+      "title": "NEXUS identity integrated",
+      "state": "verified",
+      "detail": "The repository contains the approved transparent NEXUS SVG and the midnight, cyan and lavender research palette."
+    },
+    {
+      "id": "kaggle",
+      "label": "Data access",
+      "title": "Kaggle authentication not verified",
+      "state": "blocked",
+      "detail": "The Windows host has the Kaggle Python package, but authenticated competition file access did not succeed. Rules acceptance and account login remain to be verified."
+    },
+    {
+      "id": "dataset",
+      "label": "Scientific evidence",
+      "title": "Real-data C1/C2/C3 rerun pending",
+      "state": "pending",
+      "detail": "Repository integrity guards exist; no new source-backed model score, independent holdout or leaderboard submission has been verified."
+    },
+    {
+      "id": "fingerprints",
+      "label": "Research integrity",
+      "title": "Artifact controls implemented",
+      "state": "verified",
+      "detail": "Source inventories, Morgan fingerprint alignment and fresh D2 reference-index evidence gates exist in repository code; full dataset tests remain outstanding."
+    },
+    {
+      "id": "ci",
+      "label": "Testing",
+      "title": "CI intentionally not run",
+      "state": "pending",
+      "detail": "The current research changes use skip-CI commits at the owner's request. Focused checks do not replace complete scientific regression."
+    },
+    {
+      "id": "leaderboard",
+      "label": "Leaderboard",
+      "title": "0.422 is a historical public score",
+      "state": "historical",
+      "detail": "Last recorded 8 October 2026. It is not a new measurement, verified private score or evidence of an improved model."
+    }
+  ]
+}
