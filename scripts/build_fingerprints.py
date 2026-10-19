@@ -61,8 +61,12 @@ def main():
     with ProcessPoolExecutor(max_workers=max(1, (os.cpu_count() or 2) - 1)) as ex:
         fps = np.concatenate(list(ex.map(_fp_chunk, chunks)))
     provenance = make_fingerprint_provenance(pool, pool.pool_key.to_numpy(), fps)
-    np.save(ARTIFACT_DIR / POOL_FP_FILE, fps)
-    pool[["pool_key"]].to_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE, index=False)
+    # Exclusive output files close the race between the initial existence
+    # check and publication, protecting frozen historical arrays.
+    with (ARTIFACT_DIR / POOL_FP_FILE).open("xb") as output:
+        np.save(output, fps)
+    with (ARTIFACT_DIR / POOL_FP_KEYS_FILE).open("xb") as output:
+        pool[["pool_key"]].to_parquet(output, index=False)
     with manifest_path.open("x", encoding="utf-8") as output:
         json.dump(provenance, output, indent=2)
         output.write("\n")
