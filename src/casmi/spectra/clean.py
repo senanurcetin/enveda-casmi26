@@ -24,7 +24,9 @@ def clean_peaks(mz, intensity, precursor_mz, cfg: CleanConfig = CleanConfig()):
     """Return (mz, intensity) sorted by m/z, float32, intensity normalised to base peak = 1."""
     mz = np.asarray(mz, dtype=np.float64)
     it = np.asarray(intensity, dtype=np.float64)
-    keep = np.isfinite(mz) & np.isfinite(it) & (it > 0)
+    # Fragment m/z must be strictly positive; negative/zero bins can corrupt
+    # downstream sparse-vector indexing and spectral similarity assumptions.
+    keep = np.isfinite(mz) & (mz > 0) & np.isfinite(it) & (it > 0)
     if precursor_mz is not None and np.isfinite(precursor_mz):
         keep &= mz <= precursor_mz + cfg.max_above_precursor
     mz, it = mz[keep], it[keep]
@@ -70,7 +72,7 @@ def _clean_nb(mz, it, precursor_mz, max_above, min_rel, window_da, top_k, max_pe
     lim = precursor_mz + max_above if np.isfinite(precursor_mz) else np.inf
     m = 0
     for i in range(n):
-        ok = np.isfinite(mz[i]) and np.isfinite(it[i]) and it[i] > 0 and mz[i] <= lim
+        ok = np.isfinite(mz[i]) and mz[i] > 0 and np.isfinite(it[i]) and it[i] > 0 and mz[i] <= lim
         keep[i] = ok
         m += ok
     mz, it = mz[keep], it[keep]

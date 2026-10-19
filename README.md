@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Numeric peak-content auditing (2026-10-19)
+
+A [read-only chunked peak-content audit](docs/PEAK_CONTENT_QUALITY_AUDIT.md) now detects invalid m/z and intensity values in the stored MS/MS arrays. The standard store-layout check remains fast; full peak-content scanning is optional. Both peak cleaners also reject nonpositive fragment m/z. Historical scores are unchanged and no data-dependent accuracy improvement has been claimed.
+
 ## Spectral-similarity numerical safeguards (2026-10-19)
 
 The [MS/MS entropy/cosine numerical audit](docs/SPECTRAL_SIMILARITY_NUMERIC_SAFETY.md) ensures invalid, zero-intensity and non-finite spectra cannot silently yield NaN channel similarities. Previously untested numerical boundary cases are now covered in the pinned scientific CI job. This is data-quality protection, not a proven model-score improvement.

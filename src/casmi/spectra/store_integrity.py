@@ -91,3 +91,63 @@ def inspect_store_layout(root, *, expected_spectra=None,
         empty_spectra=int(np.count_nonzero(counts == 0)),
         max_peaks_per_spectrum=int(np.max(counts, initial=0)),
     )
+
+def scan_store_peak_content(root, *, chunk_peaks: int = 262144) -> dict:
+    """Optionally scan every stored m/z and intensity using bounded memory.
+
+    The standard store reader and inspect_store_layout deliberately avoid the
+    multi-GB content scan. This separate diagnostic does not load Parquet,
+    mutate peak files, or reveal individual spectra. Only aggregate counts
+    leave the analysis. A "clean" result is about numeric peak admissibility,
+    not chemical correctness or the origin of the source files.
+    """
+    if type(chunk_peaks) is not int or not 1 <= chunk_peaks <= 1048576:
+        raise ValueError("chunk_peaks must be an integer from 1 to 1048576")
+    root = Path(root)
+    layout = inspect_store_layout(root)
+    nonfinite_mz = nonpositive_mz = 0
+    nonfinite_intensity = nonpositive_intensity = 0
+    invalid_peak_pairs = 0
+    read = 0
+
+    with (root / "mz.f32").open("rb") as mz_file, (root / "it.f32").open("rb") as it_file:
+        remaining = layout.peak_count
+        while remaining:
+            count = min(chunk_peaks, remaining)
+            mz = np.fromfile(mz_file, dtype=np.float32, count=count)
+            it = np.fromfile(it_file, dtype=np.float32, count=count)
+            if len(mz) != count or len(it) != count:
+                raise ValueError("Peak file truncated during content scan")
+            mz_finite = np.isfinite(mz)
+            it_finite = np.isfinite(it)
+            mz_nonpositive = mz_finite & (mz <= 0)
+            it_nonpositive = it_finite & (it <= 0)
+            nonfinite_mz += int(np.count_nonzero(~mz_finite))
+            nonpositive_mz += int(np.count_nonzero(mz_nonpositive))
+            nonfinite_intensity += int(np.count_nonzero(~it_finite))
+            nonpositive_intensity += int(np.count_nonzero(it_nonpositive))
+            invalid_peak_pairs += int(np.count_nonzero(
+                ~(mz_finite & it_finite) | mz_nonpositive | it_nonpositive
+            ))
+            read += count
+            remaining -= count
+
+        if mz_file.read(1) or it_file.read(1):
+            raise ValueError("Peak file grew during content scan")
+
+    invalid = invalid_peak_pairs > 0
+    return {
+        "status": "INVALID_CLEANED_PEAKS" if invalid else "VALID_CLEANED_PEAKS",
+        "total_peaks_scanned": read,
+        "nonfinite_mz": nonfinite_mz,
+        "nonpositive_mz": nonpositive_mz,
+        "nonfinite_intensity": nonfinite_intensity,
+        "nonpositive_intensity": nonpositive_intensity,
+        "invalid_peak_pairs": invalid_peak_pairs,
+        "chunk_peaks": chunk_peaks,
+        "method": "full numeric content scan in bounded float32 chunks",
+        "interpretation": (
+            "Aggregate cleaned-peak numeric validity only; not chemistry, "
+            "data-lineage, leakage or instrument accuracy"
+        ),
+    }
