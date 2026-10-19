@@ -6,7 +6,8 @@ from casmi.pool.fingerprint_audit import fingerprint_quality_summary
 
 
 def test_zero_vectors_are_counted_without_exposing_structure_rows():
-    keys = np.array(["A", "B", "C", "D"])
+    keys = np.array(["PRIVATE_TEST_MOLECULE_ALPHA", "PRIVATE_TEST_MOLECULE_BETA",
+                     "PRIVATE_TEST_MOLECULE_GAMMA", "PRIVATE_TEST_MOLECULE_DELTA"])
     vectors = np.zeros((4, 256), dtype=np.uint8)
     vectors[0, 0] = 1
     vectors[2, 7] = 128
@@ -15,7 +16,7 @@ def test_zero_vectors_are_counted_without_exposing_structure_rows():
     assert report["candidate_count"] == 4
     assert report["zero_fingerprint_rows"] == 2
     assert report["zero_fraction"] == 0.5
-    assert all(key not in str(report) for key in ("A", "B", "C", "D"))
+    assert all(key not in str(report) for key in keys)
 
 
 def test_valid_and_empty_vector_collections_are_stable():

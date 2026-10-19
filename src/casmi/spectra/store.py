@@ -35,10 +35,33 @@ class SpectrumStore:
             self.mz = np.empty(0, dtype=np.float32)
             self.it = np.empty(0, dtype=np.float32)
 
+    def close(self):
+        """Release memory-mapped peak files (important for Windows file locks).
+
+        Any arrays returned by peaks() must not be accessed after close().
+        Calling close() repeatedly is safe. The source files are not changed.
+        """
+        for name in ("mz", "it"):
+            array = getattr(self, name, None)
+            mapped = getattr(array, "_mmap", None)
+            if mapped is not None and not mapped.closed:
+                mapped.close()
+        self.mz = None
+        self.it = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        return False
+
     def __len__(self):
         return len(self.meta)
 
     def peaks(self, i):
+        if self.mz is None or self.it is None:
+            raise ValueError("SpectrumStore is closed")
         if isinstance(i, (bool, np.bool_)):
             raise TypeError("Spectrum index must be an integer row ID")
         row = operator.index(i)
