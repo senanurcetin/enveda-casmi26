@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Immutable A1 spectrum-store builds (2026-10-19)
+
+A [staged research-store build safeguard](docs/A1_STORE_BUILD_IMMUTABILITY.md) now refuses to overwrite existing MS/MS peak stores. New builds are written into isolated temporary directories, structurally verified and only then published, preserving historical input artifacts and experiment reproducibility. No CI, productization or new leaderboard data is implied.
+
 ## D1 ionization-mode separation (2026-10-19)
 
 A [D1 scientific audit](docs/D1_IONIZATION_MODE_AUDIT.md) corrects reference matching for mixed positive/negative ionization acquisitions. Each spectrum now uses its own ionization-mode reference group; missing-mode references contribute zero rather than creating cross-mode matches. The research-only change has synthetic tests but no new CASMI leaderboard result.
