@@ -74,6 +74,52 @@ def _check_ranks(run: Mapping, n: int) -> dict[str, list[int]]:
     return result
 
 
+
+def _source_snapshot_verified(a: Mapping, b: Mapping) -> bool:
+    """Check local input inventory identity and complete known input coverage.
+
+    Historical reports without inventory hashes remain exploratory. Merely
+    naming an identical SHA-256 does not prove that a subset manifest covers
+    the store and active candidate pool used by either run.
+    """
+    from casmi.validate.source_manifest import (
+        MANIFEST_SCHEMA, required_validation_inputs,
+    )
+
+    hashes = (a.get("source_manifest_sha256"), b.get("source_manifest_sha256"))
+    if hashes == (None, None):
+        return False
+    if None in hashes:
+        raise ValueError("Source artifact snapshot mismatch: one run lacks a manifest")
+    if any(not isinstance(s, str) or len(s) != 64 or
+           any(ch not in "0123456789abcdef" for ch in s) for s in hashes):
+        raise ValueError("Malformed source artifact snapshot SHA-256")
+    if hashes[0] != hashes[1]:
+        raise ValueError("Source artifact snapshot mismatch: input files differ")
+
+    for run in (a, b):
+        # Old signed reports did not yet validate required-file coverage.
+        # They can be inspected, but never yield conclusive model verdicts.
+        if run.get("source_manifest_coverage") != "required-validation-inputs-v1":
+            return False
+        if run.get("source_manifest_schema") != MANIFEST_SCHEMA:
+            raise ValueError("Invalid source artifact manifest schema")
+        pool_tag = run.get("source_manifest_pool_tag")
+        channels = run.get("config", {}).get("channels") if isinstance(run.get("config"), Mapping) else None
+        if not isinstance(channels, list) or "d1" not in channels:
+            raise ValueError("Missing validation channel provenance")
+        expected = required_validation_inputs(
+            pool_tag=pool_tag, analog=("d2" in channels),
+        )
+        provided = run.get("source_manifest_required_inputs")
+        if not isinstance(provided, list) or provided != list(expected):
+            raise ValueError("Incomplete or contradictory source artifact inventory")
+        count = run.get("source_manifest_file_count")
+        if type(count) is not int or count < len(expected):
+            raise ValueError("Invalid source artifact file count")
+    return True
+
+
 def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = False) -> dict:
     """Validate evidence and align B to A by query ID.
 
@@ -110,7 +156,8 @@ def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = 
                 "Regenerate reports with query_ids + query_signatures; "
                 "use --allow-unverified-legacy-order only for exploratory comparison."
             )
-        return {"a": ar, "b": br, "n": n, "verified": False}
+        return {"a": ar, "b": br, "n": n, "verified": False,
+                "source_verified": False, "decision_eligible": False}
 
     for run_ids, run_sigs, name in ((a_ids, a_sig, "A"), (b_ids, b_sig, "B")):
         if len(run_ids) != n or len(run_sigs) != n:
@@ -138,10 +185,13 @@ def align_runs(a: Mapping, b: Mapping, *, allow_unverified_legacy_order: bool = 
     b_by_id = dict(zip(b_ids, b_sig))
     if any(a_by_id[mid] != b_by_id[mid] for mid in a_ids):
         raise ValueError("Spectrum/knockout mismatch: query inputs differ")
+    source_verified = _source_snapshot_verified(a, b)
     b_positions = {mid: pos for pos, mid in enumerate(b_ids)}
     return {
         "a": ar,
         "b": {cls: [br[cls][b_positions[mid]] for mid in a_ids] for cls in CLASSES},
         "n": n,
         "verified": True,
+        "source_verified": source_verified,
+        "decision_eligible": source_verified,
     }
