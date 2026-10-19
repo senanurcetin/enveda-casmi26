@@ -38,7 +38,7 @@ def fixtures():
     b["tag"] = "B"
     order = list(reversed(range(8)))
     for field in ("query_ids", "query_signatures", "query_context"):
-        b[field] = [a[field][i] for i in order]
+        b[field] = [deepcopy(a[field][i]) for i in order]
     b["classes"]["C1"]["ranks"] = [1] * 8
     b["classes"]["C2"]["ranks"] = [1 if i < 4 else 0 for i in order]
     return a, b
