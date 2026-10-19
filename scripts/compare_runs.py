@@ -5,8 +5,9 @@ Usage:
   python scripts/compare_runs.py runs/OLD_A.json runs/OLD_B.json \
       --allow-unverified-legacy-order
 
-Only records containing matching query IDs and spectra/knockout fingerprints
-can support an ACCEPT/REJECT conclusion. The novelty-mixture intervals
+Only records containing matching query IDs, spectra/knockout fingerprints
+and fully covered, identical local source-inventory hashes can support an
+ACCEPT/REJECT conclusion. Earlier report formats are exploratory. The novelty-mixture intervals
 are approximately simultaneous across the fixed grid (not post-selection
 corrected). Legacy reports are exploratory.
 """
@@ -38,23 +39,27 @@ def main(a_path, b_path, n_boot=4000, seed=0,
     aligned = align_runs(
         a, b, allow_unverified_legacy_order=allow_unverified_legacy_order,
     )
-    label = "VERIFIED paired identities + input spectra" if aligned["verified"] else (
-        "UNVERIFIED legacy ordering; numbers cannot support a scientific verdict"
-    )
+    if aligned["decision_eligible"]:
+        label = "VERIFIED query identities, spectra AND complete local input snapshot"
+    elif aligned["verified"]:
+        label = ("QUERY-PAIRED ONLY; missing verified complete source snapshot. "
+                 "Results are exploratory, never ACCEPT/REJECT")
+    else:
+        label = "UNVERIFIED legacy ordering; numbers cannot support a scientific verdict"
     print(f"A = {a['tag']}   B = {b['tag']}   n = {aligned['n']}   {label}\n")
     for cls in CLASSES:
         ar, br = aligned["a"][cls], aligned["b"][cls]
         m, lo, hi = paired_difference(ar, br, n_boot=n_boot, seed=seed)
         verdict = ("better" if lo > 0 else "worse" if hi < 0 else "within noise")
-        if not aligned["verified"]:
-            verdict = "unverified"
+        if not aligned["decision_eligible"]:
+            verdict = "exploratory only"
         print(f"{cls}: MRR {rr(ar).mean():.4f} -> {rr(br).mean():.4f}   "
               f"delta {m:+.4f} [{lo:+.4f}, {hi:+.4f}]  {verdict}")
 
     result = compare_mixtures(
         aligned["a"], aligned["b"], n_boot=n_boot, seed=seed,
     )
-    verdict = result["verdict"] if aligned["verified"] else "UNVERIFIED"
+    verdict = result["verdict"] if aligned["decision_eligible"] else "UNVERIFIED"
     means = [item["delta_mrr"] for item in result["scenarios"]]
     lows = [item["ci_low"] for item in result["scenarios"]]
     highs = [item["ci_high"] for item in result["scenarios"]]
@@ -68,8 +73,8 @@ def main(a_path, b_path, n_boot=4000, seed=0,
     print("CAUTION: the interval does not correct for repeated model selection "
           "or Kaggle distribution shift.")
     print(f"VERDICT: {verdict}"
-          + (" (unverified legacy run; exploratory numerical pattern: "
-             + result["verdict"] + ")" if not aligned["verified"] else ""))
+          + (" (source/query evidence insufficient; diagnostic numerical pattern: "
+             + result["verdict"] + ")" if not aligned["decision_eligible"] else ""))
     return verdict
 
 
