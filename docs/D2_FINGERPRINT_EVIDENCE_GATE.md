@@ -34,6 +34,17 @@ These checks confirm documented *verification evidence* in run reports.
 They are not tamper-proof digital signatures and cannot authenticate the
 underlying Kaggle publisher or correctness of the external dataset.
 
+## Additional D2 index requirement (2026-10-19)
+
+A content-bound candidate fingerprint sidecar does **not** prove that an
+`analog_index.npz` reference spectrum matrix came from the currently
+verified source store. The comparator now also requires
+`analog_index_provenance` from a cache-free rebuild whenever either
+side uses D2. Use `run_validation.py --analog --fresh-analog-index`
+together with the fingerprint sidecar and local input manifest.
+Older cached-index reports remain **exploratory**. Full details:
+[D2 cache-free reference provenance](D2_FRESH_INDEX_EVIDENCE.md).
+
 ## Finding 2: invalid candidate masses could enter ppm ranking
 
 `CandidatePool` used to drop null values and sort by mass, but could accept
