@@ -112,6 +112,12 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **No automated CI requested:** changed files and synthetic tests were committed with GitHub `[skip ci]` directives; existing research workflow remains available for future deliberate verification.
 - **Data gap:** the actual large CASMI store and Kaggle/BigQuery pipelines have not been rerun. See [peak-content research audit](PEAK_CONTENT_QUALITY_AUDIT.md).
 
+## P0 — D1 reference ionization-mode alignment (2026-10-19)
+
+- **Implemented:** D1 groups mixed-mode query acquisitions and evaluates each only against the corresponding ionization-mode reference rows.
+- **Tests:** synthetic mixed-mode, row exclusion, reference cap and missing-mode regressions; isolated local assertions passed without invoking CI.
+- **Pending:** quantify mixed-mode query prevalence and any rank effects on independently verified, molecule-disjoint CASMI research datasets. See [D1 ion-mode audit](D1_IONIZATION_MODE_AUDIT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
