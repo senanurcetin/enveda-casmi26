@@ -20,6 +20,7 @@ from casmi.chem.canon import skeleton_key  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
 from casmi.engine import BaselineEngine, EngineConfig, molecule_mass  # noqa: E402
 from casmi.pool.pool import CandidatePool  # noqa: E402
+from casmi.pool.fingerprint_provenance import verify_fingerprint_provenance  # noqa: E402
 from casmi.spectra.store import SpectrumStore  # noqa: E402
 from casmi.validate.knockout import (  # noqa: E402
     CLASSES, build_queries, knockout_for, mixture_grid, include_equivalent_source_rows,
@@ -57,6 +58,8 @@ def main():
     ap.add_argument("--tag", default="d1-baseline")
     ap.add_argument("--offset-ppm", type=float, default=0.0)
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
+    ap.add_argument("--require-fingerprint-provenance", action="store_true",
+                    help="fail closed if the D2 pool/fingerprint source snapshot is absent")
     ap.add_argument("--analog-selection-policy", choices=("legacy", "source_balanced"),
                     default="legacy", help="D2 index reference selection; legacy keeps historical baseline")
     ap.add_argument("--spectral-control", choices=MODES, default="none",
@@ -71,6 +74,8 @@ def main():
         ap.error("--max-queries and --max-spectra must be positive")
     if args.control_seed < 0:
         ap.error("--control-seed must be nonnegative")
+    if args.require_fingerprint_provenance and not args.analog:
+        ap.error("--require-fingerprint-provenance requires --analog")
     if args.analog_selection_policy != "legacy" and not args.analog:
         ap.error("--analog-selection-policy requires --analog")
     cfg = EngineConfig()
@@ -109,11 +114,31 @@ def main():
     # own library. Do not use the filtered D1 index to infer all raw rows.
     source_idx = np.flatnonzero((store.meta.ingest_lib == args.library).to_numpy())
     analog = fps = None
+    fingerprint_status = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
         fp_keys = pd.read_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE).pool_key.to_numpy()
-        assert (fp_keys == pool.key).all(), "fingerprints are not aligned with the pool"
-        fps = np.load(ARTIFACT_DIR / POOL_FP_FILE)
+        if not np.array_equal(fp_keys, pool.key):
+            raise ValueError("D2 fingerprint keys are not aligned with the candidate pool")
+        fps = np.load(ARTIFACT_DIR / POOL_FP_FILE, allow_pickle=False, mmap_mode="r")
+        provenance_file = ARTIFACT_DIR / f"pool_fp_provenance{POOL_TAG}.json"
+        if provenance_file.exists():
+            with provenance_file.open("r", encoding="utf-8") as stream:
+                recorded_fingerprint = json.load(stream)
+            fingerprint_status = verify_fingerprint_provenance(
+                pool.table, fp_keys, fps, recorded_fingerprint,
+            )
+            print("Verified D2 candidate SMILES/mass/fingerprint provenance",
+                  flush=True)
+        elif args.require_fingerprint_provenance:
+            raise ValueError(
+                "No D2 fingerprint provenance manifest; rebuild a separate "
+                "CASMI_POOL_TAG variant instead of reusing frozen arrays"
+            )
+        else:
+            print("Warning: legacy D2 fingerprint source linkage not verified; "
+                  "new experiments should use --require-fingerprint-provenance",
+                  flush=True)
         analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
         print(f"analog index: {analog.matrix.shape[0]:,} spectra, {analog.matrix.nnz:,} nonzeros", flush=True)
     engine = BaselineEngine(pool, library, cfg, analog, fps)
@@ -153,6 +178,7 @@ def main():
 
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
+              "fingerprint_provenance": fingerprint_status,
               "source_manifest_sha256": (
                   source_status["files_digest_sha256"] if source_status is not None else None
               ),
