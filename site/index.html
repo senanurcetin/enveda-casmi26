@@ -12,8 +12,10 @@
 @media(max-width:1200px){.hero-art{width:200px}.kpis{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.shell{display:block}.sidebar{position:relative;height:auto;padding:18px 24px;display:block}.logo{width:138px;margin-bottom:10px}.brand-meta,.sidebar-foot{display:none}.menu{display:flex;overflow:auto;margin:10px 0 0;gap:4px}.menu a{white-space:nowrap;padding:8px}.main{padding:0 20px 40px}.hero-art{display:none}.grid,.two{grid-template-columns:1fr}}@media(max-width:480px){.kpis{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:15px;min-height:128px}.hero{min-height:280px}.hero h1{letter-spacing:-1.5px}.topbar{min-height:67px}.toplink{display:none}.score-row{grid-template-columns:minmax(100px,1fr) 40px}.library-row{grid-template-columns:105px minmax(0,1fr) 54px;gap:7px}.panel{padding:18px}.footer{display:block}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+<link rel="stylesheet" href="assets/research-finish.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to research content</a>
 <div class="shell">
 <aside class="sidebar" aria-label="Project navigation">
   <a href="#overview" aria-label="NEXUS CASMI26 overview"><img class="logo" src="assets/nexus-official.svg" alt="NEXUS official logo"></a>
@@ -23,11 +25,12 @@
     <a href="#models"><span>02</span>Model evidence</a>
     <a href="#data"><span>03</span>Data intelligence</a>
     <a href="#quality"><span>04</span>Validation &amp; risk</a>
-    <a href="#sources"><span>05</span>Sources</a>
+    <a href="#execution"><span>05</span>Research status</a>
+    <a href="#sources"><span>06</span>Sources</a>
   </nav>
   <div class="sidebar-foot"><span class="point"></span> Historical snapshot, not live Kaggle or BigQuery data<br><br>© NEXUS · CASMI26</div>
 </aside>
-<main class="main">
+<main class="main" id="main-content">
   <header class="topbar"><span class="crumb">RESEARCH <b>/</b> MOLECULAR INTELLIGENCE <b>/</b> 2026</span><a class="toplink" href="https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra" target="_blank" rel="noopener noreferrer">Competition ↗</a></header>
   <section class="hero" id="overview">
     <div class="hero-copy"><div class="overline">Evidence-led molecular identification</div><h1>Turning spectra into<br><em>structural intelligence.</em></h1><p>Enveda CASMI 2026 · An auditable retrieval, fingerprint, fragment and ranking research program. Explore the recorded experiments, training data composition and limits of offline validation.</p></div>
@@ -105,8 +108,26 @@
     </div>
   </section>
 
+  <section class="section" id="execution" aria-labelledby="execution-title">
+    <div class="section-head">
+      <div><div class="micro">05 / EVIDENCE READINESS</div><h2 id="execution-title">Research execution &amp; verification</h2></div>
+      <p>Explicit separation of implemented safeguards, real-data access, unrun tests and historical public scores. No live connection or unverified improvement is implied.</p>
+    </div>
+    <div class="evidence-heading"><span class="snapshot-label">Research status reviewed: 19 October 2026 · static record</span></div>
+    <div id="evidence-gates" class="status-overview" aria-live="polite">
+      <div class="gate-card"><span class="gate-label">Research record</span><strong>Loading dated verification states…</strong><span class="gate-description">This page does not query Kaggle or BigQuery.</span></div>
+    </div>
+    <div class="protocol">
+      <div><div class="micro">NEXT REPRODUCIBLE STEP</div><h3>From source permissions to independent evaluation</h3><p>Authenticate the Kaggle account, confirm competition rules are accepted, download only authorized source files, verify the local SHA-256 input inventory and run the molecule-disjoint C1/C2/C3 protocols. A newly measured result must be labeled with its dataset snapshot, code version and experimental configuration.</p>
+        <a class="protocol-link" href="../docs/KAGGLE_ACCESS_AND_FP_PROVENANCE.md">Kaggle &amp; fingerprint protocol ↗</a>
+      </div>
+      <div><div class="micro">COMPETITION EXECUTION</div><h3>Notebook-only submission</h3><p>Official evaluation requires a Kaggle Notebook run with internet disabled and a <code>submission.csv</code> output. Public example spectra are not an independent hidden holdout.</p><a class="protocol-link" href="https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra/overview" target="_blank" rel="noopener noreferrer">Official rules &amp; timeline ↗</a></div>
+    </div>
+    <p class="evidence-source">Audit trail: <a href="evidence-status.json">dated research evidence JSON</a> · <a href="../docs/D2_FRESH_INDEX_EVIDENCE.md">D2 index provenance</a> · <a href="../docs/FINGERPRINT_ZERO_VECTOR_AUDIT.md">Fingerprint quality</a>. These are research documents, not new leaderboard measurements.</p>
+  </section>
+
   <section class="section" id="sources">
-    <div class="section-head"><div><div class="micro">05 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
+    <div class="section-head"><div><div class="micro">06 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
     <div class="panel"><h3>Review underlying artifacts</h3><p class="panel-desc">All conclusions link back to named source files. The published brand identity is the approved Google Drive NEXUS SVG.</p>
       <div class="footlinks"><a href="../README.md">Project README ↗</a><a href="../EXPERIMENTS.md">Experiment log ↗</a><a href="../HANDOFF.md">Handoff &amp; caveats ↗</a><a href="../ARCHITECTURE.md">Architecture ↗</a><a href="../reports/data_profile.json">Dataset profile JSON ↗</a><a href="https://github.com/senanurcetin/enveda-casmi26" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
       <p class="provenance">Run via <code>python -m http.server 8000</code> in the repository root, then open <code>http://localhost:8000/site/</code>. The profile graph requires an HTTP server because browser file:// access can block JSON fetches.</p>
@@ -157,7 +178,54 @@ async function renderProfile(){
     target.appendChild(notice);
   }
 }
+async function renderEvidence(){
+  const target=document.getElementById("evidence-gates");
+  if(!target)return;
+  const stateNames={verified:"Verified in repository",blocked:"Access blocked",pending:"Pending verification",historical:"Historical only"};
+  try{
+    const response=await fetch("evidence-status.json",{cache:"no-store"});
+    if(!response.ok)throw Error("Evidence status file unavailable");
+    const record=await response.json();
+    if(record.schema!=="nexus-casmi-research-evidence-v1" || !Array.isArray(record.gates) || !record.gates.length)throw Error("Unsupported evidence record");
+    const fragment=document.createDocumentFragment();
+    for(const gate of record.gates){
+      if(!Object.prototype.hasOwnProperty.call(stateNames,gate.state))throw Error("Unsupported research status");
+      const card=document.createElement("article");card.className="gate-card";
+      const label=document.createElement("span");label.className="gate-label";label.textContent=gate.label;
+      const name=document.createElement("strong");name.textContent=gate.title;
+      const state=document.createElement("span");state.className="gate-state";state.dataset.state=gate.state;state.textContent=stateNames[gate.state];
+      const detail=document.createElement("div");detail.className="gate-description";detail.textContent=gate.detail;
+      card.append(label,name,state,detail);
+      fragment.appendChild(card);
+    }
+    target.replaceChildren(fragment);
+  }catch(error){
+    const notice=document.createElement("div");notice.className="evidence-error";
+    notice.textContent="The dated research-status record could not be loaded. No live Kaggle verification is implied. Open evidence-status.json or serve the repository root over HTTP.";
+    target.replaceChildren(notice);
+  }
+}
+function trackResearchNavigation(){
+  if(!("IntersectionObserver" in window))return;
+  const links=[...document.querySelectorAll(".menu a[href^='#']")];
+  const byId=new Map(links.map(link=>[link.getAttribute("href").slice(1),link]));
+  const observer=new IntersectionObserver((entries)=>{
+    for(const entry of entries){
+      const link=byId.get(entry.target.id);
+      if(entry.isIntersecting&&link){
+        for(const nav of links)nav.removeAttribute("aria-current");
+        link.setAttribute("aria-current","location");
+      }
+    }
+  },{rootMargin:"-18% 0px -63% 0px",threshold:0});
+  for(const id of byId.keys()){
+    const section=document.getElementById(id);
+    if(section)observer.observe(section);
+  }
+}
 renderProfile();
+renderEvidence();
+trackResearchNavigation();
 </script>
 </body>
 </html>
