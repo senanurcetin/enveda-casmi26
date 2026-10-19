@@ -57,7 +57,7 @@ def reconcile_source_rows(
         raise ValueError("Non-numeric candidate source mass") from exc
     if np.any(~np.isfinite(mass)) or np.any(mass <= 0):
         raise ValueError("Candidate source mass must be finite and positive")
-    complete.loc[:, "mass"] = mass
+    complete["mass"] = mass
 
     ranges = complete.groupby("pool_key", sort=False)["mass"].agg(["min", "max"])
     discrepancies = (ranges["max"] - ranges["min"]).to_numpy(dtype=float)
