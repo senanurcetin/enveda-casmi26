@@ -140,6 +140,14 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Verification status:** synthetic offline tests were added; Kaggle account authorization, rules acceptance, actual dataset download and full model evaluation remain **unverified**. No CI was requested.
 - See [Kaggle connection and research snapshot protocol](KAGGLE_ACCESS_AND_FP_PROVENANCE.md).
 
+## P0 — D2 fingerprint decision eligibility and candidate mass domain (2026-10-19)
+
+- **Implemented:** `align_runs` requires verified, source-bound Morgan fingerprint provenance for every D2 report before an `ACCEPT`/`REJECT` verdict; historical reports without a sidecar remain exploratory and contradictory fingerprint evidence raises an error.
+- **Implemented:** matched D1-only comparisons remain eligible without unused fingerprints, and D1–D2 ablations can share a complete superset source snapshot when the D2 sidecar is verified.
+- **Implemented:** `CandidatePool` rejects present nonfinite/nonpositive masses and validates positive finite query mass plus nonnegative finite ppm tolerance. Intentional missing-mass filtering is preserved.
+- **Local checks:** isolated synthetic NumPy/Pandas and D2 evidence smoke cases passed. Per user instruction, no CI or full scientific suite was triggered.
+- **Unverified:** Kaggle dataset access, C1/C2/C3 rerun and metric improvement. See [scientific data-quality audit](D2_FINGERPRINT_EVIDENCE_GATE.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

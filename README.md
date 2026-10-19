@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## D2 scientific decision gating and candidate mass checks (2026-10-19)
+
+[Verified D2 fingerprint evidence and candidate mass validation](docs/D2_FINGERPRINT_EVIDENCE_GATE.md) now prevents ACCEPT/REJECT judgments from D2 runs lacking source-bound fingerprint records, even when query signatures and a general source inventory match. D1-only and verified D1–D2 ablations remain supported. Candidate mass windows reject impossible values instead of propagating invalid ppm calculations. No CI or new competition-score claim.
+
 ## Kaggle access and candidate-fingerprint provenance (2026-10-19)
 
 The [secure Kaggle access and fingerprint provenance protocol](docs/KAGGLE_ACCESS_AND_FP_PROVENANCE.md) adds a local, read-only Kaggle CLI preflight without embedding credentials. Rebuilt COCONUT candidate pools and Morgan arrays now have a content-bound SHA-256 fingerprint manifest; historical pool/fingerprint files cannot be silently overwritten. D2 validation can require this provenance for new research runs. No Kaggle download, submission or leaderboard experiment was performed here.
