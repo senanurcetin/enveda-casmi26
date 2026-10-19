@@ -11,7 +11,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from casmi.spectra.store_integrity import inspect_store_layout  # noqa: E402
+from casmi.spectra.store_integrity import inspect_store_layout, scan_store_peak_content  # noqa: E402
 
 
 def make_store(root, *, offsets=(0, 2, 2, 5), peak_count=5):
@@ -91,6 +91,44 @@ class StoreLayoutTests(unittest.TestCase):
         )
         self.assertEqual(result.peak_count, 0)
         self.assertEqual(result.empty_spectra, 2)
+
+    def test_optional_scan_flags_numeric_corruption_across_small_chunks(self):
+        original = scan_store_peak_content(self.root, chunk_peaks=2)
+        self.assertEqual(original["status"], "INVALID_CLEANED_PEAKS")
+        # make_store() puts 0 in the first fragment m/z and intensity.
+        self.assertEqual(original["nonpositive_mz"], 1)
+        self.assertEqual(original["nonpositive_intensity"], 1)
+        self.assertEqual(original["invalid_peak_pairs"], 1)
+
+        mz = np.array([10., -5., np.nan, 40., 50.], np.float32)
+        it = np.array([1., 2., 3., 0., np.inf], np.float32)
+        mz.tofile(self.root / "mz.f32")
+        it.tofile(self.root / "it.f32")
+        report = scan_store_peak_content(self.root, chunk_peaks=2)
+        self.assertEqual(report["status"], "INVALID_CLEANED_PEAKS")
+        self.assertEqual(report["total_peaks_scanned"], 5)
+        self.assertEqual(report["nonfinite_mz"], 1)
+        self.assertEqual(report["nonpositive_mz"], 1)
+        self.assertEqual(report["nonfinite_intensity"], 1)
+        self.assertEqual(report["nonpositive_intensity"], 1)
+        self.assertEqual(report["invalid_peak_pairs"], 4)
+
+    def test_content_scan_clean_empty_and_chunk_validation(self):
+        mz = np.array([40., 70., 140., 180., 210.], np.float32)
+        it = np.array([0.1, 0.2, 1., 0.3, 0.5], np.float32)
+        mz.tofile(self.root / "mz.f32")
+        it.tofile(self.root / "it.f32")
+        ok = scan_store_peak_content(self.root, chunk_peaks=1)
+        self.assertEqual(ok["status"], "VALID_CLEANED_PEAKS")
+        self.assertEqual(ok["invalid_peak_pairs"], 0)
+        make_store(self.root, offsets=(0, 0, 0), peak_count=0)
+        empty = scan_store_peak_content(self.root)
+        self.assertEqual(empty["status"], "VALID_CLEANED_PEAKS")
+        self.assertEqual(empty["total_peaks_scanned"], 0)
+        for invalid in (0, -1, 2.5, True):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(ValueError, "chunk_peaks"):
+                    scan_store_peak_content(self.root, chunk_peaks=invalid)
 
     def test_truncated_or_missing_offsets_fail_closed(self):
         (self.root / "offsets.i64").write_bytes(b"")
