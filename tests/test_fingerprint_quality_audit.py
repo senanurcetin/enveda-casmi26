@@ -24,10 +24,10 @@ def test_valid_and_empty_vector_collections_are_stable():
     result = fingerprint_quality_summary(keys, keys, fps, batch_rows=1)
     assert result["status"] == "PASS_NONZERO_FINGERPRINTS"
     assert result["zero_fraction"] == 0.0
-    empty = fingerprint_quality_summary(
-        np.array([]), np.array([]), np.zeros((0, 256), np.uint8)
-    )
-    assert empty["candidate_count"] == 0
+    with pytest.raises(ValueError, match="Empty candidate pools"):
+        fingerprint_quality_summary(
+            np.array([]), np.array([]), np.zeros((0, 256), np.uint8)
+        )
 
 
 @pytest.mark.parametrize("bad", [0, -1, 1.5, True, 1000001])
