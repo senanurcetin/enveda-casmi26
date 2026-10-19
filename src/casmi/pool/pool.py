@@ -73,13 +73,23 @@ class CandidatePool:
 
     def window(self, query_mass, tol_ppm=10.0, exclude=None) -> Window:
         """All candidates with |ppm(candidate vs query)| <= tol_ppm, minus excluded keys."""
-        if (not np.isscalar(query_mass) or not np.isfinite(query_mass)
-                or query_mass <= 0):
-            raise ValueError("Query mass must be a finite positive scalar")
-        if (not np.isscalar(tol_ppm) or not np.isfinite(tol_ppm)
-                or tol_ppm < 0):
-            raise ValueError("Mass tolerance ppm must be a finite nonnegative scalar")
-        d = float(query_mass) * float(tol_ppm) * 1e-6
+        try:
+            if isinstance(query_mass, (bool, np.bool_)) or not np.isscalar(query_mass):
+                raise ValueError
+            mass_value = float(query_mass)
+            if not np.isfinite(mass_value) or mass_value <= 0:
+                raise ValueError
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("Query mass must be a finite positive scalar") from exc
+        try:
+            if isinstance(tol_ppm, (bool, np.bool_)) or not np.isscalar(tol_ppm):
+                raise ValueError
+            tolerance = float(tol_ppm)
+            if not np.isfinite(tolerance) or tolerance < 0:
+                raise ValueError
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("Mass tolerance ppm must be a finite nonnegative scalar") from exc
+        d = mass_value * tolerance * 1e-6
         lo = np.searchsorted(self.mass, query_mass - d, side="left")
         hi = np.searchsorted(self.mass, query_mass + d, side="right")
         idx = np.arange(lo, hi)
