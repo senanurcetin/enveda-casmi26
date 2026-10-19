@@ -60,6 +60,8 @@ def main():
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
     ap.add_argument("--require-fingerprint-provenance", action="store_true",
                     help="fail closed if the D2 pool/fingerprint source snapshot is absent")
+    ap.add_argument("--fresh-analog-index", action="store_true",
+                    help="rebuild D2 reference index from spectra, bypass all index caches")
     ap.add_argument("--analog-selection-policy", choices=("legacy", "source_balanced"),
                     default="legacy", help="D2 index reference selection; legacy keeps historical baseline")
     ap.add_argument("--spectral-control", choices=MODES, default="none",
@@ -76,6 +78,8 @@ def main():
         ap.error("--control-seed must be nonnegative")
     if args.require_fingerprint_provenance and not args.analog:
         ap.error("--require-fingerprint-provenance requires --analog")
+    if args.fresh_analog_index and not args.analog:
+        ap.error("--fresh-analog-index requires --analog")
     if args.analog_selection_policy != "legacy" and not args.analog:
         ap.error("--analog-selection-policy requires --analog")
     cfg = EngineConfig()
@@ -115,6 +119,7 @@ def main():
     source_idx = np.flatnonzero((store.meta.ingest_lib == args.library).to_numpy())
     analog = fps = None
     fingerprint_status = None
+    analog_index_status = None
     if args.analog:
         from casmi.channels.analog import AnalogIndex
         fp_keys = pd.read_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE).pool_key.to_numpy()
@@ -139,7 +144,16 @@ def main():
             print("Warning: legacy D2 fingerprint source linkage not verified; "
                   "new experiments should use --require-fingerprint-provenance",
                   flush=True)
-        analog = AnalogIndex(store, key_of_row, cfg.analog, cache=ARTIFACT_DIR / "analog_index.npz")
+        index_cache = None if args.fresh_analog_index else ARTIFACT_DIR / "analog_index.npz"
+        analog = AnalogIndex(store, key_of_row, cfg.analog, cache=index_cache)
+        if args.fresh_analog_index:
+            analog_index_status = analog.fresh_index_provenance()
+            print("D2 analog reference matrix rebuilt from source (cache bypassed)",
+                  flush=True)
+        else:
+            print("Warning: D2 index cache is not decision-grade evidence; "
+                  "use --fresh-analog-index with a signed input manifest",
+                  flush=True)
         print(f"analog index: {analog.matrix.shape[0]:,} spectra, {analog.matrix.nnz:,} nonzeros", flush=True)
     engine = BaselineEngine(pool, library, cfg, analog, fps)
     print(f"loaded in {time.time() - t0:.0f}s | pool {len(pool):,} | library structures {len(library.rows_of):,} "
@@ -179,6 +193,7 @@ def main():
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
               "fingerprint_provenance": fingerprint_status,
+              "analog_index_provenance": analog_index_status,
               "source_manifest_sha256": (
                   source_status["files_digest_sha256"] if source_status is not None else None
               ),
