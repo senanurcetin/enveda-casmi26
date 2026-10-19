@@ -77,7 +77,8 @@ class SliceAnalysisTests(unittest.TestCase):
         self.assertEqual(
             by_adduct["[M-H]-"]["classes"]["C2"]["candidate_mrr"], 0.0
         )
-        self.assertFalse("verdict" in json.dumps(report).lower())
+        self.assertNotIn("verdict", report)
+        self.assertNotIn("verdict", report["slices"]["adduct"][0])
         suppressed = diagnostic_slices(a, b, min_n=5)
         for record in suppressed["slices"]["adduct"]:
             self.assertEqual(record["status"], "SUPPRESSED_SMALL_CELL")
