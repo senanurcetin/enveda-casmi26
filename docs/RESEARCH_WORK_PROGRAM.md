@@ -92,6 +92,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Prohibited:** interpreting slices as independent significant effects, issuing model ACCEPT/REJECT, or presenting synthetic fixtures as real CASMI results. See [slice protocol](ERROR_SLICE_DIAGNOSTICS.md).
 - **Pending:** actual data-dependent slice profiles, instrument-family quality review and independently replicated hypotheses.
 
+## P0 — structural A1 peak-store safeguards (2026-10-19)
+
+- **Implemented:** store loading and post-build verification reject invalid offset counts/order, mismatched binary m/z/intensity arrays, truncated/unaligned files and inconsistent per-row `n_peaks`.
+- **Implemented:** an optional read-only `audit_store_integrity.py` CLI and strict row index bounds checks.
+- **Test evidence:** numerical synthetic corrupt-file fixtures plus mocked metadata constructor tests in CI. The full real CASMI spectrum store was **not** rerun or checked.
+- **Next evidence gate:** run [A1 structural audit](SPECTRUM_STORE_INTEGRITY.md), then the full SHA-256 source manifest and dataset-backed C1/C2/C3 benchmarks on the authorized scientific artifacts.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
