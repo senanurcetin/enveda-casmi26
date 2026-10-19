@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE, PROJECT_ROOT  # noqa: E402
+from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE, POOL_TAG, PROJECT_ROOT  # noqa: E402
 from casmi.channels.library import LibraryIndex  # noqa: E402
 from casmi.chem.canon import skeleton_key  # noqa: E402
 from casmi.chem.keys import MetricKeys  # noqa: E402
@@ -27,7 +27,9 @@ from casmi.validate.knockout import (  # noqa: E402
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 from casmi.validate.spectral_controls import perturb_spectra, MODES  # noqa: E402
-from casmi.validate.source_manifest import verify_manifest  # noqa: E402
+from casmi.validate.source_manifest import (  # noqa: E402
+    MANIFEST_SCHEMA, verify_manifest, require_validation_coverage,
+)
 
 
 def equivalent_keys(query, pool, keys: MetricKeys, cfg):
@@ -75,10 +77,16 @@ def main():
                   analog=replace(cfg.analog, reference_policy=args.analog_selection_policy))
     t0 = time.time()
     source_status = None
+    source_required_inputs = None
     if args.source_manifest is not None:
         with args.source_manifest.open("r", encoding="utf-8") as stream:
-            source_status = verify_manifest(ARTIFACT_DIR, json.load(stream))
-        print(f"Verified {source_status['files_checked']} local source files", flush=True)
+            recorded_manifest = json.load(stream)
+        source_required_inputs = require_validation_coverage(
+            recorded_manifest, pool_tag=POOL_TAG, analog=args.analog,
+        )
+        source_status = verify_manifest(ARTIFACT_DIR, recorded_manifest)
+        print(f"Verified {source_status['files_checked']} local source files "
+              f"(including {len(source_required_inputs)} required inputs)", flush=True)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
@@ -147,6 +155,13 @@ def main():
               ),
               "source_manifest_file_count": (
                   source_status["files_checked"] if source_status is not None else None
+              ),
+              "source_manifest_schema": MANIFEST_SCHEMA if source_status is not None else None,
+              "source_manifest_coverage": (
+                  "required-validation-inputs-v1" if source_status is not None else None
+              ),
+              "source_manifest_required_inputs": (
+                  list(source_required_inputs) if source_required_inputs is not None else None
               ),
               "spectral_control": {
                   "mode": args.spectral_control, "seed": args.control_seed,
