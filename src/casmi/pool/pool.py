@@ -49,16 +49,43 @@ class CandidatePool:
         return self.smiles[r] if r is not None else self.extra_smiles[key]
 
     def register_generated(self, keys, smiles):
-        """Add generated structures to the overlay (fingerprints as in build_fingerprints.py)."""
+        """Atomically register chemically valid generated structures.
+
+        Generated candidate IDs are 'G' + standard InChIKey14, as produced
+        by BaselineEngine._generated. Invalid records cannot contribute
+        all-zero fingerprints or leave a half-written candidate overlay.
+        """
         from rdkit import Chem
         from rdkit.Chem import rdFingerprintGenerator
+
+        keys = list(keys)
+        smiles = list(smiles)
+        if len(keys) != len(smiles):
+            raise ValueError("Generated key and SMILES counts differ")
         gen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
-        for k, s in zip(keys, smiles):
-            if k in self.extra_smiles:
+        staged = {}
+        for i, (key, smi) in enumerate(zip(keys, smiles)):
+            if key in self.extra_smiles or key in staged:
                 continue
-            mol = Chem.MolFromSmiles(s)
-            bits = gen.GetFingerprintAsNumPy(mol).astype(np.uint8) if mol is not None else np.zeros(2048, np.uint8)
-            self.extra_smiles[k], self.extra_fp[k] = s, np.packbits(bits)
+            if not isinstance(key, str) or not isinstance(smi, str):
+                raise ValueError(f"Malformed generated candidate at row {i}")
+            try:
+                mol = Chem.MolFromSmiles(smi)
+                if mol is None or mol.GetNumHeavyAtoms() == 0:
+                    raise ValueError
+                expected = "G" + Chem.MolToInchiKey(mol)[:14]
+                if key != expected:
+                    raise ValueError
+                bits = gen.GetFingerprintAsNumPy(mol).astype(np.uint8)
+                if bits.size != 2048 or not np.any(bits):
+                    raise ValueError
+            except (ValueError, TypeError, RuntimeError):
+                # Never log the source SMILES or derived molecular identity.
+                raise ValueError(f"Invalid generated candidate identity at row {i}") from None
+            staged[key] = (smi, np.packbits(bits))
+        for key, (smi, fp) in staged.items():
+            self.extra_smiles[key] = smi
+            self.extra_fp[key] = fp
 
     def packed_fps(self, keys, fps):
         """Packed fingerprints for pool and generated keys alike."""
