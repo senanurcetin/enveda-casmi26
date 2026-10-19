@@ -8,8 +8,8 @@ creates an inconsistent candidate identity. Candidate pool keys are standard
 from __future__ import annotations
 
 
-def neutral_parent_identity(smiles: str) -> tuple[str, str, float] | None:
-    """Return (parent canonical SMILES, standard InChIKey14, exact mass).
+def neutral_parent_identity(smiles: str) -> tuple[str, str, float, str] | None:
+    """Return (parent canonical SMILES, standard InChIKey14, exact mass, formula).
 
     None signifies malformed SMILES, missing InChI support, or a charged
     parent. No placeholder molecule is ever substituted for invalid input.
@@ -18,6 +18,7 @@ def neutral_parent_identity(smiles: str) -> tuple[str, str, float] | None:
     """
     from rdkit import Chem
     from rdkit.Chem.Descriptors import ExactMolWt
+    from rdkit.Chem import rdMolDescriptors
     import math
 
     if not isinstance(smiles, str) or not smiles.strip():
@@ -35,10 +36,11 @@ def neutral_parent_identity(smiles: str) -> tuple[str, str, float] | None:
         canonical = Chem.MolToSmiles(parent, canonical=True)
         standard_key = Chem.MolToInchiKey(parent)
         mass = float(ExactMolWt(parent))
+        formula = rdMolDescriptors.CalcMolFormula(parent)
     except (ValueError, RuntimeError, TypeError):
         return None
     if (not isinstance(standard_key, str) or len(standard_key) < 14
             or not standard_key[:14].isalpha()
             or not math.isfinite(mass) or mass <= 0):
         return None
-    return canonical, standard_key[:14], mass
+    return canonical, standard_key[:14], mass, formula
