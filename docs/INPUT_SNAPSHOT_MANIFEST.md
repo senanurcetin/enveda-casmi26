@@ -57,6 +57,44 @@ when the run was intentionally executed without a manifest. Blank/shuffled
 diagnostic pairings reject unequal snapshot digests when at least one side
 declares a snapshot.
 
+## Complete-source comparison gate (2026-10-19)
+
+The first version of the experiment comparator verified *query* identities and
+selected MS/MS spectra but allowed source-pool artifacts to differ silently.
+Now the two levels of evidence are tracked separately:
+
+1. **Query-paired:** Molecule IDs, actual query spectra and C1/C2/C3
+   reference exclusions match. Old runs with these signatures remain
+   scientifically useful as **exploratory comparisons**.
+2. **Decision-eligible:** In addition, **both** reports declare an identical
+   verified SHA-256 input manifest with documented coverage of the exact files
+   consumed by their pipeline. Only this level can emit a statistical
+   model-comparison `ACCEPT` or `REJECT`.
+
+When `--source-manifest` is supplied, the validation runner now checks
+**required file coverage** in addition to byte hashes. D1 requires
+`store/meta.parquet`, `store/offsets.i64`, `store/mz.f32`,
+`store/it.f32` and the active `pool{CASMI_POOL_TAG}.parquet`. D2 also
+requires `pool_fp2048{CASMI_POOL_TAG}.npy` and
+`pool_fp_keys{CASMI_POOL_TAG}.parquet`. Extra files are allowed. A manifest
+that omits any required file **fails before** the expensive scoring run.
+
+The report records `source_manifest_schema`,
+`source_manifest_pool_tag`, `source_manifest_coverage` and the
+`source_manifest_required_inputs` list, together with the existing SHA-256
+and checked file count. `scripts/compare_runs.py` checks that both reports
+have matching hashes and valid coverage for their own active channels;
+incompatible hashes/missing manifests fail closed, while legacy reports
+with no manifest or incomplete coverage produce only `UNVERIFIED`.
+This is a deliberate research-policy tightening, not an improved model score.
+
+**Important:** This attests to a minimum *input set*, not to the algorithm's
+Git commit, derived D2 cache, mutable metric-key memoization or learned model
+weights. Explicitly inventory additional relevant artifacts and preserve
+environment/dependency provenance when making a claim about those components.
+Even complete local SHA-256 manifests do not authenticate the upstream
+Kaggle/BigQuery source.
+
 ## Evidence limits
 
 - A matching file hash proves **local byte identity**, not that the dataset
