@@ -108,10 +108,52 @@ class AnalogIndex:
                     output.update(selection_version=np.array(SELECTION_VERSION),
                                   selection_digest=np.array(stamp))
                 np.savez(cache, **output)
+        # Legacy and selection-validated caches are useful for exploratory
+        # runs but cannot independently attest a freshly rebuilt D2 matrix.
+        # Only cache=None sets the scientifically stronger fresh-origin bit.
+        self.cache_origin = (
+            "recomputed_without_cache" if cache is None
+            else "loaded_cache" if loaded else "built_with_cache"
+        )
         self.key = key_of_row[self.rows]
         self.prec = meta.precursor_mz.to_numpy()[self.rows]
         self.adduct = meta.adduct.astype(str).to_numpy()[self.rows]
         self.nmass = meta.neutral_mass.to_numpy()[self.rows]
+
+    def fresh_index_provenance(self):
+        """Content digest for a D2 matrix rebuilt from the current store.
+
+        Only callable on a cache-free index. The digest binds selected rows,
+        sparse matrix bytes and its configuration to the run record.
+        It is a reproducibility checksum, NOT an external dataset signature.
+        """
+        if self.cache_origin != "recomputed_without_cache":
+            raise ValueError(
+                "D2 index was not freshly rebuilt; cached indices cannot "
+                "support a decision-grade provenance record"
+            )
+        digest = hashlib.sha256(b"casmi-d2-fresh-index-v1\\n")
+        cfg = json.dumps(asdict(self.cfg), sort_keys=True, separators=(",", ":"))
+        digest.update(cfg.encode("utf-8"))
+        for field in (
+            self.rows, np.asarray(self.matrix.shape, dtype=np.int64),
+            self.matrix.indptr, self.matrix.indices, self.matrix.data,
+        ):
+            array = np.ascontiguousarray(field)
+            digest.update(str(array.dtype).encode("ascii"))
+            digest.update(np.asarray(array.shape, dtype=np.int64).tobytes())
+            blob = memoryview(array).cast("B")
+            for start in range(0, len(blob), 1024 * 1024):
+                digest.update(blob[start:start + 1024 * 1024])
+        return {
+            "schema": "casmi-d2-fresh-index-v1",
+            "status": "REBUILT_WITHOUT_CACHE",
+            "index_sha256": digest.hexdigest(),
+            "n_references": int(self.matrix.shape[0]),
+            "n_nonzero": int(self.matrix.nnz),
+            "reference_policy": self.cfg.reference_policy,
+            "cache_used": False,
+        }
 
     def _select(self, meta, key_of_row):
         return select_reference_rows(

@@ -92,6 +92,16 @@ class RunAlignmentTests(unittest.TestCase):
                 "pool_rows_sha256": "b" * 64,
                 "fingerprint_bytes_sha256": "c" * 64,
             }
+            record["config"]["analog"] = {"reference_policy": "legacy"}
+            record["analog_index_provenance"] = {
+                "schema": "casmi-d2-fresh-index-v1",
+                "status": "REBUILT_WITHOUT_CACHE",
+                "index_sha256": "d" * 64,
+                "n_references": 100,
+                "n_nonzero": 500,
+                "reference_policy": "legacy",
+                "cache_used": False,
+            }
         verified = align_runs(a, b)
         self.assertTrue(verified["source_verified"])
         self.assertTrue(verified["decision_eligible"])

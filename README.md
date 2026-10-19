@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Verified fresh D2 index comparisons (2026-10-19)
+
+A [cache-free D2 analog-reference index protocol](docs/D2_FRESH_INDEX_EVIDENCE.md) prevents models using unverified historical sparse-index caches from receiving conclusive ACCEPT/REJECT judgments. New research runs can opt into `--fresh-analog-index` with `--analog`, verified fingerprints and a complete source manifest. This rebuild is resource-intensive and does not alter frozen leaderboard results.
+
 ## Generated molecular candidate safeguards (2026-10-19)
 
 The [D3 generated-candidate integrity audit](docs/GENERATED_CANDIDATE_INTEGRITY.md) prevents invalid SMILES or mismatched generated InChIKey14 values from being stored as empty Morgan fingerprints. Generated overlay updates are now batch-atomic, and candidate fingerprint matrices must be correctly row-aligned uint8 arrays. Historical model scores and stored source candidates are untouched.

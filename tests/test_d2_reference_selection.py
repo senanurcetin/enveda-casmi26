@@ -180,5 +180,45 @@ def test_empty_eligible_reference_library_builds_valid_index():
 
 
 
+
+def test_fresh_index_provenance_rebuilt_identically_without_cache():
+    store = DummyStore(meta())
+    keys = store.meta.train_ik14.to_numpy()
+    cfg = AnalogConfig(per_structure_adduct=2, reference_policy="legacy")
+    first = AnalogIndex(store, keys, cfg, cache=None)
+    second = AnalogIndex(store, keys, cfg, cache=None)
+    evidence = first.fresh_index_provenance()
+    assert evidence["status"] == "REBUILT_WITHOUT_CACHE"
+    assert evidence["schema"] == "casmi-d2-fresh-index-v1"
+    assert evidence["cache_used"] is False
+    assert evidence["n_references"] == len(first.rows)
+    assert evidence["n_nonzero"] == first.matrix.nnz
+    assert first.cache_origin == "recomputed_without_cache"
+    assert second.fresh_index_provenance()["index_sha256"] == evidence["index_sha256"]
+    # Different reference policies can deliberately produce different D2
+    # features; they should have different content digests.
+    balanced = AnalogIndex(
+        store, keys,
+        AnalogConfig(per_structure_adduct=2, reference_policy="source_balanced"),
+        cache=None,
+    )
+    assert balanced.fresh_index_provenance()["index_sha256"] != evidence["index_sha256"]
+
+
+def test_cached_legacy_analog_index_cannot_claim_fresh_provenance():
+    store = DummyStore(meta())
+    keys = store.meta.train_ik14.to_numpy()
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "analog_index.npz"
+        written = AnalogIndex(store, keys, AnalogConfig(), cache=path)
+        assert written.cache_origin == "built_with_cache"
+        with pytest.raises(ValueError, match="not freshly rebuilt"):
+            written.fresh_index_provenance()
+        loaded = AnalogIndex(store, keys, AnalogConfig(), cache=path)
+        assert loaded.cache_origin == "loaded_cache"
+        with pytest.raises(ValueError, match="not freshly rebuilt"):
+            loaded.fresh_index_provenance()
+
+
 def test_config_default_is_legacy_for_frozen_baseline():
     assert AnalogConfig().reference_policy == "legacy"

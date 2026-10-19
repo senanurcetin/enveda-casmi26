@@ -28,6 +28,8 @@ def verified_d2_fingerprint_evidence(a: Mapping, b: Mapping) -> bool:
     permitted if the D2 run has verified provenance and BOTH runs share a
     complete encompassing input manifest as enforced by run_alignment.
     """
+    from casmi.validate.analog_index_evidence import verified_analog_index_evidence
+
     proofs = []
     missing = False
     for run in (a, b):
@@ -53,6 +55,10 @@ def verified_d2_fingerprint_evidence(a: Mapping, b: Mapping) -> bool:
             if not _valid_sha(proof.get(key)):
                 raise ValueError(f"Invalid D2 fingerprint provenance: {key}")
         proofs.append(proof)
+        # A valid fingerprint sidecar cannot certify a cached D2 reference
+        # matrix. Unverified historical/cached runs remain exploratory.
+        if not verified_analog_index_evidence(run):
+            missing = True
 
     if missing:
         return False
