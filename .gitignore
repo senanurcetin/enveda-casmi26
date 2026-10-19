@@ -21,3 +21,11 @@ runs/*.json
 runs/*.log
 runs/*.sql
 runs/*.done
+
+# Never commit Kaggle authentication or local secret files
+.env
+.env.*
+!.env.example
+.kaggle/
+kaggle.json
+access_token
