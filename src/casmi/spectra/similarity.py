@@ -24,9 +24,24 @@ def _entropy(p):
 
 
 @nb.njit(cache=True)
+def _valid_spectrum(mz, it):
+    """Reject invalid numerical peak arrays before any logarithm or square root."""
+    if mz.ndim != 1 or it.ndim != 1 or mz.size != it.size:
+        raise ValueError("Spectrum m/z and intensity must be aligned 1D arrays")
+    for i in range(mz.size):
+        if (not np.isfinite(mz[i]) or mz[i] < 0.0
+                or not np.isfinite(it[i]) or it[i] < 0.0):
+            return False
+    return True
+
+
+@nb.njit(cache=True)
 def weight_intensity(it):
-    """Normalise to sum 1; boost low-entropy spectra (weight = 0.25 + 0.25 * S for S < 3)."""
-    p = it / it.sum()
+    """Normalise positive intensity; return zeros for zero/invalid total."""
+    total = it.sum()
+    if not np.isfinite(total) or total <= 0.0:
+        return np.zeros(it.size, dtype=np.float64)
+    p = it / total
     s = _entropy(p)
     if s < 3.0:
         w = 0.25 + 0.25 * s
@@ -71,14 +86,20 @@ def _match(mz_a, mz_b, tol_da, shift):
 
 @nb.njit(cache=True)
 def entropy_similarity(mz_a, it_a, mz_b, it_b, tol_da=0.02, shift=0.0):
+    if not _valid_spectrum(mz_a, it_a) or not _valid_spectrum(mz_b, it_b):
+        return 0.0
     if mz_a.size == 0 or mz_b.size == 0:
         return 0.0
     pa = weight_intensity(it_a.astype(np.float64))
     pb = weight_intensity(it_b.astype(np.float64))
+    if pa.sum() <= 0.0 or pb.sum() <= 0.0:
+        return 0.0
     pi, pj = _match(mz_a.astype(np.float64), mz_b.astype(np.float64), tol_da, shift)
     s = 0.0
     for k in range(len(pi)):
         a, b = pa[pi[k]], pb[pj[k]]
+        if a <= 0.0 or b <= 0.0:
+            continue  # 0*log(0) is mathematically zero, not NaN.
         s += (a + b) * np.log(a + b) - a * np.log(a) - b * np.log(b)
     return s / LN4
 
@@ -86,6 +107,8 @@ def entropy_similarity(mz_a, it_a, mz_b, it_b, tol_da=0.02, shift=0.0):
 @nb.njit(cache=True)
 def cosine_similarity(mz_a, it_a, mz_b, it_b, tol_da=0.02, shift=0.0):
     """Greedy (modified, if shift != 0) cosine on sqrt intensities."""
+    if not _valid_spectrum(mz_a, it_a) or not _valid_spectrum(mz_b, it_b):
+        return 0.0
     if mz_a.size == 0 or mz_b.size == 0:
         return 0.0
     a = np.sqrt(it_a.astype(np.float64))
@@ -94,4 +117,5 @@ def cosine_similarity(mz_a, it_a, mz_b, it_b, tol_da=0.02, shift=0.0):
     s = 0.0
     for k in range(len(pi)):
         s += a[pi[k]] * b[pj[k]]
-    return s / (np.sqrt((a * a).sum()) * np.sqrt((b * b).sum()))
+    norm = np.sqrt((a * a).sum()) * np.sqrt((b * b).sum())
+    return s / norm if norm > 0.0 and np.isfinite(norm) else 0.0
