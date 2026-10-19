@@ -88,11 +88,20 @@ class CandidatePool:
             self.extra_fp[key] = fp
 
     def packed_fps(self, keys, fps):
-        """Packed fingerprints for pool and generated keys alike."""
-        out = np.empty((len(keys), fps.shape[1]), fps.dtype)
-        for i, k in enumerate(keys):
-            r = self.row_of.get(k)
-            out[i] = fps[r] if r is not None else self.extra_fp[k]
+        """Aligned packed fingerprints for frozen pool and generated candidates."""
+        if (not isinstance(fps, np.ndarray) or fps.dtype != np.uint8
+                or fps.ndim != 2 or fps.shape != (len(self), 256)):
+            raise ValueError("Pool fingerprints must be row-aligned packed uint8 Morgan 2048 bits")
+        names = list(keys)
+        out = np.empty((len(names), 256), np.uint8)
+        for i, key in enumerate(names):
+            row = self.row_of.get(key)
+            if row is not None:
+                out[i] = fps[row]
+            elif key in self.extra_fp:
+                out[i] = self.extra_fp[key]
+            else:
+                raise KeyError("Requested fingerprint key is absent from pool and generated overlay")
         return out
 
     def __len__(self):
