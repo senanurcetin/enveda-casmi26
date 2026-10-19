@@ -51,6 +51,7 @@ def load_coconut():
     c["pool_key"] = c.standard_inchi_key.str[:14]
     c["mass"] = c.molecular_formula.fillna("").map(formula_mass)
     multi = c.canonical_smiles.str.contains(".", regex=False)
+    c["_derived_parent"] = multi
     rejected_parents = 0
     retained_parents = 0
     if multi.any():
@@ -70,7 +71,13 @@ def load_coconut():
                 "canonical_smiles", "pool_key", "mass", "molecular_formula",
             ]]
         c = c.drop(index=normalized.index[~valid])
-    c = c[c.mass.between(*MASS_RANGE) & c.pool_key.notna()].drop_duplicates("pool_key")
+    # If a source supplies both the original neutral parent and a salt of
+    # the same parent, prefer the original single-component annotation.
+    # Never let a transformed salt displace a directly identified molecule.
+    c = (c[c.mass.between(*MASS_RANGE) & c.pool_key.notna()]
+         .sort_values("_derived_parent", kind="stable")
+         .drop_duplicates("pool_key")
+         .drop(columns="_derived_parent"))
     print(f"COCONUT: {n0:,} rows -> {len(c):,} neutral structures in {MASS_RANGE} Da "
           f"({retained_parents:,} neutral parents recovered, {rejected_parents:,} invalid/charged parents excluded)")
     return c.rename(columns={"canonical_smiles": "smiles"})
