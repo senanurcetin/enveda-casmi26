@@ -44,7 +44,9 @@ python scripts/audit_store_integrity.py \
 
 Use only a locally authorized A1 store. The report is aggregate and contains
 no raw spectrum or held-out truth label. The output uses exclusive file
-creation, so a previous research record is not silently overwritten.
+creation, so a previous research record is not silently overwritten. The scan
+caps each batch at **1,048,576 peak pairs** to bound memory even when a user
+passes an unusually large `--chunk-peaks` value.
 
 **Interpretation:** `VALID_CLEANED_PEAKS` means the inspected stored peak
 values were finite and strictly positive for both m/z and intensity. It
