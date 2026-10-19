@@ -85,6 +85,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Regression evidence:** the synthetic end-to-end comparison no longer produces `ACCEPT` from identical query fingerprints alone; altered or missing inventory SHA-256 values are rejected.
 - **Remaining limits:** approved Kaggle/BigQuery files have not been independently retrieved; local inventory cannot authenticate upstream sources, changes in code dependencies, learned model weights or mutable caches. See [snapshot protocol](INPUT_SNAPSHOT_MANIFEST.md).
 
+## P1 descriptive error slices — 2026-10-19
+
+- **Implemented:** `run_validation.py` persists per-query, label-free metadata bins for adduct, ionization mode, query spectra count and median precursor m/z from original query inputs.
+- **Implemented:** `diagnose_validation_slices.py` validates query identities/spectra and metadata correspondence before computing per-class descriptive MRR differences; cells with fewer than 15 molecules are suppressed by default.
+- **Prohibited:** interpreting slices as independent significant effects, issuing model ACCEPT/REJECT, or presenting synthetic fixtures as real CASMI results. See [slice protocol](ERROR_SLICE_DIAGNOSTICS.md).
+- **Pending:** actual data-dependent slice profiles, instrument-family quality review and independently replicated hypotheses.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
