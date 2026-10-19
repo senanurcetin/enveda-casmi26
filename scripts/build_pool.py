@@ -62,11 +62,13 @@ def load_coconut():
         if len(accepted):
             parent = pd.DataFrame(
                 accepted.tolist(), index=accepted.index,
-                columns=["canonical_smiles", "pool_key", "mass"],
+                columns=["canonical_smiles", "pool_key", "mass", "molecular_formula"],
             )
-            c.loc[parent.index, ["canonical_smiles", "pool_key", "mass"]] = parent[
-                ["canonical_smiles", "pool_key", "mass"]
-            ]
+            c.loc[parent.index, [
+                "canonical_smiles", "pool_key", "mass", "molecular_formula",
+            ]] = parent[[
+                "canonical_smiles", "pool_key", "mass", "molecular_formula",
+            ]]
         c = c.drop(index=normalized.index[~valid])
     c = c[c.mass.between(*MASS_RANGE) & c.pool_key.notna()].drop_duplicates("pool_key")
     print(f"COCONUT: {n0:,} rows -> {len(c):,} neutral structures in {MASS_RANGE} Da "
