@@ -12,6 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/compare_runs.py"
+sys.path.insert(0, str(ROOT / "src"))
+from casmi.validate.source_manifest import (  # noqa: E402
+    MANIFEST_SCHEMA, required_validation_inputs,
+)
 
 
 def fixtures(count=20):
@@ -53,9 +57,20 @@ def execute(a, b, extra=()):
 
 class PairedBootstrapIntegrationTests(unittest.TestCase):
     def test_synthetic_signal_and_reverse_order(self):
-        result = execute(*fixtures())
+        baseline, experiment = fixtures()
+        for report in (baseline, experiment):
+            report["config"] = {"channels": ["d1"]}
+            report["source_manifest_sha256"] = "f" * 64
+            report["source_manifest_schema"] = MANIFEST_SCHEMA
+            report["source_manifest_pool_tag"] = ""
+            report["source_manifest_coverage"] = "required-validation-inputs-v1"
+            report["source_manifest_required_inputs"] = list(
+                required_validation_inputs()
+            )
+            report["source_manifest_file_count"] = 5
+        result = execute(baseline, experiment)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("VERIFIED paired identities", result.stdout)
+        self.assertIn("VERIFIED query identities", result.stdout)
         self.assertIn("VERDICT: ACCEPT", result.stdout)
 
     def test_same_count_changed_spectrum_rejected(self):
