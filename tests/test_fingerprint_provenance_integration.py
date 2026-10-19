@@ -87,11 +87,15 @@ class FingerprintProvenanceTests(unittest.TestCase):
             path = Path(tmp) / "fps.npy"
             np.save(path, fps)
             mmap_fps = np.load(path, allow_pickle=False, mmap_mode="r")
-            signed = make_fingerprint_provenance(pool, keys, mmap_fps)
-            self.assertEqual(
-                verify_fingerprint_provenance(pool, keys, mmap_fps, signed)["n_structures"],
-                2,
-            )
+            try:
+                signed = make_fingerprint_provenance(pool, keys, mmap_fps)
+                self.assertEqual(
+                    verify_fingerprint_provenance(pool, keys, mmap_fps, signed)["n_structures"],
+                    2,
+                )
+            finally:
+                # Windows forbids removing a file with an open NumPy mmap.
+                mmap_fps._mmap.close()
 
 
 if __name__ == "__main__":
