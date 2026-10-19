@@ -65,6 +65,12 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **CI:** synthetic controls and unverified-verdict tests, not real MS/MS data execution.
 - **Pending:** run controls on approved real datasets, audit residual C1/C2/C3 scores and investigate library/pool membership bias. See [negative-control protocol](SPECTRAL_NEGATIVE_CONTROLS.md).
 
+## P1 extension — verified spectral-control diagnostics (2026-10-19)
+
+- **Implemented and covered by synthetic tests:** `compare_control_runs.py` verifies that negative-control and unperturbed reports share exactly the same original query spectra, molecule IDs, exclusion scope, model configuration and sampling parameters. The transformed query fingerprint is allowed to differ by design, and at least one actual perturbation is required.
+- **Implemented:** descriptive molecule-paired per-class MRR contrasts and a fixed-grid approximately simultaneous bootstrap band for the diagnostic effect. Output is always `DIAGNOSTIC_ONLY`, with **no model ACCEPT/REJECT** decision. Historical `compare_runs.py` continues to reject altered-spectrum reports.
+- **Not performed:** full licensed data rerun, Kaggle/BigQuery live verification or claims of a new predictive score. These remain required evidence gates.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
