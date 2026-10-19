@@ -42,6 +42,7 @@ def main():
             result = verify_manifest(args.root, manifest)
         else:
             manifest = create_manifest(args.root, args.file)
+            args.output.parent.mkdir(parents=True, exist_ok=True)
             with args.output.open("x", encoding="utf-8") as file:
                 json.dump(manifest, file, indent=2)
                 file.write("\n")
