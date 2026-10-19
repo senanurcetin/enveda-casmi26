@@ -65,7 +65,7 @@ def main():
     pool[["pool_key"]].to_parquet(ARTIFACT_DIR / POOL_FP_KEYS_FILE, index=False)
     with manifest_path.open("x", encoding="utf-8") as output:
         json.dump(provenance, output, indent=2)
-        output.write("\\n")
+        output.write("\n")
     empty = (fps.sum(axis=1) == 0).sum()
     print(f"{len(fps):,} fingerprints ({fps.nbytes / 1e6:.0f} MB), {empty:,} empty, built in {time.time() - t0:.0f}s")
 
