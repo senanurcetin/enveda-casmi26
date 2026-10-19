@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Kaggle access and candidate-fingerprint provenance (2026-10-19)
+
+The [secure Kaggle access and fingerprint provenance protocol](docs/KAGGLE_ACCESS_AND_FP_PROVENANCE.md) adds a local, read-only Kaggle CLI preflight without embedding credentials. Rebuilt COCONUT candidate pools and Morgan arrays now have a content-bound SHA-256 fingerprint manifest; historical pool/fingerprint files cannot be silently overwritten. D2 validation can require this provenance for new research runs. No Kaggle download, submission or leaderboard experiment was performed here.
+
 ## COCONUT source identity correction (2026-10-19)
 
 The [COCONUT neutral-parent identity audit](docs/COCONUT_PARENT_IDENTITY_AUDIT.md) corrects a research data-quality issue: removing salt fragments previously changed candidate SMILES and mass without updating the original compound InChIKey. Parent SMILES, standard InChIKey14, molecular formula and exact mass are now derived from one neutral molecular graph. Frozen candidate pools and leaderboard results are not modified.

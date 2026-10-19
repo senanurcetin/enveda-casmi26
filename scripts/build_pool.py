@@ -98,6 +98,15 @@ def load_pubchemlite():
 
 
 def main():
+    # The candidate pool is an immutable research snapshot. In particular,
+    # COCONUT parent-identity fixes must not silently replace the old pool
+    # while leaving stale Morgan fingerprints and model artifacts behind.
+    output = ARTIFACT_DIR / POOL_FILE
+    if os.path.lexists(output):
+        raise FileExistsError(
+            f"Refusing to overwrite frozen candidate pool {output}; "
+            "set a new CASMI_POOL_TAG for a separately evaluated variant"
+        )
     t0 = time.time()
     s = pd.read_parquet(ARTIFACT_DIR / "structures.parquet")
     train = pd.DataFrame({"pool_key": s.pool_key, "smiles": s.smiles, "mass": s.mass,
