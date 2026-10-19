@@ -63,6 +63,49 @@ class RunAlignmentTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "signature algorithm versions"):
             align_runs(a, b)
 
+    def test_same_spectra_without_snapshot_are_not_model_decision_eligible(self):
+        a, b = run(["a", "b"]), run(["a", "b"])
+        aligned = align_runs(a, b)
+        self.assertTrue(aligned["verified"])
+        self.assertFalse(aligned["source_verified"])
+        self.assertFalse(aligned["decision_eligible"])
+
+    def test_identical_full_snapshots_allow_statistical_decision(self):
+        from casmi.validate.source_manifest import (
+            MANIFEST_SCHEMA, required_validation_inputs,
+        )
+        a, b = run(["a", "b"]), run(["a", "b"])
+        for record in (a, b):
+            record["source_manifest_sha256"] = "a" * 64
+            record["source_manifest_schema"] = MANIFEST_SCHEMA
+            record["source_manifest_pool_tag"] = ""
+            record["source_manifest_coverage"] = "required-validation-inputs-v1"
+            record["source_manifest_required_inputs"] = list(
+                required_validation_inputs(analog=True)
+            )
+            record["source_manifest_file_count"] = 7
+            record["config"] = {"channels": ["d1", "d2"]}
+        verified = align_runs(a, b)
+        self.assertTrue(verified["source_verified"])
+        self.assertTrue(verified["decision_eligible"])
+        for mutation, error in (
+            (lambda r: r.update(source_manifest_sha256="b" * 64), "snapshot mismatch"),
+            (lambda r: r.update(source_manifest_sha256=None), "snapshot mismatch"),
+            (lambda r: r.update(source_manifest_sha256="bad"), "Malformed"),
+            (lambda r: r.update(source_manifest_file_count=2), "file count"),
+            (lambda r: r.update(source_manifest_required_inputs=["pool.parquet"]), "Incomplete"),
+            (lambda r: r.update(source_manifest_pool_tag="_pcl"), "Incomplete"),
+            (lambda r: r.update(source_manifest_schema="unknown"), "schema"),
+        ):
+            changed = deepcopy(b)
+            mutation(changed)
+            with self.subTest(error=error):
+                with self.assertRaisesRegex(ValueError, error):
+                    align_runs(a, changed)
+        old_format = deepcopy(b)
+        old_format.pop("source_manifest_coverage")
+        self.assertFalse(align_runs(a, old_format)["decision_eligible"])
+
     def test_duplicate_query_ids_rejected(self):
         a = run(["a", "a"])
         with self.assertRaisesRegex(ValueError, "duplicate query IDs"):
