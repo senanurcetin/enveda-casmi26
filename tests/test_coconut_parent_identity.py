@@ -67,7 +67,7 @@ def test_coconut_loader_merges_salt_and_neutral_parent_by_corrected_key(
         "molecular_formula": [r[2] for r in rows],
         "exact_molecular_weight": [180.0] * len(rows),
         "formal_charge": [r[3] for r in rows],
-        "np_likeness": [0.5] * len(rows),
+        "np_likeness": [0.1, 0.8, 0.2, 0.4],
         "np_classifier_pathway": ["test"] * len(rows),
         "np_classifier_superclass": ["test"] * len(rows),
         "contains_sugar": [False] * len(rows),
@@ -77,6 +77,7 @@ def test_coconut_loader_merges_salt_and_neutral_parent_by_corrected_key(
     monkeypatch.setattr(build_pool, "COCONUT_ZIP", path)
     result = build_pool.load_coconut()
     assert len(result) == 1
+    assert result.iloc[0].np_likeness == pytest.approx(0.8)  # direct parent preferred
     assert result.iloc[0].pool_key == key(ASPIRIN)
     assert result.iloc[0].molecular_formula == "C9H8O4"
     assert key(result.iloc[0].smiles) == result.iloc[0].pool_key
