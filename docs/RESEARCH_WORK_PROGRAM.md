@@ -125,6 +125,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Verification:** standard-library synthetic invariants and four isolated local checks; no CI or data-dependent full-source build was run.
 - **Open evidence:** [store immutability protocol](A1_STORE_BUILD_IMMUTABILITY.md). A separate full-source build must retain its own source manifest and evaluation signature.
 
+## P0 — COCONUT neutral-parent structure identity (2026-10-19)
+
+- **Implemented:** de-salted COCONUT candidates now carry a consistent parent SMILES, standard InChIKey14, exact mass and molecular formula. Malformed or charged parents are excluded instead of replaced by placeholder molecules.
+- **Implemented:** directly supplied neutral parent records take precedence over salt-derived duplicates; synthetic regression tests cover structure identity and source annotation selection.
+- **Testing:** focused local RDKit/pandas checks passed; **CI was not invoked**, in accordance with the user's instruction.
+- **Pending:** rebuild an isolated authorized COCONUT candidate-pool variant, regenerate aligned fingerprints and rank features, record a source manifest, and test on molecule-disjoint C1/C2/C3 populations. [Scientific identity audit](COCONUT_PARENT_IDENTITY_AUDIT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
