@@ -90,11 +90,11 @@ class CandidatePool:
         except (TypeError, ValueError, OverflowError) as exc:
             raise ValueError("Mass tolerance ppm must be a finite nonnegative scalar") from exc
         d = mass_value * tolerance * 1e-6
-        lo = np.searchsorted(self.mass, query_mass - d, side="left")
-        hi = np.searchsorted(self.mass, query_mass + d, side="right")
+        lo = np.searchsorted(self.mass, mass_value - d, side="left")
+        hi = np.searchsorted(self.mass, mass_value + d, side="right")
         idx = np.arange(lo, hi)
         if exclude is not None:
             excluded = list(exclude)
             if excluded:
                 idx = idx[~np.isin(self.key[idx], excluded)]
-        return Window(idx, (query_mass - self.mass[idx]) / self.mass[idx] * 1e6)
+        return Window(idx, (mass_value - self.mass[idx]) / self.mass[idx] * 1e6)
