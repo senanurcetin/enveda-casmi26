@@ -85,6 +85,13 @@ class RunAlignmentTests(unittest.TestCase):
             )
             record["source_manifest_file_count"] = 7
             record["config"] = {"channels": ["d1", "d2"]}
+            record["fingerprint_provenance"] = {
+                "status": "POOL_FINGERPRINTS_VERIFIED",
+                "schema": "casmi-morgan-fingerprint-provenance-v1",
+                "n_structures": 100,
+                "pool_rows_sha256": "b" * 64,
+                "fingerprint_bytes_sha256": "c" * 64,
+            }
         verified = align_runs(a, b)
         self.assertTrue(verified["source_verified"])
         self.assertTrue(verified["decision_eligible"])
