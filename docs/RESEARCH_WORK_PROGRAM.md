@@ -132,6 +132,14 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Testing:** focused local RDKit/pandas checks passed; **CI was not invoked**, in accordance with the user's instruction.
 - **Pending:** rebuild an isolated authorized COCONUT candidate-pool variant, regenerate aligned fingerprints and rank features, record a source manifest, and test on molecule-disjoint C1/C2/C3 populations. [Scientific identity audit](COCONUT_PARENT_IDENTITY_AUDIT.md).
 
+## P0 — Kaggle-source access and D2 fingerprint identity (2026-10-19)
+
+- **Implemented:** local `KAGGLE_API_TOKEN` availability and optional authenticated file-listing preflight; API secrets never enter arguments, logs, reports or the public repository.
+- **Implemented:** versioned fingerprint provenance checks tie the exact ordered pool key, SMILES and mass to packed Morgan bytes, eliminating silent reuse of stale fingerprints after COCONUT parent-identity corrections.
+- **Implemented:** source pool and fingerprint builders refuse to overwrite frozen variants; `run_validation.py --require-fingerprint-provenance` rejects stale or missing D2 artifacts when explicitly required.
+- **Verification status:** synthetic offline tests were added; Kaggle account authorization, rules acceptance, actual dataset download and full model evaluation remain **unverified**. No CI was requested.
+- See [Kaggle connection and research snapshot protocol](KAGGLE_ACCESS_AND_FP_PROVENANCE.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
