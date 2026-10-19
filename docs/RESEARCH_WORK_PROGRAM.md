@@ -118,6 +118,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Tests:** synthetic mixed-mode, row exclusion, reference cap and missing-mode regressions; isolated local assertions passed without invoking CI.
 - **Pending:** quantify mixed-mode query prevalence and any rank effects on independently verified, molecule-disjoint CASMI research datasets. See [D1 ion-mode audit](D1_IONIZATION_MODE_AUDIT.md).
 
+## P0 — prevent destructive A1 store rebuilds (2026-10-19)
+
+- **Implemented:** new A1 builds publish only after post-write structural verification and refuse to overwrite any existing store directory.
+- **Implemented:** isolated `--output-dir` and `--train` command options for versioned research datasets. Temporary staging directories are removed on exceptions.
+- **Verification:** standard-library synthetic invariants and four isolated local checks; no CI or data-dependent full-source build was run.
+- **Open evidence:** [store immutability protocol](A1_STORE_BUILD_IMMUTABILITY.md). A separate full-source build must retain its own source manifest and evaluation signature.
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
