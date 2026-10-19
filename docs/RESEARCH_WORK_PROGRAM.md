@@ -99,6 +99,12 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Test evidence:** numerical synthetic corrupt-file fixtures plus mocked metadata constructor tests in CI. The full real CASMI spectrum store was **not** rerun or checked.
 - **Next evidence gate:** run [A1 structural audit](SPECTRUM_STORE_INTEGRITY.md), then the full SHA-256 source manifest and dataset-backed C1/C2/C3 benchmarks on the authorized scientific artifacts.
 
+## P0 — finite MS/MS similarity validation (2026-10-19)
+
+- **Implemented:** entropy and cosine scoring reject mismatched arrays and return zero (not NaN) for invalid, non-finite and zero-intensity MS/MS inputs; valid spectra retain the established scoring path.
+- **CI:** conventional positive-intensity invariants, ordinary peak cleaning and new numerical edge cases are exercised together in the pinned Numba scientific environment.
+- **Pending:** count/quantify bad-spectrum prevalence on actual authorized datasets; diagnose source/library-specific failures and rerun corrected validation. See [numeric safety audit](SPECTRAL_SIMILARITY_NUMERIC_SAFETY.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

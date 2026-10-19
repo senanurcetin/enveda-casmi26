@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Spectral-similarity numerical safeguards (2026-10-19)
+
+The [MS/MS entropy/cosine numerical audit](docs/SPECTRAL_SIMILARITY_NUMERIC_SAFETY.md) ensures invalid, zero-intensity and non-finite spectra cannot silently yield NaN channel similarities. Previously untested numerical boundary cases are now covered in the pinned scientific CI job. This is data-quality protection, not a proven model-score improvement.
+
 ## Peak-store structural integrity (2026-10-19)
 
 The [A1 spectrum-store structural audit](docs/SPECTRUM_STORE_INTEGRITY.md) now checks binary offset ordering, m/z/intensity file alignment, terminal peak counts and per-spectrum metadata before reference arrays are used. Invalid row indexing fails closed. This is a read-only data-integrity safeguard, not a new prediction result or complete scan of peak contents.
