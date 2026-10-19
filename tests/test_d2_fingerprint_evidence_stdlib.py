@@ -24,7 +24,19 @@ def run(channels=("d1", "d2"), *, fingerprint=True):
         ),
         "source_manifest_file_count": 7,
         "fingerprint_provenance": None,
+        "analog_index_provenance": None,
     }
+    if "d2" in channels:
+        report["config"]["analog"] = {"reference_policy": "legacy"}
+        report["analog_index_provenance"] = {
+            "schema": "casmi-d2-fresh-index-v1",
+            "status": "REBUILT_WITHOUT_CACHE",
+            "index_sha256": "4" * 64,
+            "n_references": 50,
+            "n_nonzero": 1000,
+            "reference_policy": "legacy",
+            "cache_used": False,
+        }
     if "d2" in channels and fingerprint:
         report["fingerprint_provenance"] = {
             "status": "POOL_FINGERPRINTS_VERIFIED",
@@ -77,6 +89,38 @@ class D2EvidenceTests(unittest.TestCase):
 
     def test_d1_comparison_does_not_need_fp_sidecar(self):
         a, b = run(("d1",), fingerprint=False), run(("d1",), fingerprint=False)
+        self.assertTrue(align_runs(a, b)["decision_eligible"])
+
+    def test_cached_legacy_index_is_exploratory_even_with_verified_fingerprints(self):
+        a, b = run(), run()
+        a["analog_index_provenance"] = None
+        self.assertTrue(align_runs(a, b)["verified"])
+        self.assertFalse(align_runs(a, b)["decision_eligible"])
+        a = run()
+        b["analog_index_provenance"] = None
+        self.assertFalse(align_runs(a, b)["decision_eligible"])
+
+    def test_cache_claims_and_changed_reference_policy_fail_closed(self):
+        a, b = run(), run()
+        for mutation, expected in (
+            (lambda p: p.update(cache_used=True), "bypass"),
+            (lambda p: p.update(index_sha256="bad"), "content digest"),
+            (lambda p: p.update(n_references=0), "reference count"),
+            (lambda p: p.update(n_nonzero=-1), "nonzero count"),
+            (lambda p: p.update(reference_policy="source_balanced"), "contradicts"),
+            (lambda p: p.update(status="LOADED_FROM_CACHE"), "schema or status"),
+        ):
+            changed = deepcopy(b)
+            mutation(changed["analog_index_provenance"])
+            with self.subTest(expected=expected):
+                with self.assertRaisesRegex(ValueError, expected):
+                    align_runs(a, changed)
+
+    def test_separately_fresh_rebuilt_d2_policy_variants_are_comparable(self):
+        a, b = run(), run()
+        b["config"]["analog"]["reference_policy"] = "source_balanced"
+        b["analog_index_provenance"]["reference_policy"] = "source_balanced"
+        b["analog_index_provenance"]["index_sha256"] = "5" * 64
         self.assertTrue(align_runs(a, b)["decision_eligible"])
 
     def test_source_snapshot_is_still_required(self):
