@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Cross-source candidate identity consistency (2026-10-19)
+
+The [candidate-source reconciliation audit](docs/CANDIDATE_SOURCE_RECONCILIATION.md) guards against combining SMILES and neutral masses from different provider records and flags large same-InChIKey14 mass discrepancies. The A3 candidate pool is now staged and structurally checked before exclusive publication, preserving frozen research artifacts. No independent leaderboard improvement or productionization is claimed.
+
 ## Fail-closed Morgan fingerprint generation and audit (2026-10-19)
 
 [Read-only fingerprint quality auditing](docs/FINGERPRINT_ZERO_VECTOR_AUDIT.md) is now available to detect previously signed but chemically invalid all-zero candidate vectors. New fingerprint builds reject malformed SMILES, zero-heavy-atom structures and empty Morgan vectors before output files are written, and use the same candidate mass ordering as inference. Historical artifacts are untouched; no Kaggle performance improvement is claimed.
