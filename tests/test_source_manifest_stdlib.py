@@ -8,7 +8,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from casmi.validate.source_manifest import create_manifest, verify_manifest  # noqa: E402
+from casmi.validate.source_manifest import (  # noqa: E402
+    create_manifest, verify_manifest, required_validation_inputs,
+    require_validation_coverage,
+)
 
 
 class SourceManifestTests(unittest.TestCase):
@@ -76,6 +79,23 @@ class SourceManifestTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "outside"):
                 create_manifest(self.root, ["store/linked"])
+
+    def test_required_validation_coverage_is_complete_and_tag_aware(self):
+        basic = required_validation_inputs()
+        self.assertEqual(len(basic), 5)
+        self.assertIn("pool.parquet", basic)
+        self.assertEqual(len(required_validation_inputs(analog=True)), 7)
+        tagged = required_validation_inputs(pool_tag="_pcl", analog=True)
+        self.assertIn("pool_pcl.parquet", tagged)
+        self.assertIn("pool_fp2048_pcl.npy", tagged)
+        with self.assertRaisesRegex(ValueError, "Invalid candidate-pool tag"):
+            required_validation_inputs(pool_tag="../escape")
+        manifest = {"files": [{"path": name} for name in basic]}
+        self.assertEqual(require_validation_coverage(manifest), basic)
+        with self.assertRaisesRegex(ValueError, "omits required"):
+            require_validation_coverage(manifest, analog=True)
+        with self.assertRaisesRegex(ValueError, "omits required"):
+            require_validation_coverage(manifest, pool_tag="_pcl")
 
     def test_empty_manifest_rejected(self):
         with self.assertRaisesRegex(ValueError, "at least one"):
