@@ -72,7 +72,10 @@ def test_mixed_modes_keep_correct_refs_even_with_one_ref_per_mode(monkeypatch):
 def test_exclusions_apply_separately_to_each_query_mode(monkeypatch):
     idx = make_index(monkeypatch)
     assert idx.score(queries(), "K", np.array([1])) == (1.0, 0.5, 1)
-    assert idx.score(queries(), "K", np.array([0])) == (1.0, 0.5, 1)
+    # The second positive-mode reference remains eligible but has no match;
+    # the negative reference matches, so both are counted as used.
+    assert idx.score(queries(), "K", np.array([0])) == (1.0, 0.5, 2)
+    assert idx.score(queries(), "K", np.array([0, 2])) == (1.0, 0.5, 1)
     assert idx.score(queries(), "K", np.array([0, 1, 2])) == (0.0, 0.0, 0)
 
 
