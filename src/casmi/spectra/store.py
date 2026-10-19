@@ -7,22 +7,42 @@ Layout (artifacts/store/):
 """
 from pathlib import Path
 
+import operator
+
 import numpy as np
 import pandas as pd
+
+from casmi.spectra.store_integrity import inspect_store_layout
 
 
 class SpectrumStore:
     def __init__(self, root: Path):
         root = Path(root)
         self.meta = pd.read_parquet(root / "meta.parquet")
-        self.offsets = np.fromfile(root / "offsets.i64", dtype=np.int64)
-        self.mz = np.memmap(root / "mz.f32", dtype=np.float32, mode="r")
-        self.it = np.memmap(root / "it.f32", dtype=np.float32, mode="r")
-        assert len(self.offsets) == len(self.meta) + 1, "store is inconsistent"
+        if "n_peaks" not in self.meta:
+            raise ValueError("Spectrum metadata lacks per-row n_peaks counts")
+        layout = inspect_store_layout(
+            root, expected_spectra=len(self.meta),
+            metadata_n_peaks=self.meta["n_peaks"].to_numpy(),
+        )
+        self.offsets = layout.offsets
+        self.layout = layout
+        if layout.peak_count:
+            self.mz = np.memmap(root / "mz.f32", dtype=np.float32, mode="r")
+            self.it = np.memmap(root / "it.f32", dtype=np.float32, mode="r")
+        else:
+            # A valid empty peak store cannot be memmapped by NumPy.
+            self.mz = np.empty(0, dtype=np.float32)
+            self.it = np.empty(0, dtype=np.float32)
 
     def __len__(self):
         return len(self.meta)
 
     def peaks(self, i):
-        a, b = self.offsets[i], self.offsets[i + 1]
+        if isinstance(i, (bool, np.bool_)):
+            raise TypeError("Spectrum index must be an integer row ID")
+        row = operator.index(i)
+        if row < 0 or row >= len(self.meta):
+            raise IndexError(f"Spectrum row {row} is outside the store")
+        a, b = int(self.offsets[row]), int(self.offsets[row + 1])
         return np.asarray(self.mz[a:b]), np.asarray(self.it[a:b])
