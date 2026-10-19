@@ -21,7 +21,20 @@ class Window:
 class CandidatePool:
     def __init__(self, table: pd.DataFrame):
         """table: pool_key, smiles, mass, sources (bitmask) [+ any extra per-structure columns]."""
-        t = table.dropna(subset=["pool_key", "mass"]).sort_values("mass", kind="stable")
+        needed = {"pool_key", "smiles", "mass"}
+        if not needed.issubset(table.columns):
+            raise ValueError(f"Candidate pool missing columns: {sorted(needed - set(table.columns))}")
+        # Missing candidates can be dropped as before, but present impossible
+        # masses must not silently produce NaN/inf ppm values or divide by 0.
+        t = table.dropna(subset=["pool_key", "mass"]).copy()
+        try:
+            mass = pd.to_numeric(t["mass"], errors="raise").to_numpy(dtype=np.float64)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("Candidate pool contains non-numeric masses") from exc
+        if np.any(~np.isfinite(mass)) or np.any(mass <= 0.0):
+            raise ValueError("Candidate pool masses must be finite and strictly positive")
+        t["mass"] = mass
+        t = t.sort_values("mass", kind="stable")
         t = t.drop_duplicates("pool_key", keep="first").reset_index(drop=True)
         self.table = t
         self.mass = t["mass"].to_numpy(np.float64)
@@ -60,10 +73,18 @@ class CandidatePool:
 
     def window(self, query_mass, tol_ppm=10.0, exclude=None) -> Window:
         """All candidates with |ppm(candidate vs query)| <= tol_ppm, minus excluded keys."""
-        d = query_mass * tol_ppm * 1e-6
+        if (not np.isscalar(query_mass) or not np.isfinite(query_mass)
+                or query_mass <= 0):
+            raise ValueError("Query mass must be a finite positive scalar")
+        if (not np.isscalar(tol_ppm) or not np.isfinite(tol_ppm)
+                or tol_ppm < 0):
+            raise ValueError("Mass tolerance ppm must be a finite nonnegative scalar")
+        d = float(query_mass) * float(tol_ppm) * 1e-6
         lo = np.searchsorted(self.mass, query_mass - d, side="left")
         hi = np.searchsorted(self.mass, query_mass + d, side="right")
         idx = np.arange(lo, hi)
-        if exclude:
-            idx = idx[~np.isin(self.key[idx], list(exclude))]
+        if exclude is not None:
+            excluded = list(exclude)
+            if excluded:
+                idx = idx[~np.isin(self.key[idx], excluded)]
         return Window(idx, (query_mass - self.mass[idx]) / self.mass[idx] * 1e6)
