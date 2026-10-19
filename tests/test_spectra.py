@@ -13,6 +13,39 @@ def test_identical_spectra_score_one():
     assert cosine_similarity(MZ, IT, MZ, IT) == pytest.approx(1.0, abs=1e-9)
 
 
+@pytest.mark.parametrize("similarity", [entropy_similarity, cosine_similarity])
+def test_blank_zero_intensity_and_invalid_peaks_never_return_nan(similarity):
+    empty = np.array([], dtype=np.float32)
+    zero = np.zeros(MZ.size, dtype=np.float32)
+    assert similarity(empty, empty, MZ, IT) == 0.0
+    assert similarity(MZ, zero, MZ, IT) == 0.0
+    assert similarity(MZ, IT, MZ, zero) == 0.0
+    for invalid_mz, invalid_it in [
+        (np.array([np.nan, 150., 200., 250.], dtype=np.float32), IT),
+        (np.array([-3., 150., 200., 250.], dtype=np.float32), IT),
+        (MZ, np.array([np.nan, 1., 0.5, 0.1], dtype=np.float32)),
+        (MZ, np.array([-1., 1., 0.5, 0.1], dtype=np.float32)),
+        (MZ, np.array([np.inf, 1., 0.5, 0.1], dtype=np.float32)),
+    ]:
+        assert similarity(invalid_mz, invalid_it, MZ, IT) == 0.0
+        assert similarity(MZ, IT, invalid_mz, invalid_it) == 0.0
+
+
+@pytest.mark.parametrize("similarity", [entropy_similarity, cosine_similarity])
+def test_valid_zero_intensity_peak_contributes_no_nan(similarity):
+    mz = np.array([100., 110.], dtype=np.float32)
+    intensity = np.array([1., 0.], dtype=np.float32)
+    result = similarity(mz, intensity, mz, intensity)
+    assert np.isfinite(result)
+    assert result == pytest.approx(1.0, abs=1e-9)
+
+
+@pytest.mark.parametrize("similarity", [entropy_similarity, cosine_similarity])
+def test_mismatched_mass_intensity_lengths_fail_closed(similarity):
+    with pytest.raises(ValueError, match="aligned 1D"):
+        similarity(MZ, IT[:-1], MZ, IT)
+
+
 def test_disjoint_spectra_score_zero():
     other = MZ + 7.0
     assert entropy_similarity(MZ, IT, other, IT) == 0.0
