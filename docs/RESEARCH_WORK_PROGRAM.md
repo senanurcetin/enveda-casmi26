@@ -71,6 +71,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Implemented:** descriptive molecule-paired per-class MRR contrasts and a fixed-grid approximately simultaneous bootstrap band for the diagnostic effect. Output is always `DIAGNOSTIC_ONLY`, with **no model ACCEPT/REJECT** decision. Historical `compare_runs.py` continues to reject altered-spectrum reports.
 - **Not performed:** full licensed data rerun, Kaggle/BigQuery live verification or claims of a new predictive score. These remain required evidence gates.
 
+## P0 data-source provenance gate (2026-10-19)
+
+- **Implemented:** explicit streaming SHA-256 inventories for user-authorized local spectrum metadata, peak memmaps, candidate pools and fingerprint artifacts. Manifests contain only relative paths, file lengths and hashes.
+- **Implemented:** `run_validation.py --source-manifest` aborts before scoring if any inventoried input differs; the report records the composite inventory hash, and diagnostic control pairings require equal hashes when supplied.
+- **Validated with synthetic files:** same-byte integrity, same-size modification detection, path traversal/symlink protection and malformed manifests.
+- **Not completed:** verify actual Kaggle dataset lineage, BigQuery schema, source snapshot, or rerun models against real competition artifacts. See [local snapshot instructions](INPUT_SNAPSHOT_MANIFEST.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

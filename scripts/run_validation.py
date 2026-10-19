@@ -27,6 +27,7 @@ from casmi.validate.knockout import (  # noqa: E402
 from casmi.validate.metric import rank_of_truth, summarize  # noqa: E402
 from casmi.validate.run_alignment import query_signature, SIGNATURE_VERSION  # noqa: E402
 from casmi.validate.spectral_controls import perturb_spectra, MODES  # noqa: E402
+from casmi.validate.source_manifest import verify_manifest  # noqa: E402
 
 
 def equivalent_keys(query, pool, keys: MetricKeys, cfg):
@@ -57,6 +58,8 @@ def main():
                     default="legacy", help="D2 index reference selection; legacy keeps historical baseline")
     ap.add_argument("--spectral-control", choices=MODES, default="none",
                     help="diagnostic only: suppress or perturb fragments, not a model setting")
+    ap.add_argument("--source-manifest", type=Path, default=None,
+                    help="optional SHA-256 artifact inventory; fail closed on mismatch")
     ap.add_argument("--control-seed", type=int, default=0,
                     help="per-molecule deterministic negative-control seed")
     args = ap.parse_args()
@@ -71,6 +74,11 @@ def main():
     cfg = replace(cfg, mass_offset_ppm=args.offset_ppm,
                   analog=replace(cfg.analog, reference_policy=args.analog_selection_policy))
     t0 = time.time()
+    source_status = None
+    if args.source_manifest is not None:
+        with args.source_manifest.open("r", encoding="utf-8") as stream:
+            source_status = verify_manifest(ARTIFACT_DIR, json.load(stream))
+        print(f"Verified {source_status['files_checked']} local source files", flush=True)
     store = SpectrumStore(ARTIFACT_DIR / "store")
     key_of_row = store.meta.train_ik14.to_numpy(dtype=object)
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
@@ -134,6 +142,12 @@ def main():
 
     config = {**json.loads(json.dumps(asdict(cfg), default=str)), "channels": ["d1"] + (["d2"] if args.analog else [])}
     report = {"tag": args.tag, "config": config,
+              "source_manifest_sha256": (
+                  source_status["files_digest_sha256"] if source_status is not None else None
+              ),
+              "source_manifest_file_count": (
+                  source_status["files_checked"] if source_status is not None else None
+              ),
               "spectral_control": {
                   "mode": args.spectral_control, "seed": args.control_seed,
                   "interpretation": "negative-control diagnostic, not submission/model improvement",

@@ -60,6 +60,13 @@ def align_control_runs(reference: Mapping, treatment: Mapping) -> dict:
     b_ids, b_signatures, b_ranks = _identities(treatment, "Treatment")
     if len(a_ids) != len(b_ids) or set(a_ids) != set(b_ids):
         raise ValueError("Control population/query ID mismatch")
+    source_a = reference.get("source_manifest_sha256")
+    source_b = treatment.get("source_manifest_sha256")
+    if source_a is not None or source_b is not None:
+        if (not isinstance(source_a, str) or len(source_a) != 64
+                or any(ch not in "0123456789abcdef" for ch in source_a)
+                or source_a != source_b):
+            raise ValueError("Negative control source artifact snapshots differ")
     if reference.get("config") != treatment.get("config"):
         raise ValueError("Control cannot be compared across model configurations")
     sampling_a, sampling_b = reference.get("query_sampling"), treatment.get("query_sampling")

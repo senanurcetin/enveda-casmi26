@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Research input snapshot integrity (2026-10-19)
+
+The [local SHA-256 snapshot protocol](docs/INPUT_SNAPSHOT_MANIFEST.md) allows researchers to record and verify the approved spectrum store, candidate pools and fingerprints without committing dataset bytes or absolute paths. Validation can optionally fail closed on changed source artifacts. This is reproducibility infrastructure, not proof of Kaggle/BigQuery authenticity or improved prediction scores.
+
 ## Source-verified negative-control comparisons (2026-10-19)
 
 A [diagnostic-only control comparator](docs/SPECTRAL_NEGATIVE_CONTROLS.md) now checks original molecule/spectrum identities before calculating paired bootstrap differences between unperturbed and blank/shuffled spectra. Results cannot produce model-improvement ACCEPT/REJECT decisions or new Kaggle claims. This remains non-commercial research work.

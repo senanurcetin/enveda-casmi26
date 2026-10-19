@@ -85,6 +85,19 @@ class PairedNegativeControlTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source spectra"):
             align_control_runs(a, b)
 
+    def test_snapshot_hash_prevents_unmatched_control_comparison(self):
+        a = baseline()
+        b = control(a)
+        a["source_manifest_sha256"] = "a" * 64
+        b["source_manifest_sha256"] = "b" * 64
+        with self.assertRaisesRegex(ValueError, "artifact snapshots differ"):
+            align_control_runs(a, b)
+        b["source_manifest_sha256"] = a["source_manifest_sha256"]
+        self.assertTrue(align_control_runs(a, b)["verified_source_pairing"])
+        del b["source_manifest_sha256"]
+        with self.assertRaisesRegex(ValueError, "artifact snapshots differ"):
+            align_control_runs(a, b)
+
     def test_changed_query_population_or_model_fails_closed(self):
         a = baseline()
         for change, error in [
