@@ -20,6 +20,12 @@ on:
       - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "scripts/build_rank_data.py"
+      - "scripts/build_store.py"
+      - "scripts/audit_store_integrity.py"
+      - "src/casmi/spectra/store.py"
+      - "src/casmi/spectra/store_integrity.py"
+      - "tests/test_store_integrity.py"
+      - "tests/test_store_integrity_integration.py"
       - "src/casmi/validate/run_alignment.py"
       - "src/casmi/validate/spectral_controls.py"
       - "src/casmi/validate/knockout.py"
@@ -60,6 +66,12 @@ on:
       - "scripts/reconcile_bigquery_profile.py"
       - "scripts/run_validation.py"
       - "scripts/build_rank_data.py"
+      - "scripts/build_store.py"
+      - "scripts/audit_store_integrity.py"
+      - "src/casmi/spectra/store.py"
+      - "src/casmi/spectra/store_integrity.py"
+      - "tests/test_store_integrity.py"
+      - "tests/test_store_integrity_integration.py"
       - "src/casmi/validate/run_alignment.py"
       - "src/casmi/validate/spectral_controls.py"
       - "src/casmi/validate/knockout.py"
@@ -102,7 +114,7 @@ jobs:
       - name: Run paired-comparison integration checks
         run: python -m unittest discover -s tests -p '*_integration.py' -v
       - name: Validate Python syntax
-        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/compare_control_runs.py scripts/manifest_artifacts.py scripts/diagnose_validation_slices.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py scripts/build_rank_data.py scripts/profile_data.py src/casmi/validate/run_alignment.py src/casmi/validate/control_alignment.py src/casmi/validate/source_manifest.py src/casmi/validate/error_slices.py src/casmi/validate/spectral_controls.py src/casmi/validate/spectrum_overlap.py src/casmi/validate/paired_bootstrap.py src/casmi/validate/simultaneous_ci.py src/casmi/validate/metric.py src/casmi/channels/analog.py src/casmi/channels/prefilter.py src/casmi/channels/reference_selection.py scripts/audit_analog_retention.py
+        run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/compare_control_runs.py scripts/manifest_artifacts.py scripts/diagnose_validation_slices.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py scripts/build_rank_data.py scripts/build_store.py scripts/audit_store_integrity.py scripts/profile_data.py src/casmi/validate/run_alignment.py src/casmi/validate/control_alignment.py src/casmi/validate/source_manifest.py src/casmi/validate/error_slices.py src/casmi/validate/spectral_controls.py src/casmi/validate/spectrum_overlap.py src/casmi/spectra/store.py src/casmi/spectra/store_integrity.py src/casmi/validate/paired_bootstrap.py src/casmi/validate/simultaneous_ci.py src/casmi/validate/metric.py src/casmi/channels/analog.py src/casmi/channels/prefilter.py src/casmi/channels/reference_selection.py scripts/audit_analog_retention.py
 
   official-metric-regression:
     runs-on: ubuntu-latest
@@ -115,4 +127,4 @@ jobs:
       - name: Install official-metric compatible chemistry stack
         run: python -m pip install numpy==2.3.5 pandas==2.3.3 rdkit==2026.3.3 pytest==9.0.2 scipy==1.16.2 numba==0.62.1
       - name: Run chemistry, tautomer and MRR rank-slot regressions
-        run: python -m pytest tests/test_foundations.py tests/test_knockout_leakage.py tests/test_analog_index_knockout.py tests/test_analog_retention_audit.py tests/test_d2_reference_selection.py -q
+        run: python -m pytest tests/test_foundations.py tests/test_knockout_leakage.py tests/test_analog_index_knockout.py tests/test_analog_retention_audit.py tests/test_d2_reference_selection.py tests/test_store_integrity.py -q
