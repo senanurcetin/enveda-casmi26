@@ -58,6 +58,44 @@ misrepresented as ordinary model-improvement evidence. A dedicated control
 analysis should verify original-source signature alignment explicitly before
 quantifying uncertainty in treatment effects.
 
+## Paired diagnostic report (source-verified, no model verdict)
+
+The original control implementation recorded source spectra fingerprints but
+did not provide an approved *diagnostic* comparator. The separate
+`scripts/compare_control_runs.py` now validates:
+
+- Exact same query IDs, irrespective of report row order, with no duplicates.
+- Matching `casmi-query-spectra-v2` provenance. In the controlled report,
+  `source_query_signatures` must correspond **exactly** to the original
+  unperturbed query fingerprints, including excluded reference row scope.
+- Identical model configuration and all non-control query-sampling parameters.
+- Valid C1/C2/C3 ranks with coherent MRR summary, genuine changed treatment
+  signatures, and an explicit valid perturbation mode and seed.
+
+Only when all guards pass are molecule-aligned, descriptive
+`negative_control_minus_unperturbed_reference` effects calculated. Each class
+has a pointwise paired-bootstrap interval, with an approximately simultaneous
+band across the twelve predefined novelty-class mixtures. The output is always
+`DIAGNOSTIC_ONLY` and contains **no** ACCEPT or REJECT field. Deliberately
+perturbed input spectra are **not** evidence for a model-improvement decision.
+
+```bash
+python scripts/compare_control_runs.py \
+  runs/ACTUAL_REFERENCE_RUN.json runs/ACTUAL_BLANK_RUN.json \
+  --bootstrap 4000 --seed 0 \
+  --output runs/blank_diagnostic.json
+
+python scripts/compare_control_runs.py \
+  runs/ACTUAL_REFERENCE_RUN.json runs/ACTUAL_SHUFFLE_RUN.json \
+  --bootstrap 4000 --seed 0 \
+  --output runs/shuffle_diagnostic.json
+```
+
+These commands name placeholders: use actual generated validation paths.
+Report creation uses exclusive file creation to avoid overwriting another
+diagnostic. CI tests use synthetic reports only; they do not calculate
+CASMI26 experimental control scores.
+
 ## Leakage and confounding cautions
 
 - A strong `blank` score may indicate candidate-mass/pool priors, not
