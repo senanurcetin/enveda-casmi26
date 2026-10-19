@@ -125,7 +125,7 @@ class StoreLayoutTests(unittest.TestCase):
         empty = scan_store_peak_content(self.root)
         self.assertEqual(empty["status"], "VALID_CLEANED_PEAKS")
         self.assertEqual(empty["total_peaks_scanned"], 0)
-        for invalid in (0, -1, 2.5, True):
+        for invalid in (0, -1, 2.5, True, 1048577):
             with self.subTest(invalid=invalid):
                 with self.assertRaisesRegex(ValueError, "chunk_peaks"):
                     scan_store_peak_content(self.root, chunk_peaks=invalid)
