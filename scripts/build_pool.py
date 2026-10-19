@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FILE  # noqa: E402
 from casmi.chem.masses import formula_mass  # noqa: E402
 from casmi.pool.pool import SOURCE_BITS  # noqa: E402
+from casmi.pool.structure_identity import neutral_parent_identity  # noqa: E402
 
 import os  # noqa: E402
 COCONUT_ZIP = Path(os.environ.get("CASMI_COCONUT", "C:/Users/MONSTER/kaggle-data/external/coconut/coconut_csv_lite-09-2026.zip"))
@@ -32,12 +33,6 @@ MASS_RANGE = (100.0, 1300.0)          # test monoisotopic masses span 157–1,15
 ENVEDA180_BIT = 1                     # bit 0 in build_structures.LIBS
 
 
-def largest_fragment(smiles):
-    from rdkit import Chem
-    frags = smiles.split(".")
-    return max(frags, key=lambda f: (Chem.MolFromSmiles(f) or Chem.MolFromSmiles("C")).GetNumHeavyAtoms())
-
-
 def load_coconut():
     cols = ["identifier", "canonical_smiles", "standard_inchi_key", "molecular_formula",
             "exact_molecular_weight", "formal_charge", "np_likeness", "np_classifier_pathway",
@@ -49,17 +44,33 @@ def load_coconut():
         c = pd.read_csv(COCONUT_ZIP, usecols=cols, low_memory=False)
     n0 = len(c)
     c = c[(c.formal_charge == 0) & c.canonical_smiles.notna() & c.standard_inchi_key.notna()].copy()
-    multi = c.canonical_smiles.str.contains(".", regex=False)
-    # salts / counter-ions: keep the parent. Its formula no longer matches, so mass is recomputed below.
-    c.loc[multi, "canonical_smiles"] = c.loc[multi, "canonical_smiles"].map(largest_fragment)
-    c["mass"] = c.molecular_formula.fillna("").map(formula_mass)
-    if multi.any():
-        from rdkit.Chem.Descriptors import ExactMolWt
-        from rdkit import Chem
-        c.loc[multi, "mass"] = c.loc[multi, "canonical_smiles"].map(lambda s: ExactMolWt(Chem.MolFromSmiles(s)))
+    # Preserve the original standard key for unchanged single-component
+    # molecules. For every salt/mixture, derive SMILES, standard InChIKey14
+    # and exact mass from the SAME neutral parent. Keeping the old compound
+    # InChIKey after stripping fragments silently mislabels candidate rows.
     c["pool_key"] = c.standard_inchi_key.str[:14]
-    c = c[c.mass.between(*MASS_RANGE)].drop_duplicates("pool_key")
-    print(f"COCONUT: {n0:,} rows -> {len(c):,} neutral structures in {MASS_RANGE} Da ({multi.sum():,} de-salted)")
+    c["mass"] = c.molecular_formula.fillna("").map(formula_mass)
+    multi = c.canonical_smiles.str.contains(".", regex=False)
+    rejected_parents = 0
+    retained_parents = 0
+    if multi.any():
+        normalized = c.loc[multi, "canonical_smiles"].map(neutral_parent_identity)
+        valid = normalized.map(lambda item: item is not None)
+        rejected_parents = int((~valid).sum())
+        accepted = normalized.loc[valid]
+        retained_parents = len(accepted)
+        if len(accepted):
+            parent = pd.DataFrame(
+                accepted.tolist(), index=accepted.index,
+                columns=["canonical_smiles", "pool_key", "mass"],
+            )
+            c.loc[parent.index, ["canonical_smiles", "pool_key", "mass"]] = parent[
+                ["canonical_smiles", "pool_key", "mass"]
+            ]
+        c = c.drop(index=normalized.index[~valid])
+    c = c[c.mass.between(*MASS_RANGE) & c.pool_key.notna()].drop_duplicates("pool_key")
+    print(f"COCONUT: {n0:,} rows -> {len(c):,} neutral structures in {MASS_RANGE} Da "
+          f"({retained_parents:,} neutral parents recovered, {rejected_parents:,} invalid/charged parents excluded)")
     return c.rename(columns={"canonical_smiles": "smiles"})
 
 
