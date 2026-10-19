@@ -19,6 +19,8 @@ from casmi.config import ARTIFACT_DIR, POOL_FILE, POOL_FP_FILE, POOL_FP_KEYS_FIL
 from casmi.chem.masses import formula_mass  # noqa: E402
 from casmi.pool.pool import SOURCE_BITS  # noqa: E402
 from casmi.pool.structure_identity import neutral_parent_identity  # noqa: E402
+from casmi.pool.source_reconciliation import reconcile_source_rows  # noqa: E402
+from casmi.pool.build_safety import fresh_pool_file  # noqa: E402
 
 import os  # noqa: E402
 COCONUT_ZIP = Path(os.environ.get("CASMI_COCONUT", "C:/Users/MONSTER/kaggle-data/external/coconut/coconut_csv_lite-09-2026.zip"))
@@ -133,6 +135,15 @@ def main():
             parts.append(e.assign(sources=SOURCE_BITS["pubchem_lit"], n_spectra=0, libs=0))
             print(f"PubChem literature subset: {len(e):,} structures")
     both = pd.concat(parts, ignore_index=True)
+    # Never let groupby.first() assemble SMILES from one source and mass
+    # from another. All identity fields must coexist in the chosen row.
+    # Reject material mass contradictions for a shared InChIKey14.
+    both, quality = reconcile_source_rows(both)
+    print("Source reconciliation: "
+          f"{quality['complete_rows']:,}/{quality['input_rows']:,} complete rows, "
+          f"{quality['incomplete_rows_excluded']:,} excluded, "
+          f"{quality['shared_pool_keys']:,} multiply-sourced keys, "
+          f"max mass spread {quality['max_source_mass_spread_da']:.5f} Da")
     g = both.groupby("pool_key", sort=False)
     pool = pd.DataFrame({
         "smiles": g.smiles.first(),                       # train SMILES win: they are the labels' form
@@ -143,7 +154,14 @@ def main():
         "np_superclass": g.np_superclass.first(), "has_sugar": g.has_sugar.first(),
     }).reset_index()
     pool = pool.dropna(subset=["mass"]).sort_values("mass", kind="stable").reset_index(drop=True)
-    pool.to_parquet(ARTIFACT_DIR / POOL_FILE, index=False)
+    # Historical pools are immutable. Complete, verify and publish a
+    # new Parquet before making the final output name visible.
+    from pyarrow import parquet as pq
+    with fresh_pool_file(output) as staged:
+        pool.to_parquet(staged, index=False)
+        metadata = pq.ParquetFile(staged).metadata
+        if metadata.num_rows != len(pool):
+            raise ValueError("Persisted candidate pool row count differs from build")
 
     in_train = (pool.sources & SOURCE_BITS["train"]) > 0
     in_coco = (pool.sources & SOURCE_BITS["coconut"]) > 0
