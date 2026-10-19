@@ -78,6 +78,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Validated with synthetic files:** same-byte integrity, same-size modification detection, path traversal/symlink protection and malformed manifests.
 - **Not completed:** verify actual Kaggle dataset lineage, BigQuery schema, source snapshot, or rerun models against real competition artifacts. See [local snapshot instructions](INPUT_SNAPSHOT_MANIFEST.md).
 
+## P0 — verified source snapshots for scientific decisions (2026-10-19)
+
+- **Implemented:** optional local input snapshots now require all static files consumed by validation: four spectrum-store artifacts and the active candidate-pool table, plus both D2 fingerprint artifacts when analog scoring is enabled.
+- **Implemented:** `compare_runs.py` distinguishes query-ID/spectrum pairing from full local input provenance. A report without a matching, coverage-checked SHA-256 snapshot is **exploratory only**, even when the bootstrap effect excludes zero.
+- **Regression evidence:** the synthetic end-to-end comparison no longer produces `ACCEPT` from identical query fingerprints alone; altered or missing inventory SHA-256 values are rejected.
+- **Remaining limits:** approved Kaggle/BigQuery files have not been independently retrieved; local inventory cannot authenticate upstream sources, changes in code dependencies, learned model weights or mutable caches. See [snapshot protocol](INPUT_SNAPSHOT_MANIFEST.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

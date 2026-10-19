@@ -100,3 +100,48 @@ def verify_manifest(root: Path, manifest: dict) -> dict:
         "files_digest_sha256": fresh["files_digest_sha256"],
         "files_checked": len(entries),
     }
+
+def required_validation_inputs(*, pool_tag: str = "", analog: bool = False) -> tuple[str, ...]:
+    """Enumerate the minimum immutable data inputs used by validation.
+
+    Only the required static store and pool artifacts are included here.
+    Derived caches and mutable metric-key memoization remain outside this
+    minimal source-input attestation.
+    """
+    import re
+
+    if not isinstance(pool_tag, str) or not re.fullmatch(r"(?:_[A-Za-z0-9_-]+)?", pool_tag):
+        raise ValueError("Invalid candidate-pool tag")
+    files = [
+        "store/meta.parquet", "store/offsets.i64", "store/mz.f32",
+        "store/it.f32", f"pool{pool_tag}.parquet",
+    ]
+    if analog:
+        files.extend((
+            f"pool_fp2048{pool_tag}.npy",
+            f"pool_fp_keys{pool_tag}.parquet",
+        ))
+    return tuple(sorted(files))
+
+
+def require_validation_coverage(manifest: dict, *, pool_tag: str = "",
+                                analog: bool = False) -> tuple[str, ...]:
+    """Fail closed if an opt-in inventory omits an input consumed by this run.
+
+    Must be followed by verify_manifest to validate file contents and hashes.
+    """
+    if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), list):
+        raise ValueError("Invalid local artifact inventory")
+    paths = set()
+    for entry in manifest["files"]:
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+            raise ValueError("Malformed local artifact path entry")
+        paths.add(entry["path"])
+    expected = required_validation_inputs(pool_tag=pool_tag, analog=analog)
+    missing = sorted(set(expected) - paths)
+    if missing:
+        raise ValueError(
+            "Source manifest omits required validation inputs: " + ", ".join(missing)
+        )
+    return expected
+
