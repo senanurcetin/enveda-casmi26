@@ -148,6 +148,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Local checks:** isolated synthetic NumPy/Pandas and D2 evidence smoke cases passed. Per user instruction, no CI or full scientific suite was triggered.
 - **Unverified:** Kaggle dataset access, C1/C2/C3 rerun and metric improvement. See [scientific data-quality audit](D2_FINGERPRINT_EVIDENCE_GATE.md).
 
+## P0 — reject malformed Morgan inputs and audit frozen vectors (2026-10-19)
+
+- **Implemented:** fingerprint construction now uses the same `CandidatePool` invariants as inference and fails closed for invalid RDKit SMILES, zero-heavy-atom molecules and all-zero Morgan fingerprints.
+- **Implemented:** a read-only, batched `audit_pool_fingerprints.py` checks candidate-key order, packed-vector shape, zero-vector prevalence and optional provenance manifest on immutable existing research artifacts.
+- **Tests:** synthetic generator failure/no-output guards and aggregate-quality regressions added. Local isolated RDKit and NumPy smoke checks passed; full scientific suite and GitHub CI were **not run** per instruction.
+- **Pending:** run the audit against authorized full candidate pools, rebuild only separately tagged variants, and independently evaluate C1/C2/C3. See [fingerprint quality protocol](FINGERPRINT_ZERO_VECTOR_AUDIT.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)

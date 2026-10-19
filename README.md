@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## Fail-closed Morgan fingerprint generation and audit (2026-10-19)
+
+[Read-only fingerprint quality auditing](docs/FINGERPRINT_ZERO_VECTOR_AUDIT.md) is now available to detect previously signed but chemically invalid all-zero candidate vectors. New fingerprint builds reject malformed SMILES, zero-heavy-atom structures and empty Morgan vectors before output files are written, and use the same candidate mass ordering as inference. Historical artifacts are untouched; no Kaggle performance improvement is claimed.
+
 ## D2 scientific decision gating and candidate mass checks (2026-10-19)
 
 [Verified D2 fingerprint evidence and candidate mass validation](docs/D2_FINGERPRINT_EVIDENCE_GATE.md) now prevents ACCEPT/REJECT judgments from D2 runs lacking source-bound fingerprint records, even when query signatures and a general source inventory match. D1-only and verified D1–D2 ablations remain supported. Candidate mass windows reject impossible values instead of propagating invalid ppm calculations. No CI or new competition-score claim.
