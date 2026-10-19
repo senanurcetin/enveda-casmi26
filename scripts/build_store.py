@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from casmi.config import ARTIFACT_DIR, DATA_DIR  # noqa: E402
 from casmi.chem.masses import TEST_ADDUCTS, formula_mass, neutral_mass, parse_adduct  # noqa: E402
 from casmi.spectra.clean import CleanConfig, clean_peaks_fast  # noqa: E402
+from casmi.spectra.store_integrity import inspect_store_layout  # noqa: E402
 
 STORE_CFG = CleanConfig(min_rel_intensity=0.001, max_peaks=150, top_k_per_window=0)
 META_COLS = ["ingest_lib", "inchikey14", "molecular_formula", "ionization_mode", "instrument_type",
@@ -95,6 +96,14 @@ def main():
     for c in ["ingest_lib", "ionization_mode", "instrument_type", "adduct", "collision_energy_orig_units"]:
         meta[c] = meta[c].astype("category")
     meta.to_parquet(out / "meta.parquet", index=False)
+    # Reject silently truncated/shifted flat arrays immediately after the build.
+    # This audits structural alignment, not the chemical validity of each peak.
+    layout = inspect_store_layout(
+        out, expected_spectra=len(meta),
+        metadata_n_peaks=meta["n_peaks"].to_numpy(),
+    )
+    if layout.peak_count != n_peaks_total:
+        raise ValueError("Builder peak total disagrees with persisted store")
     print(f"\nstore: {len(meta):,} spectra, {n_peaks_total:,} peaks "
           f"({n_peaks_total * 8 / 1e9:.2f} GB), built in {time.time() - t0:.0f}s")
 
