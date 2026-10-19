@@ -89,6 +89,10 @@ data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_ge
 - Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
 - These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
 
+## D1 ionization-mode separation (2026-10-19)
+
+A [D1 scientific audit](docs/D1_IONIZATION_MODE_AUDIT.md) corrects reference matching for mixed positive/negative ionization acquisitions. Each spectrum now uses its own ionization-mode reference group; missing-mode references contribute zero rather than creating cross-mode matches. The research-only change has synthetic tests but no new CASMI leaderboard result.
+
 ## Numeric peak-content auditing (2026-10-19)
 
 A [read-only chunked peak-content audit](docs/PEAK_CONTENT_QUALITY_AUDIT.md) now detects invalid m/z and intensity values in the stored MS/MS arrays. The standard store-layout check remains fast; full peak-content scanning is optional. Both peak cleaners also reject nonpositive fragment m/z. Historical scores are unchanged and no data-dependent accuracy improvement has been claimed.

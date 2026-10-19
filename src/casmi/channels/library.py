@@ -62,14 +62,40 @@ class LibraryIndex:
         return rows
 
     def score(self, query_spectra, key, excluded):
-        """Best, mean-of-best-per-spectrum similarity, and number of references used."""
-        mode = query_spectra[0]["mode"]
-        rows = self.references(key, mode, {s["adduct"] for s in query_spectra}, excluded)
-        if rows is None or len(rows) == 0:
+        """Best and mean per-spectrum match using ONLY same-mode references.
+
+        A molecule can have spectra collected in different ionization modes.
+        Each query spectrum must be compared exclusively with references from
+        its own mode; using query_spectra[0]["mode"] for every spectrum
+        incorrectly compares positive and negative ionizations. If a mode has
+        no valid references, its query spectra contribute zero to the mean.
+        """
+        if not query_spectra:
             return 0.0, 0.0, 0
-        refs = [self._clean(r) for r in rows]
-        per_spec = []
-        for q in query_spectra:
-            per_spec.append(max(entropy_similarity(q["mz_c"], q["it_c"], rm, ri, self.cfg.tol_da, 0.0)
-                                for rm, ri in refs))
-        return float(max(per_spec)), float(np.mean(per_spec)), len(rows)
+        by_mode = {}
+        for index, spectrum in enumerate(query_spectra):
+            by_mode.setdefault(spectrum["mode"], []).append(index)
+        per_spec = np.zeros(len(query_spectra), dtype=np.float64)
+        used_rows = set()
+        for mode, indices in by_mode.items():
+            rows = self.references(
+                key, mode,
+                {query_spectra[i]["adduct"] for i in indices},
+                excluded,
+            )
+            if rows is None or len(rows) == 0:
+                continue
+            references = [self._clean(int(row)) for row in rows]
+            used_rows.update(int(row) for row in rows)
+            for i in indices:
+                query = query_spectra[i]
+                per_spec[i] = max(
+                    entropy_similarity(
+                        query["mz_c"], query["it_c"], rm, ri,
+                        self.cfg.tol_da, 0.0,
+                    )
+                    for rm, ri in references
+                )
+        if not used_rows:
+            return 0.0, 0.0, 0
+        return float(per_spec.max()), float(per_spec.mean()), len(used_rows)
