@@ -169,6 +169,13 @@ A follow-up code audit identified that D2 discarded knocked-out reference rows *
 - **Verification:** 5 isolated local RDKit/NumPy cases passed; additional synthetic tests committed. No GitHub CI or full licensed data rerun.
 - **Pending:** separately signed D3-enabled novelty evaluation and negative controls on authorized data. See [generated candidate integrity protocol](GENERATED_CANDIDATE_INTEGRITY.md).
 
+## P0 — D2 analog-reference cache integrity (2026-10-19)
+
+- **Implemented:** opt-in `run_validation.py --fresh-analog-index` bypasses all D2 sparse-matrix cache reads/writes and computes an attested digest over selected reference IDs, CSR matrix and model configuration.
+- **Implemented:** D2 statistical model comparisons now require independent cache-free index evidence, matching source input inventory and fingerprint sidecar; historical cached D2 reports remain exploratory.
+- **Coverage:** synthetic cache-free/cache-loaded and contradictory provenance tests; existing D1 and D1-vs-D2 comparisons remain usable when the D2 run is verified.
+- **Remaining:** authorized full dataset index rebuild, file manifest comparison, model-independent replication and full scientific regression suite; **CI deliberately not invoked**. See [D2 index evidence protocol](D2_FRESH_INDEX_EVIDENCE.md).
+
 ## Scientific quality gates
 
 ### Gate G0 — population identity (**enforced in code**)
