@@ -15,6 +15,37 @@
 | `tests/test_*_stdlib.py` | Offline reproducibility and regression smoke tests | Checked-in code, historical JSON |
 | `.github/workflows/nexus-research-checks.yml` | CI for offline tests | Repo source |
 
+## Updated research interface and Kaggle readiness (20 October 2026)
+
+The responsive NEXUS 2.0 dashboard includes a dedicated **Research readiness**
+section separating completed repository integrity safeguards from pending
+Kaggle authentication, licensed input access, independent evaluation and
+Notebook submission. The panel is intentionally read-only; it never invents
+live scores or marks unperformed runs as completed. The existing official
+NEXUS SVG identity and historical experiment graphics remain intact.
+
+A new local, non-destructive readiness gate checks official file presence,
+the submission CSV header, required source scripts and (if installed)
+Parquet footers/columns without loading the training dataset into memory:
+
+```bash
+python scripts/kaggle_submission_readiness.py \
+  --data-dir /path/to/authorized/competition-data \
+  --json-out runs/kaggle-input-readiness.json
+```
+
+Expected official files: `train.parquet`, `test.parquet`,
+`sample_submission.csv`. A PASS is only local file/schema readiness,
+not proof of competition-rule acceptance, GPU/runtime viability,
+successful notebook execution or leaderboard evaluation.
+
+**SentinelX host check on 20 October 2026:** Windows agent reachable;
+on its current execution environment, Kaggle CLI and Python commands
+were not on PATH, `KAGGLE_API_TOKEN` was not set, and the expected
+CASMI dataset directory was absent. No private credential was printed
+or persisted. This check describes the connected host environment
+rather than the user's Kaggle account status.
+
 ## View the NEXUS dashboard
 
 From the **repository root**:
