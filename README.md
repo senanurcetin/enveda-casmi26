@@ -15,6 +15,21 @@ fusion notebook with our own pipeline (`ranker-v16-gen2`, below) fused in as a t
 transfer to the leaderboard and a prize place (≈0.46 public) was out of reach; the hand-off and every result
 are in [HANDOFF.md](HANDOFF.md).
 
+## Research dashboard and Kaggle execution readiness (20 October 2026)
+
+The [NEXUS research intelligence dashboard](site/index.html) now includes a
+responsive **Kaggle readiness** panel and explicit historical-vs-current
+evidence states. Its data charts are sourced from the checked-in
+`reports/data_profile.json`, not live Kaggle or BigQuery connections.
+
+For authorized local data, `python scripts/kaggle_submission_readiness.py
+--data-dir /path/to/casmi-data` checks file presence, required Parquet
+fields and notebook components without downloading or submitting anything.
+See [design and access status](docs/NEXUS-CASMI26.md).
+The research project is not yet Kaggle-execution-complete: credential
+authorization, actual competition data, offline Notebook rerun and a fresh
+`submission.csv` still require verification.
+
 ## Approach in one paragraph
 
 Retrieve, then rank. Candidates come from a structure pool (training structures + COCONUT +
