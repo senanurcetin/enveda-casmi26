@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import nbformat
+from research_style import finalize
 from nbformat.v4 import new_code_cell as C, new_markdown_cell as M, new_notebook
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("casmi26-ranker-shortcut.ipynb")
@@ -31,7 +32,7 @@ How much it can exploit depends on *your simulation design*, not on the test set
 Plus a **knockout audit** you can run on your own ranker table, and the numbers from my full pipeline, where removing pool-membership features moved held-out Class-1 MRR from **0.375 to 0.839**.'''))
 
 A(M("## 1. Setup"))
-A(C(r'''import glob, re, time
+A(C(r'''import glob, re, time, os
 from pathlib import Path
 
 import numpy as np
@@ -44,7 +45,7 @@ SEED = 42
 rng = np.random.default_rng(SEED)
 T0 = time.time()
 hits = sorted(glob.glob("/kaggle/input/**/train.parquet", recursive=True))
-DATA = Path(hits[0]).parent if hits else Path("C:/Users/MONSTER/kaggle-data/casmi26")
+DATA = Path(hits[0]).parent if hits else Path(os.environ.get("CASMI_DATA_DIR", "data"))
 TRAIN = pq.ParquetFile(DATA / "train.parquet")
 print(DATA, TRAIN.metadata.num_rows, "spectra")
 
@@ -223,8 +224,8 @@ res.style.format({"V-in C1": "{:.3f}", "V-in C2": "{:.3f}"}).background_gradient
 A(C(r'''fig, ax = plt.subplots(figsize=(10, 3.8))
 lab = res["trained on"] + "→" + res["evaluated on"] + " | " + res["features"]
 x = np.arange(len(res))
-ax.bar(x - 0.2, res["V-in C1"], 0.4, label="Class 1", color="#4C72B0")
-ax.bar(x + 0.2, res["V-in C2"], 0.4, label="Class 2", color="#DD8452")
+ax.bar(x - 0.2, res["V-in C1"], 0.4, label="Class 1", color="#00E0FF")
+ax.bar(x + 0.2, res["V-in C2"], 0.4, label="Class 2", color="#8F9BFF")
 ax.set_xticks(x, lab, fontsize=8, rotation=20, ha="right")
 ax.set_ylabel("V-in MRR@25"); ax.set_ylim(0, 1.05); ax.legend(loc="upper right")
 ax.set_title("Same queries, same model family — only the simulation design and one feature change")
@@ -308,5 +309,5 @@ A(C(r'''print(f"total runtime {time.time() - T0:.0f}s")'''))
 
 nb = new_notebook(cells=cells, metadata={"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                                          "language_info": {"name": "python", "version": "3.12"}})
-nbformat.write(nb, OUT)
+nbformat.write(finalize(nb), OUT)
 print("wrote", OUT, len(cells), "cells")

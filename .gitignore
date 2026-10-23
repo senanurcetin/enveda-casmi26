@@ -29,3 +29,7 @@ runs/*.done
 .kaggle/
 kaggle.json
 access_token
+
+# Local publication readbacks and execution logs
+runs/kaggle-*/
+.artifacts/

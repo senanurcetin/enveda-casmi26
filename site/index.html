@@ -12,9 +12,18 @@
 @media(max-width:1200px){.hero-art{width:200px}.kpis{grid-template-columns:repeat(2,1fr)}}@media(max-width:850px){.shell{display:block}.sidebar{position:relative;height:auto;padding:18px 24px;display:block}.logo{width:138px;margin-bottom:10px}.brand-meta,.sidebar-foot{display:none}.menu{display:flex;overflow:auto;margin:10px 0 0;gap:4px}.menu a{white-space:nowrap;padding:8px}.main{padding:0 20px 40px}.hero-art{display:none}.grid,.two{grid-template-columns:1fr}}@media(max-width:480px){.kpis{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:15px;min-height:128px}.hero{min-height:280px}.hero h1{letter-spacing:-1.5px}.topbar{min-height:67px}.toplink{display:none}.score-row{grid-template-columns:minmax(100px,1fr) 40px}.library-row{grid-template-columns:105px minmax(0,1fr) 54px;gap:7px}.panel{padding:18px}.footer{display:block}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 .readiness{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.readiness-step{border:1px solid var(--line);border-radius:14px;background:#0b1829;padding:20px}.readiness-step h3{font-size:14px;margin:10px 0}.readiness-step p{font-size:12px;color:var(--muted);margin:0 0 14px}.phase{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);font-weight:800}.state{font-size:11px;color:#ffd08a}.reference{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.reference a{border:1px solid #305071;border-radius:9px;padding:9px 12px;font-size:12px;color:#cbeaff}.reference a:focus-visible,.menu a:focus-visible,.toplink:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}.evidence-note{padding:15px 19px;border-left:3px solid var(--cyan);background:#102135;border-radius:7px;font-size:12px;color:#b9d0e7;margin:16px 0 0}.evidence-note strong{color:#ebfaff}@media(max-width:1050px){.readiness{grid-template-columns:1fr}}@media print{.sidebar,.toplink{display:none}.shell{display:block}.panel,.readiness-step{break-inside:avoid}body{background:white;color:#17243b}.main{max-width:none}}
+
+.skip{position:absolute;left:16px;top:-80px;z-index:10;padding:12px;background:var(--cyan);color:#061524}.skip:focus{top:16px}
+select,input{font:inherit;color:var(--light);background:#0b1525;border:1px solid #52667d;border-radius:8px;padding:10px 12px;max-width:100%;min-height:44px}
+select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.filter-label{display:block;font-size:12px;color:#b9c5ce;margin:0 0 7px}#model-family{width:100%;margin-bottom:10px;font-size:12px}
+.evidence-controls{display:grid;grid-template-columns:1fr 2fr;gap:18px}.evidence-controls input,.evidence-controls select{width:100%}.evidence-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.evidence-card{border:1px solid var(--line);border-radius:10px;padding:18px;background:#0b1525}.evidence-card h3{margin:12px 0 8px}.evidence-card p{font-size:12px;color:#b9c5ce}.evidence-card a{font-size:12px;color:var(--cyan);text-decoration:underline}.evidence-card .pill{color:#d2d9ff}.evidence-card[data-state="pending"] .pill{color:var(--warn);border-color:#766140}
+@media(max-width:650px){.evidence-controls,.evidence-cards{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.hero h1{font-size:clamp(31px,8vw,45px)}}
 </style>
 </head>
 <body>
+<a class="skip" href="#overview">Skip to research content</a>
 <div class="shell">
 <aside class="sidebar" aria-label="Project navigation">
   <a href="#overview" aria-label="NEXUS CASMI26 overview"><img class="logo" src="assets/nexus-official.svg" alt="NEXUS official logo"></a>
@@ -25,7 +34,8 @@
     <a href="#data"><span>03</span>Data intelligence</a>
     <a href="#quality"><span>04</span>Validation &amp; risk</a>
     <a href="#readiness"><span>05</span>Research readiness</a>
-    <a href="#sources"><span>06</span>Sources</a>
+    <a href="#evidence"><span>06</span>Evidence explorer</a>
+    <a href="#sources"><span>07</span>Sources</a>
   </nav>
   <div class="sidebar-foot"><span class="point"></span> Historical snapshot, not live Kaggle or BigQuery data<br><br>© NEXUS · CASMI26</div>
 </aside>
@@ -46,8 +56,9 @@
   <section class="section" id="models">
     <div class="section-head"><div><div class="micro">02 / EXPERIMENTS</div><h2>Model performance &amp; research channels</h2></div><p>Recorded public leaderboard experiments, not confidence intervals or a prediction of the final private score.</p></div>
     <div class="grid">
-      <article class="panel"><h3>Public score progression</h3><p class="panel-desc">MRR@25 · All results drawn from the dated README experiment summary. Purple bars involve the external v4n fusion base.</p>
-        <div id="scores">
+      <article class="panel"><h3>Public score progression</h3><p class="panel-desc">MRR@25 · All results drawn from the source-linked historical evidence registry. Purple bars involve the external v4n fusion base.</p>
+        <label class="filter-label" for="model-family">Model attribution</label><select id="model-family"><option value="all">All recorded experiments</option><option value="own">Own pipeline only</option><option value="external">External base only</option><option value="fusion">Fusion only</option></select>
+        <div id="scores" aria-live="polite">
           <div class="score-row"><div><div class="score-info"><span>Library + analog</span><strong>0.190</strong></div><div class="track"><span class="fill" style="width:38%"></span></div></div><span class="tag">OWN</span></div>
           <div class="score-row"><div><div class="score-info"><span>Learned ranker (clean priors)</span><strong>0.258</strong></div><div class="track"><span class="fill" style="width:52%"></span></div></div><span class="tag">OWN</span></div>
           <div class="score-row"><div><div class="score-info"><span>+ PubChemLite</span><strong>0.273</strong></div><div class="track"><span class="fill" style="width:55%"></span></div></div><span class="tag">OWN</span></div>
@@ -56,9 +67,9 @@
           <div class="score-row fused"><div><div class="score-info"><span>External v4n base</span><strong>0.420</strong></div><div class="track"><span class="fill" style="width:84%"></span></div></div><span class="tag">BASE</span></div>
           <div class="score-row fused"><div><div class="score-info"><span>v4n + NEXUS rank-list fusion</span><strong>0.422</strong></div><div class="track"><span class="fill" style="width:84.4%"></span></div></div><span class="tag">FUSION</span></div>
         </div>
-        <div class="provenance">Source: README.md and HANDOFF.md · Last recorded result 2026-10-08 · Scores shown on a 0–0.50 visual scale.</div>
+        <div class="provenance">Source: reports/research_evidence.json → EXPERIMENTS.md / HANDOFF.md · Last recorded result 2026-10-08 · Scores shown on a 0–0.50 visual scale.</div>
       </article>
-      <article class="panel"><h3>Four independent evidence channels</h3><p class="panel-desc">The system retrieves mass-compatible structures, scores candidates, then aggregates per molecule.</p>
+      <article class="panel"><h3>Four complementary evidence channels</h3><p class="panel-desc">The system retrieves mass-compatible structures, scores candidates, then aggregates per molecule.</p>
         <div class="channel"><div class="channel-mark">D1</div><div><strong>Direct library search</strong><small>Measured MS/MS entropy similarity to known reference spectra.</small></div></div>
         <div class="channel"><div class="channel-mark">D2</div><div><strong>Analog propagation</strong><small>Mass-shifted spectra and molecular fingerprint similarity.</small></div></div>
         <div class="channel"><div class="channel-mark">D3</div><div><strong>Spectrum → fingerprint</strong><small>Learned molecular fingerprint likelihood from spectral evidence.</small></div></div>
@@ -95,7 +106,7 @@
         <div class="risk"><div class="risk-num">03</div><div><strong>Validation / leaderboard discordance</strong><p>Use matched-molecule paired bootstrap deltas and record losses, not just successful hyperparameter probes.</p></div></div>
         <div class="risk"><div class="risk-num">04</div><div><strong>Submission integrity</strong><p>Check exact molecule coverage, duplicate IDs, nonempty ranked slots, 25-candidate maximum and optional chemistry-level duplicates.</p></div></div>
       </article>
-      <article class="panel"><h3>Audit workflow</h3><p class="panel-desc">New non-mutating pre-submission CLI complements the existing scorer and production pipeline.</p>
+      <article class="panel"><h3>Audit workflow</h3><p class="panel-desc">A non-mutating pre-submission CLI complements the research scorer and candidate pipeline.</p>
         <div class="statline"><span>Submission target</span><strong>1 row / molecule</strong></div>
         <div class="statline"><span>Candidate budget</span><strong>1–25 ranked SMILES</strong></div>
         <div class="statline"><span>Official comparison unit</span><strong>Canonical InChIKey14</strong></div>
@@ -110,9 +121,9 @@
   <section class="section" id="readiness">
     <div class="section-head"><div><div class="micro">05 / EXECUTION GATES</div><h2>Kaggle research readiness</h2></div><p>Transparent release checklist. These are repository capabilities and outstanding requirements, not live evidence of executed experiments.</p></div>
     <div class="readiness">
-      <article class="readiness-step"><div class="phase">01 / SOURCE ACCESS</div><h3>Competition data and account</h3><p>Official data access requires Kaggle account authorization and acceptance of competition rules. The local SentinelX host currently has no configured Kaggle CLI/token or CASMI dataset path.</p><div class="state">Not verified on connected host</div></article>
+      <article class="readiness-step"><div class="phase">01 / SOURCE ACCESS</div><h3>Competition data and account</h3><p>Official data access requires Kaggle account authorization and acceptance of competition rules. Publication access was verified on 23 October 2026. Full corrected-protocol model evaluation still requires licensed inputs and independent run evidence.</p><div class="state">Publication access verified · model revalidation pending</div></article>
       <article class="readiness-step"><div class="phase">02 / SCIENTIFIC REBUILD</div><h3>Signed candidate &amp; D2 index</h3><p>Preserve a complete input SHA-256 inventory; require content-bound candidate fingerprints; rebuild D2's sparse reference index without cache for decision-grade runs.</p><div class="state">Implementation available · real-data execution pending</div></article>
-      <article class="readiness-step"><div class="phase">03 / SUBMISSION</div><h3>Notebook and ranked structures</h3><p>Validate one row per molecule and 1–25 ranked SMILES. Kaggle requires an internet-disabled Notebook producing submission.csv within the competition runtime limit.</p><div class="state">Submission not executed or verified</div></article>
+      <article class="readiness-step"><div class="phase">03 / SUBMISSION</div><h3>Owned research notebooks</h3><p>Both public research notebooks completed their updated CPU runs. Source hashes match the tracked publication bundles. These demonstrate research analyses; full corrected-pipeline evaluation and a new competition submission remain separate.</p><div class="state">2 / 2 COMPLETE · source readback verified</div><a class="pill" href="../reports/kaggle_publications.json">Inspect publication evidence</a></article>
     </div>
     <div class="evidence-note"><strong>Historical evidence ≠ current score.</strong> The 0.422 public MRR@25 is the recorded result from 8 October 2026. Repository integrity improvements since that date have not been measured on the hidden Kaggle evaluation set.</div>
     <div class="reference">
@@ -124,8 +135,18 @@
     </div>
   </section>
 
+  <section class="section" id="evidence">
+    <div class="section-head"><div><div class="micro">06 / RESEARCH REVIEW</div><h2>What does the evidence support?</h2></div><p>Inspect recorded results, implemented safeguards and uncompleted research separately. Reviewed 23 October 2026.</p></div>
+    <div class="panel">
+      <div class="evidence-controls"><div><label class="filter-label" for="evidence-state">Evidence state</label><select id="evidence-state"><option value="all">All evidence</option><option value="historical">Historical records</option><option value="implemented">Implemented controls</option><option value="pending">Pending evaluation</option></select></div><div><label class="filter-label" for="evidence-query">Search research evidence</label><input id="evidence-query" type="search" placeholder="Try leakage, spectra or uncertainty"></div></div>
+      <p class="provenance" id="evidence-count" role="status">Loading source-linked evidence…</p>
+      <div id="evidence-cards" class="evidence-cards"></div>
+      <div class="reference"><a href="../reports/research_review.md" download>Download research review</a><a href="../reports/research_evidence.json">Inspect evidence JSON</a><a href="../MODEL_CARD.md">Model card</a><a href="../DATA_CARD.md">Data card</a></div>
+    </div>
+  </section>
+
   <section class="section" id="sources">
-    <div class="section-head"><div><div class="micro">06 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
+    <div class="section-head"><div><div class="micro">07 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
     <div class="panel"><h3>Review underlying artifacts</h3><p class="panel-desc">All conclusions link back to named source files. The published brand identity is the approved Google Drive NEXUS SVG.</p>
       <div class="footlinks"><a href="../README.md">Project README ↗</a><a href="../EXPERIMENTS.md">Experiment log ↗</a><a href="../HANDOFF.md">Handoff &amp; caveats ↗</a><a href="../ARCHITECTURE.md">Architecture ↗</a><a href="../reports/data_profile.json">Dataset profile JSON ↗</a><a href="https://github.com/senanurcetin/enveda-casmi26" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
       <p class="provenance">Run via <code>python -m http.server 8000</code> in the repository root, then open <code>http://localhost:8000/site/</code>. The profile graph requires an HTTP server because browser file:// access can block JSON fetches.</p>
@@ -177,6 +198,48 @@ async function renderProfile(){
   }
 }
 renderProfile();
+
+let researchLedger=null;
+function renderEvidence(){
+  if(!researchLedger)return;
+  const state=document.getElementById('evidence-state').value;
+  const query=document.getElementById('evidence-query').value.trim().toLowerCase();
+  const selected=researchLedger.claims.filter(row=>(state==='all'||row.state===state)&&(`${row.title} ${row.detail}`).toLowerCase().includes(query));
+  const target=document.getElementById('evidence-cards');target.replaceChildren();
+  for(const row of selected){
+    const card=document.createElement('article');card.className='evidence-card';card.dataset.state=row.state;
+    const tag=document.createElement('span');tag.className='pill';tag.textContent=row.state.toUpperCase();
+    const title=document.createElement('h3');title.textContent=row.title;
+    const detail=document.createElement('p');detail.textContent=row.detail;
+    const source=document.createElement('a');source.href='../'+row.source;source.textContent='Inspect source →';
+    card.append(tag,title,detail,source);target.appendChild(card);
+  }
+  document.getElementById('evidence-count').textContent=selected.length+' of '+researchLedger.claims.length+' evidence records'+(selected.length?'':' — no matching records. Clear the search or change the filter.');
+}
+function renderScores(){
+  if(!researchLedger)return;
+  const family=document.getElementById('model-family').value;
+  const target=document.getElementById('scores');target.replaceChildren();
+  for(const row of researchLedger.experiments.filter(row=>family==='all'||row.family===family)){
+    const el=document.createElement('div');el.className='score-row'+(row.family==='own'?'':' fused');
+    const body=document.createElement('div'),info=document.createElement('div');info.className='score-info';
+    const label=safeNode(row.label),value=document.createElement('strong');value.textContent=row.score.toFixed(3);info.append(label,value);
+    const track=document.createElement('div');track.className='track';const fill=document.createElement('span');fill.className='fill';fill.style.width=(row.score/0.5*100)+'%';track.appendChild(fill);body.append(info,track);
+    const tag=document.createElement('span');tag.className='tag';tag.textContent=row.family.toUpperCase();el.append(body,tag);target.appendChild(el);
+  }
+}
+async function loadEvidence(){
+  try{
+    const response=await fetch('../reports/research_evidence.json');if(!response.ok)throw Error('HTTP '+response.status);
+    const data=await response.json();if(data.schema_version!==1||!Array.isArray(data.claims)||!Array.isArray(data.experiments))throw Error('Unsupported evidence registry');
+    researchLedger=data;renderEvidence();renderScores();
+  }catch(error){document.getElementById('evidence-count').textContent='Evidence registry unavailable. Serve the repository root and inspect the linked JSON. '+error.message;}
+}
+document.getElementById('evidence-state').addEventListener('change',renderEvidence);
+document.getElementById('evidence-query').addEventListener('input',renderEvidence);
+document.getElementById('model-family').addEventListener('change',renderScores);
+loadEvidence();
+
 </script>
 </body>
 </html>

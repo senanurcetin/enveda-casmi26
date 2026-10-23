@@ -1,0 +1,18 @@
+{
+  "id": "senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score",
+  "title": "CASMI26: A Bigger Candidate Pool Lowered My Score",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "dataset_sources": [
+    "senanuretin/casmi26-structure-sources"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "enveda-CASMI26-molecule-id-mass-spectra"
+  ]
+}

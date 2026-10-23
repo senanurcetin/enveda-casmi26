@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import nbformat
+from research_style import finalize
 from nbformat.v4 import new_code_cell as C, new_markdown_cell as M, new_notebook
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("casmi26-bigger-pool.ipynb")
@@ -22,7 +23,7 @@ If the answer is not in your candidate pool, your ranker scores 0 on that molecu
 
 Two of the three additions *hurt*. My validation set got all three wrong: it said PubChemLite would **hurt**, and that the other two would change nothing.
 
-This notebook shows **why** from the competition data, in about a minute on CPU. It then shows the validation set that *did* track these leaderboard moves, and how to build one.
+This notebook diagnoses candidate coverage and decoy density from the competition data on CPU. The leaderboard tables are quoted historical results. It then shows the validation set that *did* track these leaderboard moves, and how to build one.
 
 **TL;DR**
 1. MRR is a ranking metric. Every structure you add inside a query's ±10 ppm window is a new competitor for rank 1. A new source helps only if the **answers** it adds outweigh the **decoys**.
@@ -30,7 +31,7 @@ This notebook shows **why** from the competition data, in about a minute on CPU.
 3. A validation set of *famous* natural products (like `enveda-np-examples`) barely sees decoy costs. Its answers are easy to find, and nearly all are in COCONUT, so it cannot see a new source's benefit either. Harder held-out queries tracked both leaderboard losses.'''))
 
 A(M("## 1. Setup — competition data plus four public structure lists"))
-A(C(r'''import glob, re, time
+A(C(r'''import glob, re, time, os
 from pathlib import Path
 import numpy as np, pandas as pd, pyarrow.parquet as pq
 import matplotlib.pyplot as plt
@@ -38,7 +39,7 @@ import matplotlib.pyplot as plt
 T0 = time.time()
 def find(pattern):
     hits = sorted(glob.glob(f"/kaggle/input/**/{pattern}", recursive=True)) or \
-           sorted(glob.glob(f"C:/Users/MONSTER/kaggle-data/**/{pattern}", recursive=True))
+           sorted(glob.glob(str(Path(os.environ.get("CASMI_DATA_DIR", "data")) / "**" / pattern), recursive=True))
     assert hits, pattern
     return Path(hits[0])
 
@@ -166,7 +167,7 @@ It rejected PubChemLite (−0.035 on Class 2, the only effect it can see is the 
 - the hosts describe these as *deliberately common* natural products. They have many close relatives in the libraries, so the answer usually sits far ahead of any new isomer;
 - 249 of the 250 answers are in COCONUT, so V-in can never see the *benefit* of a new source either.
 
-The second set (**V-real**) uses 600 structures from the training libraries that my ranker never trained on (excluded at scaffold level, tautomers included). Half are COCONUT members; half are known only through PubChemLite. They are harder and less famous, which is closer to what the leaderboard implies about the real Class 2.
+The second set (**V-real**) uses 600 structures from the training libraries that my ranker never trained on (grouped by the historical structure-identity protocol; this is not a verified scaffold split). Half are COCONUT members; half are known only through PubChemLite. They are harder and less famous, which is closer to what the leaderboard implies about the real Class 2.
 
 Numbers from my pipeline (logged runs; the ranker was retrained once, for the PubChemLite pool, as on the leaderboard; V-real = Class-2 MRR on its COCONUT half):'''))
 A(C(r'''runs = pd.DataFrame({
@@ -181,11 +182,11 @@ fig, ax = plt.subplots(1, 2, figsize=(11, 3.8))
 x = np.arange(len(runs))
 for col, mk in [("V-in Class 2", "o"), ("V-real Class 2", "s")]:
     ax[0].plot(x, runs[col] - runs[col].iloc[1], marker=mk, label=col)
-ax[0].plot(x, 2 * (runs["public LB"] - runs["public LB"].iloc[1]), marker="^", color="k", label="public LB (×2)")
+ax[0].plot(x, 2 * (runs["public LB"] - runs["public LB"].iloc[1]), marker="^", color="#DDB26F", label="public LB (×2)")
 ax[0].axhline(0, color="grey", lw=0.8)
 ax[0].set_xticks(x, ["base", "+PCL", "+PCL+ChEBI+LM", "+PCL+PubChem"], rotation=15)
 ax[0].set_title("change vs. the PubChemLite pool"); ax[0].legend(fontsize=8)
-ax[1].bar(res.pool.str.replace("+ ", "+\n"), res["mean window"], color="#6b8fb5")
+ax[1].bar(res.pool.str.replace("+ ", "+\n"), res["mean window"], color="#4EA8FF")
 ax[1].set_title("mean candidates in a ±10 ppm window"); ax[1].tick_params(axis="x", labelsize=8)
 plt.tight_layout(); plt.show()'''))
 
@@ -194,7 +195,7 @@ A(M(r'''V-real's Class-2 score falls with every source added after PubChemLite, 
 ## 4. Takeaways
 - **Pool size is a trade, not a free win.** Check how many decoys a source adds inside your query windows, not just how many answers it covers.
 - **Validate on queries that look like the test, not like a showcase.** A held-out set of famous compounds tells you how well you retrieve famous compounds.
-- **Hold out at scaffold level** (skeleton or tautomer-aware keys, not InChIKey), or V-real's structures leak into training through their tautomers.
+- **Group metric-equivalent structures before splitting.** Tautomer-canonical keys prevent one identity leak; scaffold independence needs a separate scaffold definition and audit.
 - **One change per submission** when the leaderboard is your only judge of a benefit.
 
 *Previous notebook in this series: [Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool): shortcut features in knockout-trained rankers.*'''))
@@ -202,5 +203,5 @@ A(C(r'''print(f"notebook ran in {time.time() - T0:.0f}s")'''))
 
 nb = new_notebook(cells=cells, metadata={"kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"},
                                          "language_info": {"name": "python"}})
-nbformat.write(nb, OUT)
+nbformat.write(finalize(nb), OUT)
 print(f"wrote {OUT}")

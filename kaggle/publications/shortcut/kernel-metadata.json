@@ -1,0 +1,16 @@
+{
+  "id": "senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool",
+  "title": "CASMI26: Your Ranker Learns How You Built the Pool",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "enveda-CASMI26-molecule-id-mass-spectra"
+  ]
+}
