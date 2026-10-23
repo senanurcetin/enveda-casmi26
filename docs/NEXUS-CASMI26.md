@@ -1,5 +1,7 @@
 # NEXUS CASMI26 — Research Intelligence
 
+**Publication review, 24 October 2026:** both owned Kaggle research notebooks are COMPLETE with matching source hashes. See [publication readback](../reports/kaggle_publications.json), [current documentation](README.md) and [model card](../MODEL_CARD.md). The dated host check below describes a different earlier environment; it is not the current publication status. Full corrected-pipeline evaluation remains pending.
+
 **Status:** historical research dashboard + reproducible QA utilities.  
 **Snapshot date:** 2026-10-08. This extension does **not** claim a new Kaggle run, a new model score, or a new live BigQuery connection.
 

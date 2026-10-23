@@ -1,195 +1,103 @@
-# Enveda CASMI 2026 — molecule identification from MS/MS spectra
+<p align="center"><img src="site/assets/nexus-midnight.svg" alt="NEXUS official identity" width="480"></p>
 
-![CASMI 2026 mass spectrum molecule identification workflow](docs/casmi-molecule-pipeline.svg)
+# CASMI26 · Molecular Identification Research
 
-> This is a schematic workflow illustration, **not** a competition submission image or a claim about current leaderboard rank.
+**An evidence-led, noncommercial data science portfolio:** retrieving and ranking molecular structures from tandem mass spectra under incomplete reference coverage.
 
+[Research brief](docs/hiring-summary.md) · [Documentation](docs/README.md) · [Model card](MODEL_CARD.md) · [Kaggle notebooks](kaggle/README.md) · [Interactive research dashboard](site/index.html)
 
-Kaggle competition: [enveda-CASMI26-molecule-id-mass-spectra](https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra).
-Given the tandem mass spectra of an unknown natural product, rank up to 25 candidate structures;
-scored by MRR@25 on the tautomer-canonical InChIKey (first block).
+[![Research checks](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml/badge.svg)](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml)
 
-**Project work stopped on 8 October 2026; the Kaggle competition remains open until 14 December 2026.** Best public leaderboard score **0.422**: the public v4n
-fusion notebook with our own pipeline (`ranker-v16-gen2`, below) fused in as a third ranked list
-(`casmi26-fusion-ours-d`). Our pipeline alone reached 0.309. The portfolio records a **public leaderboard snapshot dated 8 October 2026: 353 of 2,797 teams**; an undated earlier README snapshot recorded **348 of 2,791**. Both are historical, non-final ranks, not competing model scores. Work stopped because the remaining ideas did not
-transfer to the leaderboard and a prize place (≈0.46 public) was out of reach; the hand-off and every result
-are in [HANDOFF.md](HANDOFF.md).
+**Research review: 23 October 2026.** The competition experiment campaign stopped on 8 October. Subsequent work improves reliability, reproducibility and communication. Historical scores have not been recomputed under later validation corrections. No new competition submission or final private score is claimed.
 
-## Research dashboard and Kaggle execution readiness (20 October 2026)
+## The research question
 
-The [NEXUS research intelligence dashboard](site/index.html) now includes a
-responsive **Kaggle readiness** panel and explicit historical-vs-current
-evidence states. Its data charts are sourced from the checked-in
-`reports/data_profile.json`, not live Kaggle or BigQuery connections.
+Can a candidate-ranking system identify unknown natural products when the correct structure may have reference spectra, may exist only in a structure database, or may be absent from every candidate source?
 
-For authorized local data, `python scripts/kaggle_submission_readiness.py
---data-dir /path/to/casmi-data` checks file presence, required Parquet
-fields and notebook components without downloading or submitting anything.
-See [design and access status](docs/NEXUS-CASMI26.md).
-The research project is not yet Kaggle-execution-complete: credential
-authorization, actual competition data, offline Notebook rerun and a fresh
-`submission.csv` still require verification.
+The original pipeline combines mass-constrained retrieval, four evidence channels, generated candidates and learned ranking. The central finding is that **a ranker can learn how its simulated candidate pool was constructed instead of learning chemical evidence**. A second finding is that adding a database can lower accuracy by introducing more mass-compatible decoys.
 
-## Approach in one paragraph
+## Recorded results and attribution
 
-Retrieve, then rank. Candidates come from a structure pool (training structures + COCONUT +
-PubChemLite, ~1.08 M) within ±10 ppm of the query's neutral mass, plus *generated* candidates:
-biotransformations (methylation, glycosylation, homologs, acyl/sugar losses, …) applied to the
-query's spectral analogs, for molecules that are in no database. Each candidate gets evidence from
-four channels, and a LightGBM LambdaRank model trained on knockout-simulated queries ranks them:
+| Historical public MRR@25 | Score | What was measured |
+|---|---:|---|
+| Library + analog rule | 0.190 | Own baseline |
+| Ranker without membership priors | 0.258 | Own ranking system |
+| + PubChemLite, retrained | 0.273 | Candidate-source extension |
+| + Fragments and candidate generation | 0.298 | Structural evidence and recall |
+| Extended generation | **0.309** | Best recorded own pipeline |
+| External v4n base | 0.420 | Third-party solution, attributed in handoff |
+| v4n + own rank-list fusion | **0.422** | Separate fusion result |
 
-| channel | evidence |
-|---|---|
-| D1 | direct library match (entropy similarity to the candidate's own spectra) |
-| D2 | mass-shifted analog propagation: similarity to other structures' spectra × Tanimoto |
-| D3 | spectrum → fingerprint network (set transformer), Bernoulli likelihood of the candidate fingerprint |
-| D4 | fragment explanation: share of the spectrum explained by 1–2 bond cleavages of the candidate |
+Sources: [experiment log](EXPERIMENTS.md), [historical handoff](HANDOFF.md), [machine-readable evidence registry](reports/research_evidence.json). Snapshot: **8 October 2026**. The +0.002 fusion difference is not established as a transferable or statistically significant improvement. The 0.422 result must not be attributed entirely to the original pipeline.
 
-## What made the difference (leaderboard)
+## What this project demonstrates
 
-| step | public LB |
-|---|---|
-| direct match + analog rule | 0.190 |
-| learned ranker, membership priors removed (they were simulation shortcuts) | 0.258 |
-| + PubChemLite in the pool, ranker retrained on it | 0.273 |
-| + D4 fragment explanation + Class-3 generated candidates | 0.298 |
-| + extended transformations, 2× training queries | **0.309** |
+- **Scientific modeling:** MS/MS similarity, molecular fingerprints, fragment explanations, candidate generation and LightGBM LambdaRank.
+- **Experimental judgment:** shortcut-feature audits, candidate coverage versus decoy cost, negative results and mismatches between offline validation and leaderboard ordering.
+- **Data engineering:** immutable peak stores, candidate-source reconciliation, fingerprint provenance and content-hashed input inventories.
+- **Research reliability:** molecule-level pairing, negative controls, fixed-grid simultaneous bootstrap bands and tests for rank-slot, identity and numerical edge cases.
+- **Communication:** an English research narrative, model/data cards, reproducible Kaggle publication bundles and a NEXUS evidence dashboard.
 
-| public v4n fusion notebook (huseyinemreaksoy et al.) as the base | 0.420 |
-| + our pipeline as a third reciprocal-rank list (β 0.4, weak library matches only) | **0.422** |
+## Architecture
 
-Just as informative are the changes that lost on the leaderboard: bigger pools (ChEBI, LIPID MAPS,
-PubChem literature), up-weighting Class 3, NP-likeness, tuned LightGBM, a larger D3, a learned bond
-model and a learned spectral similarity. Each one is logged with its numbers in
-[EXPERIMENTS.md](EXPERIMENTS.md). After the move to the fusion base: a heavier weight on our list (0.413),
-fusion knobs of the base (0.414–0.420), and an isomer-ranking head on frozen DreaMS embeddings, which reached
-MRR 0.69 on held-out Enveda-180 structures but no better than chance on real candidates, so it never shipped
-([HANDOFF.md](HANDOFF.md)).
-
-## Validation
-
-Two held-out query sets, both at structure (skeleton) level and never used for training:
-**V-in** (the 250 instrument-matched `enveda-np-examples`) and **V-real** (600 harder, held-out
-library structures). V-real tracks the leaderboard's direction for pool and channel changes;
-effects below ~0.01 are beyond what either set resolves. For the fusion notebook,
-`notebooks/build_fusion_notebook.py --validation [--val-set test_like]` runs the whole notebook on a held-out
-set and `scripts/replay_fusion.py` re-fuses its stage dumps offline; both sets ranked the fusion weights in a
-different order than the leaderboard did, so they were used for direction only. Details and every decision in
-[EXPERIMENTS.md](EXPERIMENTS.md); the design in [ARCHITECTURE.md](ARCHITECTURE.md).
-
-## Reproduce
-
-Competition data is not redistributed. Everything train-derived is rebuilt inside the Kaggle
-notebook by [kaggle/submission_driver.py](kaggle/submission_driver.py) from `train.parquet` and the
-public sources (COCONUT CC0, PubChemLite CC BY 4.0):
-
-```
-CASMI_RANKER=ranker-v16-gen2  CASMI_USE_PUBCHEMLITE=1  python kaggle/submission_driver.py
+```mermaid
+flowchart LR
+    A[Licensed MS/MS spectra] --> B[Clean peaks and immutable store]
+    C[Public structure sources] --> D[Mass-compatible candidate pool]
+    B --> E[D1 library · D2 analog · D3 fingerprint · D4 fragments]
+    D --> E
+    E --> F[Generated candidates and LambdaRank]
+    F --> G[Ranked structures per molecule]
+    G --> H[Knockout validation and paired diagnostics]
+    H --> I[Historical evidence · Kaggle research · NEXUS dashboard]
 ```
 
-Locally, the same stages run as `scripts/build_*.py` → `scripts/make_submission.py`; ranker training
-data comes from `scripts/build_rank_data.py --generate`, `scripts/merge_train_gen.py` and
-`scripts/train_ranker.py`.
+The dashboard reads committed aggregates and evidence JSON; it serves no trained model and makes no live Kaggle or BigQuery calls. [Original solution design](ARCHITECTURE.md) · [Data card and identity boundaries](DATA_CARD.md).
 
-## Public notebooks from this project
+## Inspect locally — no account or cloud spend
 
-- [CASMI26: Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool)
-- [CASMI26: A Bigger Candidate Pool Lowered My Score](https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score)
+```bash
+python -m http.server 8000
+# Open http://localhost:8000/site/
+```
 
+The responsive dashboard includes model-attribution filters, dataset-library composition, methodology risks, searchable evidence states and a downloadable source-hashed research review. NEXUS uses the approved identity from the owner's Drive Logo folder. [Brand provenance](docs/BRAND_IDENTITY.md).
 
-### Research reliability update (18 October 2026)
+```bash
+python scripts/research_evidence.py
+python -m pytest tests/test_research_evidence_stdlib.py tests/test_nexus_analytics_stdlib.py -q
+```
 
-- The scientific run comparator now reports **approximately simultaneous paired-bootstrap confidence intervals** over the fixed C1/C2/C3 novelty-mixture grid, rather than interpreting several pointwise 95% confidence intervals as one joint 95% statement. The correction does **not** address repeated experiment selection or distribution shift; see [the original experiment log and caveat](EXPERIMENTS.md).
-- Invalid or blank SMILES rank slots are preserved in local MRR scoring, with independent regression tests; no malformed candidate can be silently removed to improve its rank.
-- Validation comparisons reject mismatched spectrum-signature algorithm versions, and legacy unverified runs cannot establish positive/negative scientific conclusions.
-- These are **non-commercial, research-only** improvements. No new training, Kaggle submission, competition score or live warehouse data is claimed.
+[Environment, complete test commands and full-data rebuild requirements](docs/REPRODUCIBILITY.md).
 
-## Verified fresh D2 index comparisons (2026-10-19)
+![NEXUS research evidence explorer](docs/assets/nexus-casmi-evidence-explorer.png)
 
-A [cache-free D2 analog-reference index protocol](docs/D2_FRESH_INDEX_EVIDENCE.md) prevents models using unverified historical sparse-index caches from receiving conclusive ACCEPT/REJECT judgments. New research runs can opt into `--fresh-analog-index` with `--analog`, verified fingerprints and a complete source manifest. This rebuild is resource-intensive and does not alter frozen leaderboard results.
+Local source-rendered desktop capture; [verification scope](docs/VERIFICATION.md). This is a historical research interface.
 
-## Generated molecular candidate safeguards (2026-10-19)
+## Kaggle research
 
-The [D3 generated-candidate integrity audit](docs/GENERATED_CANDIDATE_INTEGRITY.md) prevents invalid SMILES or mismatched generated InChIKey14 values from being stored as empty Morgan fingerprints. Generated overlay updates are now batch-atomic, and candidate fingerprint matrices must be correctly row-aligned uint8 arrays. Historical model scores and stored source candidates are untouched.
+1. [Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool): simulation-induced shortcut features and placebo knockouts.
+2. [A Bigger Candidate Pool Lowered My Score](https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score): coverage gains versus decoy-window density.
 
-## Cross-source candidate identity consistency (2026-10-19)
+**Both updated notebooks completed on Kaggle**, with matching source hashes in [publication readback](reports/kaggle_publications.json). The publication bundles retain existing input attachments, CPU execution and internet-disabled computation. Historical tables are labeled explicitly. [Build, publish and verify source/status](kaggle/README.md).
 
-The [candidate-source reconciliation audit](docs/CANDIDATE_SOURCE_RECONCILIATION.md) guards against combining SMILES and neutral masses from different provider records and flags large same-InChIKey14 mass discrepancies. The A3 candidate pool is now staged and structurally checked before exclusive publication, preserving frozen research artifacts. No independent leaderboard improvement or productionization is claimed.
+## Limitations that affect interpretation
 
-## Fail-closed Morgan fingerprint generation and audit (2026-10-19)
+V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. Later audits corrected sampled-query C1 leakage and D2 shortlist eligibility; their effect on real-data accuracy remains unmeasured. Tautomer identity grouping is not scaffold independence. The recorded public-example overlap used coarse keys, so exact-content overlap remains to be verified.
 
-[Read-only fingerprint quality auditing](docs/FINGERPRINT_ZERO_VECTOR_AUDIT.md) is now available to detect previously signed but chemically invalid all-zero candidate vectors. New fingerprint builds reject malformed SMILES, zero-heavy-atom structures and empty Morgan vectors before output files are written, and use the same candidate mass ordering as inference. Historical artifacts are untouched; no Kaggle performance improvement is claimed.
+[Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) · [Evidence and pending work](reports/research_review.md) · [Archived maintenance notes](docs/MAINTENANCE_HISTORY.md).
 
-## D2 scientific decision gating and candidate mass checks (2026-10-19)
+## Repository map
 
-[Verified D2 fingerprint evidence and candidate mass validation](docs/D2_FINGERPRINT_EVIDENCE_GATE.md) now prevents ACCEPT/REJECT judgments from D2 runs lacking source-bound fingerprint records, even when query signatures and a general source inventory match. D1-only and verified D1–D2 ablations remain supported. Candidate mass windows reject impossible values instead of propagating invalid ppm calculations. No CI or new competition-score claim.
+```text
+src/casmi/             chemistry, spectra, candidates, channels, ranking, validation
+scripts/               data builds, audits, experiment comparisons, evidence export
+notebooks/             tracked research notebook builders and local notebooks
+kaggle/publications/   reproducible owned notebook bundles and input metadata
+reports/               historical profile, evidence ledger and publication readback
+site/                  static NEXUS research dashboard and approved assets
+tests/                 synthetic scientific, provenance and integrity regressions
+docs/                  reviewer guide, methodology, reproducibility and audit history
+```
 
-## Kaggle access and candidate-fingerprint provenance (2026-10-19)
-
-The [secure Kaggle access and fingerprint provenance protocol](docs/KAGGLE_ACCESS_AND_FP_PROVENANCE.md) adds a local, read-only Kaggle CLI preflight without embedding credentials. Rebuilt COCONUT candidate pools and Morgan arrays now have a content-bound SHA-256 fingerprint manifest; historical pool/fingerprint files cannot be silently overwritten. D2 validation can require this provenance for new research runs. No Kaggle download, submission or leaderboard experiment was performed here.
-
-## COCONUT source identity correction (2026-10-19)
-
-The [COCONUT neutral-parent identity audit](docs/COCONUT_PARENT_IDENTITY_AUDIT.md) corrects a research data-quality issue: removing salt fragments previously changed candidate SMILES and mass without updating the original compound InChIKey. Parent SMILES, standard InChIKey14, molecular formula and exact mass are now derived from one neutral molecular graph. Frozen candidate pools and leaderboard results are not modified.
-
-## Immutable A1 spectrum-store builds (2026-10-19)
-
-A [staged research-store build safeguard](docs/A1_STORE_BUILD_IMMUTABILITY.md) now refuses to overwrite existing MS/MS peak stores. New builds are written into isolated temporary directories, structurally verified and only then published, preserving historical input artifacts and experiment reproducibility. No CI, productization or new leaderboard data is implied.
-
-## D1 ionization-mode separation (2026-10-19)
-
-A [D1 scientific audit](docs/D1_IONIZATION_MODE_AUDIT.md) corrects reference matching for mixed positive/negative ionization acquisitions. Each spectrum now uses its own ionization-mode reference group; missing-mode references contribute zero rather than creating cross-mode matches. The research-only change has synthetic tests but no new CASMI leaderboard result.
-
-## Numeric peak-content auditing (2026-10-19)
-
-A [read-only chunked peak-content audit](docs/PEAK_CONTENT_QUALITY_AUDIT.md) now detects invalid m/z and intensity values in the stored MS/MS arrays. The standard store-layout check remains fast; full peak-content scanning is optional. Both peak cleaners also reject nonpositive fragment m/z. Historical scores are unchanged and no data-dependent accuracy improvement has been claimed.
-
-## Spectral-similarity numerical safeguards (2026-10-19)
-
-The [MS/MS entropy/cosine numerical audit](docs/SPECTRAL_SIMILARITY_NUMERIC_SAFETY.md) ensures invalid, zero-intensity and non-finite spectra cannot silently yield NaN channel similarities. Previously untested numerical boundary cases are now covered in the pinned scientific CI job. This is data-quality protection, not a proven model-score improvement.
-
-## Peak-store structural integrity (2026-10-19)
-
-The [A1 spectrum-store structural audit](docs/SPECTRUM_STORE_INTEGRITY.md) now checks binary offset ordering, m/z/intensity file alignment, terminal peak counts and per-spectrum metadata before reference arrays are used. Invalid row indexing fails closed. This is a read-only data-integrity safeguard, not a new prediction result or complete scan of peak contents.
-
-## Scientific subgroup diagnostics (2026-10-19)
-
-A [molecule-level slice analyzer](docs/ERROR_SLICE_DIAGNOSTICS.md) now supports label-free adduct, ionization-mode, precursor-mass and spectra-count summaries, preserving query pairing and suppressing sparse subgroups. All effects are descriptive only; no new validated model scores or production features.
-
-## Input-complete model comparison safeguard (2026-10-19)
-
-Scientific paired model comparisons now require a verified *complete minimum* local input inventory as well as matching molecule/spectral signatures before returning an `ACCEPT`/`REJECT` decision. Earlier runs without these manifests remain exploratory. See [source-inventory evidence rules](docs/INPUT_SNAPSHOT_MANIFEST.md). No Kaggle/BigQuery model score has been recomputed.
-
-## Research input snapshot integrity (2026-10-19)
-
-The [local SHA-256 snapshot protocol](docs/INPUT_SNAPSHOT_MANIFEST.md) allows researchers to record and verify the approved spectrum store, candidate pools and fingerprints without committing dataset bytes or absolute paths. Validation can optionally fail closed on changed source artifacts. This is reproducibility infrastructure, not proof of Kaggle/BigQuery authenticity or improved prediction scores.
-
-## Source-verified negative-control comparisons (2026-10-19)
-
-A [diagnostic-only control comparator](docs/SPECTRAL_NEGATIVE_CONTROLS.md) now checks original molecule/spectrum identities before calculating paired bootstrap differences between unperturbed and blank/shuffled spectra. Results cannot produce model-improvement ACCEPT/REJECT decisions or new Kaggle claims. This remains non-commercial research work.
-
-## Spectral evidence diagnostics (2026-10-18)
-
-A [non-commercial negative-control protocol](docs/SPECTRAL_NEGATIVE_CONTROLS.md) adds blank-fragment and deterministic intensity-shuffle modes to the knockout validation runner. Control reports preserve original source fingerprints and may **never** be promoted to ordinary model-improvement ACCEPT/REJECT verdicts. These are scientific diagnostic tools only; no new Kaggle results are claimed.
-
-## Controlled D2 cross-library index experiment (2026-10-18)
-
-The [source-balanced D2 experiment protocol](docs/D2_SOURCE_BALANCED_EXPERIMENT.md) introduces an **opt-in** reference sampler that preserves the highest-quality spectrum while reserving independent source-library coverage when the index cap permits. The baseline policy is unchanged. A distinct, provenance-checked cache keeps the new experiment separate from historical inference artifacts; the metadata audit can compare both index-selection policies. This is a validation and reproducibility improvement, **not** a new MRR result. Productization remains excluded.
-
-## Scientific integrity update — D2 analog shortlisting (2026-10-18)
-
-The [D2 knockout and prefilter audit](docs/D2_PREFILTER_KNOCKOUT_AUDIT.md) documents a second validation flaw: excluded self/reference spectra were removed **after** approximate top-k selection, so invalid hits could crowd out eligible independent analogs. The corrected algorithm applies knockout, adduct and mass eligibility **before** top-k and is covered by numerical plus direct `AnalogIndex.search` regression tests. Historical competition metrics remain unchanged. No new Kaggle run, submission or product work is implied.
-
-## Scientific evaluation update — C1 reference leakage (2026-10-18)
-
-The [non-commercial research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) identifies and fixes a C1 holdout flaw: when only a subset of a molecule's source spectra was used as a simulated query, its *unselected* same-structure reference spectra could remain in the search index. New exclusion bookkeeping now hides every same-library reference, including tautomer-equivalent standard keys, while retaining legitimately independent cross-library references. Query signatures have been versioned to `casmi-query-spectra-v2`, and regression tests cover sampled queries.
-
-**Existing public and historical validation scores have not been recomputed.** This is a methodology fix, not a newly demonstrated model-score increase. Project scope remains scientific research only; no productization.
-
-## NEXUS Research Intelligence (2026-10-18 extension)
-
-A [NEXUS 2.0 research dashboard](site/index.html) now presents the **historical 8 October** model results, experimental provenance, and the source-library profile in `reports/data_profile.json`. It uses the approved NEXUS SVG and works locally with `python -m http.server 8000` (open `/site/`). **It does not represent live Kaggle or BigQuery results and does not change the frozen model or leaderboard claims.**
-
-**Research-only scope:** No productization, service deployment, monetization, or live dashboard pipeline is planned. The staged implementation and scientific acceptance gates are in [RESEARCH_WORK_PROGRAM.md](docs/RESEARCH_WORK_PROGRAM.md). The current sprint adds query-identity and source-spectrum fingerprints to validation reports, disallows unsupported paired bootstrap claims for legacy runs, and provides offline BigQuery profile reconciliation. These updates do not change any model score or trigger a Kaggle submission.
-
-New quality utilities include [`scripts/audit_submission.py`](scripts/audit_submission.py) for submission shape, exact test molecule coverage, candidate budget and optional canonical structure checks; a read-only [BigQuery data quality SQL template](sql/bigquery/library_quality.sql) with a safe renderer; and dependency-free regression tests in GitHub Actions. See [implementation details and limitations](docs/NEXUS-CASMI26.md).
+**Research-only scope:** no billing, customer onboarding, paid inference or recurring infrastructure. Competition data is not redistributed; source datasets and third-party notebooks retain their own terms and attribution. NEXUS is a personal brand and implies no organizer endorsement. [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md).

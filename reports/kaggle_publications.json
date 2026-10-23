@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-23T21:28:23.588101+00:00",
+  "publications": [
+    {
+      "id": "senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score",
+      "url": "https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score",
+      "status": "pass",
+      "latest_run_status": "COMPLETE",
+      "source_matches": true,
+      "source_sha256": "111a626960ed3f04b2f7eb734794a183c73562fb659ee3c2edc04f71cce5708b",
+      "public": true,
+      "scope": "Notebook demonstration and historical analysis; no full corrected-pipeline evaluation or competition submission"
+    },
+    {
+      "id": "senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool",
+      "url": "https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool",
+      "status": "pass",
+      "latest_run_status": "COMPLETE",
+      "source_matches": true,
+      "source_sha256": "6ca1715b6e131bfca9edc4096275599a0dff188173e44cf9fbbd85b1401dc6ea",
+      "public": true,
+      "scope": "Notebook demonstration and historical analysis; no full corrected-pipeline evaluation or competition submission"
+    }
+  ],
+  "status": "pass"
+}

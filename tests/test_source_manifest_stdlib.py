@@ -74,9 +74,14 @@ class SourceManifestTests(unittest.TestCase):
     def test_symlink_outside_root_rejected(self):
         with tempfile.TemporaryDirectory() as outside:
             (Path(outside) / "secret.dat").write_bytes(b"PRIVATE")
-            (self.root / "store" / "linked").symlink_to(
-                Path(outside) / "secret.dat"
-            )
+            try:
+                (self.root / "store" / "linked").symlink_to(
+                    Path(outside) / "secret.dat"
+                )
+            except OSError as error:
+                if getattr(error, "winerror", None) == 1314:
+                    self.skipTest("Windows symlink privilege unavailable")
+                raise
             with self.assertRaisesRegex(ValueError, "outside"):
                 create_manifest(self.root, ["store/linked"])
 
