@@ -2,6 +2,7 @@ name: NEXUS CASMI26 research checks
 
 on:
   push:
+    branches: [main]
     paths:
       - "site/**"
       - "notebooks/**"
@@ -134,10 +135,10 @@ jobs:
           python -m pip install nbformat==5.10.4
           python scripts/build_research_publications.py
           git diff --exit-code -- reports/research_review.md kaggle/publications
-      - name: Install numpy for synthetic comparisons
-        run: python -m pip install numpy==2.3.5
+      - name: Install synthetic integration dependencies
+        run: python -m pip install numpy==2.3.5 pandas==2.3.3 pytest==9.0.2
       - name: Run paired-comparison integration checks
-        run: python -m unittest discover -s tests -p '*_integration.py' -v
+        run: python -m pytest tests/*_integration.py -q
       - name: Validate Python syntax
         run: python -m py_compile scripts/audit_submission.py scripts/render_bigquery_sql.py scripts/compare_runs.py scripts/compare_control_runs.py scripts/manifest_artifacts.py scripts/diagnose_validation_slices.py scripts/reconcile_bigquery_profile.py scripts/run_validation.py scripts/build_rank_data.py scripts/build_store.py scripts/audit_store_integrity.py scripts/profile_data.py src/casmi/validate/run_alignment.py src/casmi/validate/control_alignment.py src/casmi/validate/source_manifest.py src/casmi/validate/error_slices.py src/casmi/validate/spectral_controls.py src/casmi/validate/spectrum_overlap.py src/casmi/spectra/store.py src/casmi/spectra/store_integrity.py src/casmi/spectra/similarity.py src/casmi/validate/paired_bootstrap.py src/casmi/validate/simultaneous_ci.py src/casmi/validate/metric.py src/casmi/channels/analog.py src/casmi/channels/prefilter.py src/casmi/channels/reference_selection.py scripts/audit_analog_retention.py
 

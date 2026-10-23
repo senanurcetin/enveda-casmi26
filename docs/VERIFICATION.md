@@ -25,3 +25,5 @@ The final browser review and screenshots used accessibility controls without Pla
 ![Source-linked evidence explorer](assets/nexus-casmi-evidence-explorer.png)
 
 These are local source-rendered screenshots, not evidence of a publicly deployed web service. The historical public MRR values remain author-log records. Source-file hashes in the exported review use normalized UTF-8/LF text for consistent Windows/Linux regeneration.
+
+CI maintenance also declares pandas/Pytest for integration modules and uses Pytest to collect their function-based regressions. Push checks run on main; pull requests run their own checks to avoid duplicate branch/PR executions.
