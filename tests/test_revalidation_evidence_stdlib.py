@@ -36,10 +36,13 @@ def synthetic_report():
                    "raw_inputs": {name: {"bytes": 1, "sha256": "a" * 64} for name in ("train.parquet", "coconut.csv", "pubchemlite.csv")},
                    "execution": {"platform": "Kaggle", "competition_source": COMPETITION,
                                  "dataset_sources": DATASETS, "internet_enabled": False, "submitted_predictions": False}})
-    result.update({"fingerprint_provenance": {"status": "POOL_FINGERPRINTS_VERIFIED"},
+    result.update({"fingerprint_provenance": {"status": "POOL_FINGERPRINTS_VERIFIED", "n_structures": 3},
                    "analog_index_provenance": {"status": "REBUILT_WITHOUT_CACHE", "cache_used": False},
                    "candidate_source_quality": {"mass_conflict_policy": "quarantine_entire_identity",
-                                                "mass_conflict_groups": 0, "quarantined_mass_conflict_groups": 2},
+                                                "mass_conflict_groups": 0, "quarantined_mass_conflict_groups": 2,
+                                                "structure_quarantine": {"policy": "quarantine_invalid_selected_candidate_identity",
+                                                                         "input_candidates": 4, "retained_candidates": 3,
+                                                                         "quarantined_candidates": 1, "reasons": {"unparseable": 1}}},
                    "queries_with_truth_absent_from_candidate_pool": 1})
     names = list(required_validation_inputs(pool_tag="_corrected_study", analog=True))
     names += ["structures.parquet", "pool_source_quality_corrected_study.json", "models/fp_fold0.pt", "models/fp_fold1.pt"]

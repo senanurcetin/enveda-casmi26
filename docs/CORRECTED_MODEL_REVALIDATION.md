@@ -10,6 +10,8 @@ The first execution stopped at the candidate-source quality gate: **1,710 shared
 
 Quarantine does not delete evaluation molecules. Ground-truth structures come from the independently retained training structure table. Metric-equivalent references are excluded using both that table and the retained candidate pool. A missing candidate truth remains in the denominator and can only score if the inference path actually recovers it. No labels are inserted into candidate generation.
 
+The following execution reached fingerprint generation and stopped with a `ValueError`. The revised build also screens selected candidate structures before publication: unparseable SMILES, no-heavy-atom structures and zero/error Morgan vectors are explicitly quarantined and counted. The fingerprint builder remains strict and performs its own verification. This screening establishes computational usability, not provider-identity accuracy or chemical plausibility.
+
 ## Paired experimental design
 
 | Dimension | Prespecified settings |

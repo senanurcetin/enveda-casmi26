@@ -143,9 +143,6 @@ def main():
         both, quarantine_conflicts=os.environ.get("CASMI_QUARANTINE_MASS_CONFLICTS") == "1",
     )
     quality_path = ARTIFACT_DIR / f"pool_source_quality{os.environ.get('CASMI_POOL_TAG', '')}.json"
-    with quality_path.open("x", encoding="utf-8") as stream:
-        json.dump(quality, stream, indent=2, allow_nan=False)
-        stream.write("\n")
     print("Source reconciliation: "
           f"{quality['complete_rows']:,}/{quality['input_rows']:,} complete rows, "
           f"{quality['incomplete_rows_excluded']:,} excluded, "
@@ -161,6 +158,15 @@ def main():
         "np_superclass": g.np_superclass.first(), "has_sugar": g.has_sugar.first(),
     }).reset_index()
     pool = pool.dropna(subset=["mass"]).sort_values("mass", kind="stable").reset_index(drop=True)
+    if os.environ.get("CASMI_QUARANTINE_INVALID_STRUCTURES") == "1":
+        from casmi.pool.structure_quality import quarantine_invalid_candidates
+        pool, structure_quality = quarantine_invalid_candidates(
+            pool, workers=max(1, min(3, (os.cpu_count() or 2) - 1)),
+        )
+        quality["structure_quarantine"] = structure_quality
+    with quality_path.open("x", encoding="utf-8") as stream:
+        json.dump(quality, stream, indent=2, allow_nan=False)
+        stream.write("\n")
     # Historical pools are immutable. Complete, verify and publish a
     # new Parquet before making the final output name visible.
     from pyarrow import parquet as pq

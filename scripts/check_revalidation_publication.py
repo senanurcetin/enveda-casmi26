@@ -65,6 +65,12 @@ def validate_result(result, root=ROOT):
             or quality.get("mass_conflict_groups") != 0
             or quality.get("quarantined_mass_conflict_groups", -1) < 0):
         raise ValueError("Candidate-source conflict policy is not verified")
+    structural = quality.get("structure_quarantine", {})
+    if (structural.get("policy") != "quarantine_invalid_selected_candidate_identity"
+            or structural.get("retained_candidates") != result["fingerprint_provenance"].get("n_structures")
+            or structural.get("input_candidates", -1) != structural.get("retained_candidates", 0) + structural.get("quarantined_candidates", 0)
+            or sum(structural.get("reasons", {}).values()) != structural.get("quarantined_candidates")):
+        raise ValueError("Structure-quarantine accounting is not verified")
     missing = result["queries_with_truth_absent_from_candidate_pool"]
     if type(missing) is not int or not 0 <= missing <= count:
         raise ValueError("Invalid missing-truth denominator accounting")

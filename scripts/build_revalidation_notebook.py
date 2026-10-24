@@ -52,6 +52,7 @@ for name in names:
 env = {**os.environ, 'CASMI_ARTIFACTS':str(artifacts), 'CASMI_DATA':str(train.parent),
        'CASMI_COCONUT':str(coconut), 'CASMI_PUBCHEMLITE':str(pcl), 'CASMI_POOL_TAG':'_corrected_study',
        'CASMI_QUARANTINE_MASS_CONFLICTS':'1',
+       'CASMI_QUARANTINE_INVALID_STRUCTURES':'1',
        'PYTHONPATH':str(code / 'src')+os.pathsep+str(code), 'PYTHONUNBUFFERED':'1',
        'OMP_NUM_THREADS':'2', 'OPENBLAS_NUM_THREADS':'2', 'MKL_NUM_THREADS':'2',
        'CUBLAS_WORKSPACE_CONFIG':':4096:8', 'CASMI_STUDY_OUTPUT':'/kaggle/working/revalidation_study.json'}
