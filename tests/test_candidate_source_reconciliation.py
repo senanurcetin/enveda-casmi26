@@ -38,6 +38,25 @@ def test_material_same_key_mass_collision_rejected_without_leaking_smiles():
         reconcile_source_rows(frame)
 
 
+def test_explicit_quarantine_removes_all_sources_of_conflicting_identity():
+    frame = records()
+    frame.loc[2, "mass"] = 44.0626
+    accepted, report = reconcile_source_rows(frame, quarantine_conflicts=True)
+    assert accepted.pool_key.tolist() == ["BBBBBBBBBBBBBB", "CCCCCCCCCCCCCC"]
+    assert report["quarantined_mass_conflict_groups"] == 1
+    assert report["quarantined_source_rows"] == 2
+    assert report["complete_rows"] == 2
+    assert report["distinct_pool_keys"] == 2
+    assert report["mass_conflict_policy"] == "quarantine_entire_identity"
+
+
+def test_quarantine_cannot_publish_empty_pool():
+    frame = records().iloc[[0, 2]].copy()
+    frame.loc[2, "mass"] += 10
+    with pytest.raises(ValueError, match="No complete candidate rows remain"):
+        reconcile_source_rows(frame, quarantine_conflicts=True)
+
+
 def test_incomplete_row_cannot_be_spliced_into_a_different_source_row():
     frame = records()
     frame.loc[0, "mass"] = np.nan

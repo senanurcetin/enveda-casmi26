@@ -13,6 +13,7 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 | How is inference assembled? | [Original architecture](../ARCHITECTURE.md) |
 | What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
 | Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
+| How are frozen models and negative controls revalidated? | [Corrected-model study protocol](CORRECTED_MODEL_REVALIDATION.md) |
 | How are Kaggle publications maintained? | [Kaggle guide](../kaggle/README.md) |
 | What was actually checked in this update? | [Verification record](VERIFICATION.md) |
 | Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |
