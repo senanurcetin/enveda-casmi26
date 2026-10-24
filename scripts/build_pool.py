@@ -7,6 +7,7 @@ COCONUT annotations (NP-likeness, NPClassifier pathway, sugars) are kept as rank
 Output: artifacts/pool.parquet
 """
 import sys
+import json
 import time
 import zipfile
 from pathlib import Path
@@ -138,7 +139,13 @@ def main():
     # Never let groupby.first() assemble SMILES from one source and mass
     # from another. All identity fields must coexist in the chosen row.
     # Reject material mass contradictions for a shared InChIKey14.
-    both, quality = reconcile_source_rows(both)
+    both, quality = reconcile_source_rows(
+        both, quarantine_conflicts=os.environ.get("CASMI_QUARANTINE_MASS_CONFLICTS") == "1",
+    )
+    quality_path = ARTIFACT_DIR / f"pool_source_quality{os.environ.get('CASMI_POOL_TAG', '')}.json"
+    with quality_path.open("x", encoding="utf-8") as stream:
+        json.dump(quality, stream, indent=2, allow_nan=False)
+        stream.write("\n")
     print("Source reconciliation: "
           f"{quality['complete_rows']:,}/{quality['input_rows']:,} complete rows, "
           f"{quality['incomplete_rows_excluded']:,} excluded, "

@@ -22,6 +22,7 @@ def reconcile_source_rows(
     records: pd.DataFrame, *,
     max_spread_da: float = DEFAULT_MAX_MASS_SPREAD_DA,
     max_spread_ppm: float = DEFAULT_MAX_MASS_SPREAD_PPM,
+    quarantine_conflicts: bool = False,
 ) -> tuple[pd.DataFrame, dict]:
     """Return whole, complete source rows after auditing duplicate key masses.
 
@@ -65,22 +66,32 @@ def reconcile_source_rows(
         float(max_spread_da),
         ranges["min"].to_numpy(dtype=float) * float(max_spread_ppm) * 1e-6,
     )
-    conflicts = int(np.count_nonzero(discrepancies > thresholds))
-    if conflicts:
+    conflict_keys = ranges.index[discrepancies > thresholds]
+    conflicts = len(conflict_keys)
+    if conflicts and not quarantine_conflicts:
         # Aggregate count only: no licensed source identifiers, chemical
         # structures, or per-molecule annotations escape into log messages.
         raise ValueError(
             f"Conflicting neutral mass for {conflicts} shared InChIKey14 groups; "
             "quarantine or correct providers before building a new candidate pool"
         )
+    quarantined = complete.pool_key.isin(conflict_keys)
+    quarantined_rows = int(quarantined.sum())
+    if conflicts:
+        complete = complete.loc[~quarantined].copy()
+        if complete.empty:
+            raise ValueError("No complete candidate rows remain after conflict quarantine")
     summary = {
         "status": "SOURCE_ROWS_RECONCILED",
         "input_rows": int(len(records)),
         "complete_rows": int(len(complete)),
         "incomplete_rows_excluded": int(omitted),
-        "distinct_pool_keys": int(len(ranges)),
+        "distinct_pool_keys": int(complete.pool_key.nunique()),
         "shared_pool_keys": int((complete.groupby("pool_key").size() > 1).sum()),
         "mass_conflict_groups": 0,
+        "mass_conflict_policy": "quarantine_entire_identity" if quarantine_conflicts else "reject",
+        "quarantined_mass_conflict_groups": int(conflicts),
+        "quarantined_source_rows": quarantined_rows,
         "max_source_mass_spread_da": float(discrepancies.max(initial=0.0)),
         "mass_threshold_da": float(max_spread_da),
         "mass_threshold_ppm": float(max_spread_ppm),

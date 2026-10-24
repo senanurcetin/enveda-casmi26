@@ -13,7 +13,6 @@ import traceback
 import numpy as np
 import pandas as pd
 
-from casmi.channels.fpmodel import candidate_scores
 from casmi.rank.features import add_context, add_priors
 
 
@@ -28,6 +27,7 @@ class Predictor:
 
     # ------------------------------------------------------------------ one molecule
     def _d3(self, f, spectra):
+        from casmi.channels.fpmodel import candidate_scores
         from casmi.channels.fpinfer import molecule_logp
         t = time.perf_counter()
         lp_on, lp_off = molecule_logp(self.fp_models, spectra, self.device)
@@ -42,11 +42,17 @@ class Predictor:
         self.timings["d3"] += time.perf_counter() - t
         return f
 
-    def rank(self, spectra, top_n=25):
-        f = self.engine.features([dict(s) for s in spectra])
+    def rank(self, spectra, top_n=25, *, excluded_rows=None, excluded_keys=None,
+             knocked_keys=frozenset()):
+        """Use the inference path with explicit research-only reference/pool knockouts.
+
+        Defaults preserve ordinary inference. Validation also clears reference-count
+        priors for withheld structures rather than leaking their original membership.
+        """
+        f = self.engine.features([dict(s) for s in spectra], excluded_rows, excluded_keys)
         if f.empty:
             return []
-        f = add_context(add_priors(f, self.pool))
+        f = add_context(add_priors(f, self.pool, knocked_keys))
         if self.fp_models:
             f = self._d3(f, spectra)
         if self.ranker is not None and any(c.startswith("d4_") for c in self.ranker.columns):
