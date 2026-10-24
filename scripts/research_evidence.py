@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-STATES = {"historical", "implemented", "pending"}
+STATES = {"historical", "implemented", "measured", "pending"}
 
 
 def validate(ledger: dict, root: Path) -> None:

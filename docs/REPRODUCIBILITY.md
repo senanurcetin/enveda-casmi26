@@ -33,3 +33,7 @@ Run `python scripts/build_research_publications.py` to generate the two owned no
 Use licensed competition files and the matching public structure releases, then follow [the original architecture](../ARCHITECTURE.md), [fingerprint provenance](KAGGLE_ACCESS_AND_FP_PROVENANCE.md), [snapshot inventory](INPUT_SNAPSHOT_MANIFEST.md) and [fresh-index protocol](D2_FRESH_INDEX_EVIDENCE.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py` and audit ranked candidates with `scripts/audit_submission.py` before any separately chosen competition submission.
 
 No new competition submission is part of this portfolio maintenance. Full GPU training and corrected-protocol evaluation remain pending. The static dashboard has zero infrastructure spend; hosted Kaggle execution is CPU-only for these publication bundles and subject to account quotas. Optional BigQuery scans and GPU retraining are not part of the default workflow.
+
+## Reproduce the executed public-example content audit
+
+Install PyArrow (tested with Kaggle 23.0.1 and local/CI 24.0.0), then run `scripts/audit_public_overlap.py` on already-authorized train/public inputs. It streams Arrow batches, exports only aggregates and hashes, and refuses to overwrite reports. Alternatively build the internet-disabled CPU bundle with `scripts/build_overlap_notebook.py`; its completed Kaggle readback is checked by `scripts/check_overlap_publication.py`. [Executed counts and methodology](PUBLIC_EXAMPLE_OVERLAP.md).

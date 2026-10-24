@@ -18,7 +18,7 @@ select,input{font:inherit;color:var(--light);background:#0b1525;border:1px solid
 select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
 .filter-label{display:block;font-size:12px;color:#b9c5ce;margin:0 0 7px}#model-family{width:100%;margin-bottom:10px;font-size:12px}
 .evidence-controls{display:grid;grid-template-columns:1fr 2fr;gap:18px}.evidence-controls input,.evidence-controls select{width:100%}.evidence-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.evidence-card{border:1px solid var(--line);border-radius:10px;padding:18px;background:#0b1525}.evidence-card h3{margin:12px 0 8px}.evidence-card p{font-size:12px;color:#b9c5ce}.evidence-card a{font-size:12px;color:var(--cyan);text-decoration:underline}.evidence-card .pill{color:#d2d9ff}.evidence-card[data-state="pending"] .pill{color:var(--warn);border-color:#766140}
+.evidence-card{border:1px solid var(--line);border-radius:10px;padding:18px;background:#0b1525}.evidence-card h3{margin:12px 0 8px}.evidence-card p{font-size:12px;color:#b9c5ce}.evidence-card a{font-size:12px;color:var(--cyan);text-decoration:underline}.evidence-card .pill{color:#d2d9ff}.evidence-card[data-state="measured"] .pill{color:var(--cyan);border-color:#28778b}.evidence-card[data-state="pending"] .pill{color:var(--warn);border-color:#766140}
 @media(max-width:650px){.evidence-controls,.evidence-cards{grid-template-columns:1fr}.topbar{flex-wrap:wrap}.hero h1{font-size:clamp(31px,8vw,45px)}}
 </style>
 </head>
@@ -92,7 +92,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
         <div class="statline"><span>Public example test spectra</span><strong id="public-test">1,213</strong></div>
         <div class="statline"><span>Public example molecules</span><strong id="public-molecules">400</strong></div>
         <div class="statline"><span>Public example instrument</span><strong>timsTOF</strong></div>
-        <div class="callout"><strong>Do not evaluate on the public example file</strong><p>The historical profile reported 1,213 / 1,213 coarse-key matches to training spectra. Coarse keys can collide: exact peak-and-intensity overlap must be reverified before citing this as complete leakage.</p></div>
+        <div class="callout"><strong>Do not evaluate on the public example file</strong><p>The completed Kaggle audit scanned 2,539,608 training rows: all 1,213 public spectra match exact precursor, full m/z and intensity arrays, plus adduct/mode. Two coarse candidate pairs were rejected. This does not establish hidden-test contamination. <a href="../docs/PUBLIC_EXAMPLE_OVERLAP.md">Inspect executed evidence →</a></p></div>
       </article>
     </div>
   </section>
@@ -123,7 +123,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
     <div class="readiness">
       <article class="readiness-step"><div class="phase">01 / SOURCE ACCESS</div><h3>Competition data and account</h3><p>Official data access requires Kaggle account authorization and acceptance of competition rules. Publication access was verified on 23 October 2026. Full corrected-protocol model evaluation still requires licensed inputs and independent run evidence.</p><div class="state">Publication access verified · model revalidation pending</div></article>
       <article class="readiness-step"><div class="phase">02 / SCIENTIFIC REBUILD</div><h3>Signed candidate &amp; D2 index</h3><p>Preserve a complete input SHA-256 inventory; require content-bound candidate fingerprints; rebuild D2's sparse reference index without cache for decision-grade runs.</p><div class="state">Implementation available · real-data execution pending</div></article>
-      <article class="readiness-step"><div class="phase">03 / SUBMISSION</div><h3>Owned research notebooks</h3><p>Both public research notebooks completed their updated CPU runs. Source hashes match the tracked publication bundles. These demonstrate research analyses; full corrected-pipeline evaluation and a new competition submission remain separate.</p><div class="state">2 / 2 COMPLETE · source readback verified</div><a class="pill" href="../reports/kaggle_publications.json">Inspect publication evidence</a></article>
+      <article class="readiness-step"><div class="phase">03 / PUBLICATIONS</div><h3>Owned research notebooks</h3><p>Two historical research notebooks and the separate exact-content data audit completed their CPU runs. Sources match their tracked bundles. Full corrected-pipeline model evaluation and a new competition submission remain separate.</p><div class="state">3 / 3 COMPLETE · source readbacks verified</div><a class="pill" href="../reports/kaggle_publications.json">Inspect historical notebook evidence</a><a class="pill" href="../reports/public_overlap_publication.json">Inspect data-audit evidence</a></article>
     </div>
     <div class="evidence-note"><strong>Historical evidence ≠ current score.</strong> The 0.422 public MRR@25 is the recorded result from 8 October 2026. Repository integrity improvements since that date have not been measured on the hidden Kaggle evaluation set.</div>
     <div class="reference">
@@ -136,9 +136,9 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
   </section>
 
   <section class="section" id="evidence">
-    <div class="section-head"><div><div class="micro">06 / RESEARCH REVIEW</div><h2>What does the evidence support?</h2></div><p>Inspect recorded results, implemented safeguards and uncompleted research separately. Reviewed 23 October 2026.</p></div>
+    <div class="section-head"><div><div class="micro">06 / RESEARCH REVIEW</div><h2>What does the evidence support?</h2></div><p>Inspect historical results, executed data audits, implemented safeguards and uncompleted research separately. Reviewed 24 October 2026.</p></div>
     <div class="panel">
-      <div class="evidence-controls"><div><label class="filter-label" for="evidence-state">Evidence state</label><select id="evidence-state"><option value="all">All evidence</option><option value="historical">Historical records</option><option value="implemented">Implemented controls</option><option value="pending">Pending evaluation</option></select></div><div><label class="filter-label" for="evidence-query">Search research evidence</label><input id="evidence-query" type="search" placeholder="Try leakage, spectra or uncertainty"></div></div>
+      <div class="evidence-controls"><div><label class="filter-label" for="evidence-state">Evidence state</label><select id="evidence-state"><option value="all">All evidence</option><option value="historical">Historical records</option><option value="measured">Executed data audits</option><option value="implemented">Implemented controls</option><option value="pending">Pending evaluation</option></select></div><div><label class="filter-label" for="evidence-query">Search research evidence</label><input id="evidence-query" type="search" placeholder="Try leakage, spectra or uncertainty"></div></div>
       <p class="provenance" id="evidence-count" role="status">Loading source-linked evidence…</p>
       <div id="evidence-cards" class="evidence-cards"></div>
       <div class="reference"><a href="../reports/research_review.md" download>Download research review</a><a href="../reports/research_evidence.json">Inspect evidence JSON</a><a href="../MODEL_CARD.md">Model card</a><a href="../DATA_CARD.md">Data card</a></div>

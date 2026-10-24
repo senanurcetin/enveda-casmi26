@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-23T22:04:16.534445+00:00",
+  "id": "senanuretin/casmi26-exact-public-example-overlap-audit",
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit",
+  "latest_run_status": "COMPLETE",
+  "public": true,
+  "source_matches": true,
+  "source_sha256": "7bc858ecbadd9e7d2ec9ada2ca99c987b7b024424b41ab0bec575a225fda349e",
+  "aggregate_artifact_sha256": "1884f12c133da90612ab9312ad267a8d533fed9057e08a972775fe89ab2be895",
+  "status": "pass",
+  "scope": "Executed public-example content audit; no hidden-test or model-performance claim"
+}
