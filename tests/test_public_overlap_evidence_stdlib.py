@@ -6,6 +6,7 @@ from copy import deepcopy
 from pathlib import Path
 
 from scripts.check_overlap_publication import validate_result
+from scripts.check_kaggle_publications import source_hash
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +20,8 @@ class PublishedOverlapEvidenceTests(unittest.TestCase):
         record = json.loads((ROOT / "reports/public_overlap_publication.json").read_text(encoding="utf-8"))
         canonical = (ROOT / "reports/public_overlap_audit.json").read_text(encoding="utf-8").encode()
         self.assertEqual(hashlib.sha256(canonical).hexdigest(), record["aggregate_artifact_sha256"])
+        notebook = json.loads((ROOT / "kaggle/audits/public-overlap/notebook.ipynb").read_text(encoding="utf-8"))
+        self.assertEqual(source_hash(notebook), record["source_sha256"])
         self.assertTrue(record["source_matches"] and record["public"])
         self.assertEqual(record["latest_run_status"], "COMPLETE")
 
