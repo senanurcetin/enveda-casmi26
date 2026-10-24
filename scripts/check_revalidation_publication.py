@@ -11,9 +11,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from scripts.build_revalidation_notebook import DATASETS, KERNEL, SCRIPTS
 from scripts.check_kaggle_publications import source_hash
+from casmi.validate.source_manifest import required_validation_inputs, _canonical_files_digest
 
 COMPETITION = "enveda-CASMI26-molecule-id-mass-spectra"
 
@@ -40,6 +41,20 @@ def validate_result(result, root=ROOT):
         raise ValueError("A nonempty molecule cohort is required")
     if result["cohort"]["library"] != "enveda-np-examples":
         raise ValueError("Unexpected evaluation population")
+    manifest = result["source_artifact_manifest"]
+    entries = manifest.get("files", [])
+    required = set(required_validation_inputs(pool_tag="_corrected_study", analog=True))
+    required.update({"structures.parquet", "pool_source_quality_corrected_study.json",
+                     "models/fp_fold0.pt", "models/fp_fold1.pt"})
+    required.update(f"models/ranker-v16-gen2_seed{seed}.txt" for seed in range(5))
+    if (manifest.get("schema") != "casmi-local-artifact-manifest-v1"
+            or len(entries) != len(required) or {entry.get("path") for entry in entries} != required
+            or entries != sorted(entries, key=lambda entry: entry["path"])
+            or manifest.get("files_digest_sha256") != _canonical_files_digest(entries)):
+        raise ValueError("Incomplete or inconsistent static source/model inventory")
+    for entry in entries:
+        if type(entry.get("bytes")) is not int or entry["bytes"] <= 0 or not re.fullmatch(r"[0-9a-f]{64}", entry.get("sha256", "")):
+            raise ValueError("Invalid static source/model hash")
     if result["fingerprint_provenance"].get("status") != "POOL_FINGERPRINTS_VERIFIED":
         raise ValueError("Unverified candidate fingerprints")
     analog = result["analog_index_provenance"]
@@ -66,6 +81,13 @@ def validate_result(result, root=ROOT):
                     or control.get("verified_original_source_pairing") is not True
                     or not 0 < control.get("changed_query_signatures", 0) <= count):
                 raise ValueError("Unverified control pairing or spectral perturbation")
+            for cls in ("C1", "C2", "C3"):
+                values = control.get("classes", {}).get(cls, {})
+                reference = block["conditions"]["none"][cls]["mrr"]
+                treatment = block["conditions"][mode][cls]["mrr"]
+                if (values.get("reference_mrr") != reference or values.get("control_mrr") != treatment
+                        or not math.isclose(values.get("control_minus_reference", math.inf), treatment - reference, abs_tol=1e-12)):
+                    raise ValueError("Paired control summaries contradict absolute results")
         for classes in block["conditions"].values():
             if set(classes) != {"C1", "C2", "C3"}:
                 raise ValueError("Missing novelty class")
