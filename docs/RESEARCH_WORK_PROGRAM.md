@@ -7,6 +7,10 @@
 
 This is an execution plan **committed to the repository**, not a promise that a process is running in the background. Later stages require reproducible datasets, appropriate permissions and normal execution in a development environment. Never place private datasets, training derivatives, credentials or private leaderboard answers into the public repository.
 
+## Completed data-evidence gate — 24 October 2026
+
+The [full-content public-example audit](PUBLIC_EXAMPLE_OVERLAP.md) completed on Kaggle: all 2,539,608 training rows scanned; all 1,213 public spectra / 400 molecules matched exact arrays and acquisition mode/adduct. Two coarse candidate pairs were rejected. Input/code hashes and authenticated publication readback are committed. This closes the public-example exact-overlap task for that input snapshot. Full corrected-protocol model evaluation, negative-control runs and live BigQuery reconciliation remain pending. Historical progress notes below retain their original dates.
+
 ## Prioritization and schedule
 
 | Period | Priority | Work package | Acceptance criteria | Status on 2026-10-18 |

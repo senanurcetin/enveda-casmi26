@@ -27,3 +27,11 @@ The final browser review and screenshots used accessibility controls without Pla
 These are local source-rendered screenshots, not evidence of a publicly deployed web service. The historical public MRR values remain author-log records. Source-file hashes in the exported review use normalized UTF-8/LF text for consistent Windows/Linux regeneration.
 
 CI maintenance also declares pandas/Pytest for integration modules and uses Pytest to collect their function-based regressions. Push checks run on main; pull requests run their own checks to avoid duplicate branch/PR executions.
+
+## Executed data-evidence extension — 24 October 2026
+
+The separate [public-example content audit](PUBLIC_EXAMPLE_OVERLAP.md) completed on Kaggle, with matching notebook source and a verified aggregate artifact hash. All 2,539,608 training rows were scanned; all 1,213 public spectra / 400 molecules matched full numerical content and acquisition mode/adduct. Two coarse candidate pairs were rejected. No hidden evaluation or model-performance conclusion follows.
+
+Twelve initial overlap/matcher/Arrow regressions passed, followed by sixteen focused evidence/dashboard tests. The complete updated suite passed: **287 tests, 2 skipped, 96 subtests** (the same two existing pandas dtype warnings). The new measured-evidence filter was selected with browser accessibility controls and rendered exactly one of six evidence cards. No Playwright was used for this extension.
+
+![Executed overlap evidence in the NEXUS dashboard](assets/nexus-casmi-measured-overlap.png)

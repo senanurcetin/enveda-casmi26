@@ -20,3 +20,9 @@ python scripts/check_kaggle_publications.py --output reports/kaggle_publications
 The readback compares ordered cell-source hashes and checks remote run status and public visibility. A matching source plus `COMPLETE` establishes that Kaggle completed that notebook version; it does not prove the old score tables or full-pipeline correctness. Failed and pending runs remain visible in the report.
 
 Authentication uses the already configured Kaggle CLI. Tokens and local credential files are never copied into the repository. Raw data, notebook output datasets and generated structure records are not committed. Source-release availability and account CPU quotas can still block execution.
+
+## Executed full-content data audit
+
+[Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit) is a separate third research notebook. It scanned all training rows and confirmed 1,213/1,213 public spectra and 400/400 molecules as exact numeric-content matches, including adduct/mode consistency, while rejecting two coarse candidate pairs. It does not train or score a model. [Protocol, input hashes and limits](../docs/PUBLIC_EXAMPLE_OVERLAP.md).
+
+Its source bundle lives under `kaggle/audits/public-overlap`, outside the two historical-publication bundles. Generate it with `python scripts/build_overlap_notebook.py` and verify its completed source, input attachments and aggregate JSON with `python scripts/check_overlap_publication.py`. The existing two-notebook readback remains scoped to those two publications.

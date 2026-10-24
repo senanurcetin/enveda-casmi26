@@ -1,24 +1,102 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-23",
-  "scope": "Noncommercial historical research; no new competition submission or accuracy claim",
+  "reviewed_on": "2026-10-24",
+  "scope": "Noncommercial research: historical model scores and executed data-quality evidence; no new competition submission or accuracy claim",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
   "experiments": [
-    {"id": "library-analog", "label": "Library + analog rule", "score": 0.190, "family": "own", "source": "EXPERIMENTS.md"},
-    {"id": "clean-ranker", "label": "Ranker without membership priors", "score": 0.258, "family": "own", "source": "EXPERIMENTS.md"},
-    {"id": "pubchemlite", "label": "+ PubChemLite, retrained", "score": 0.273, "family": "own", "source": "EXPERIMENTS.md"},
-    {"id": "fragments", "label": "+ Fragments and generation", "score": 0.298, "family": "own", "source": "EXPERIMENTS.md"},
-    {"id": "extended-generation", "label": "Extended generation", "score": 0.309, "family": "own", "source": "HANDOFF.md"},
-    {"id": "external-base", "label": "External v4n base", "score": 0.420, "family": "external", "source": "HANDOFF.md"},
-    {"id": "fusion", "label": "v4n + own rank-list fusion", "score": 0.422, "family": "fusion", "source": "HANDOFF.md"}
+    {
+      "id": "library-analog",
+      "label": "Library + analog rule",
+      "score": 0.19,
+      "family": "own",
+      "source": "EXPERIMENTS.md"
+    },
+    {
+      "id": "clean-ranker",
+      "label": "Ranker without membership priors",
+      "score": 0.258,
+      "family": "own",
+      "source": "EXPERIMENTS.md"
+    },
+    {
+      "id": "pubchemlite",
+      "label": "+ PubChemLite, retrained",
+      "score": 0.273,
+      "family": "own",
+      "source": "EXPERIMENTS.md"
+    },
+    {
+      "id": "fragments",
+      "label": "+ Fragments and generation",
+      "score": 0.298,
+      "family": "own",
+      "source": "EXPERIMENTS.md"
+    },
+    {
+      "id": "extended-generation",
+      "label": "Extended generation",
+      "score": 0.309,
+      "family": "own",
+      "source": "HANDOFF.md"
+    },
+    {
+      "id": "external-base",
+      "label": "External v4n base",
+      "score": 0.42,
+      "family": "external",
+      "source": "HANDOFF.md"
+    },
+    {
+      "id": "fusion",
+      "label": "v4n + own rank-list fusion",
+      "score": 0.422,
+      "family": "fusion",
+      "source": "HANDOFF.md"
+    }
   ],
   "claims": [
-    {"id": "historical-scores", "title": "Historical public scores", "state": "historical", "detail": "Own pipeline 0.309; fusion 0.422 includes the external v4n solution. These are archived author logs, not a fresh leaderboard readback or final private scores.", "source": "HANDOFF.md"},
-    {"id": "profile", "title": "Source-library composition", "state": "historical", "detail": "2,539,608 spectra and 275,810 structure keys in the committed profile. Counts are not an independent audit of the current source dataset.", "source": "reports/data_profile.json"},
-    {"id": "c1-fix", "title": "Same-library C1 exclusion", "state": "implemented", "detail": "Code excludes complete same-library reference groups, including unsampled equivalent-structure spectra. Synthetic regressions exist; historical scores were not recomputed.", "source": "docs/CASMI26_RESEARCH_ASSESSMENT.md"},
-    {"id": "uncertainty", "title": "Fixed-grid simultaneous uncertainty", "state": "implemented", "detail": "Paired bootstrap bands account for a predeclared novelty-mixture grid. Repeated model selection and domain shift remain outside that guarantee.", "source": "EXPERIMENTS.md"},
-    {"id": "revalidation", "title": "Full corrected-protocol revalidation", "state": "pending", "detail": "Requires licensed data, immutable input hashes, verified fingerprints, fresh analog indices and paired per-molecule outputs. No completed full-data rerun is asserted.", "source": "docs/RESEARCH_WORK_PROGRAM.md"},
-    {"id": "overlap", "title": "Exact train / public-example overlap", "state": "pending", "detail": "The archived 1,213 coarse-key matches are insufficient to establish exact peak-and-intensity identity. Recompute content-level overlap before claiming complete leakage.", "source": "src/casmi/validate/spectrum_overlap.py"}
+    {
+      "id": "historical-scores",
+      "title": "Historical public scores",
+      "state": "historical",
+      "detail": "Own pipeline 0.309; fusion 0.422 includes the external v4n solution. These are archived author logs, not a fresh leaderboard readback or final private scores.",
+      "source": "HANDOFF.md"
+    },
+    {
+      "id": "profile",
+      "title": "Source-library composition",
+      "state": "historical",
+      "detail": "Archived profile: 2,539,608 spectra and 275,810 structure keys. The new content audit rescanned the spectrum-row count; distinct-structure totals and library partitions were not recomputed.",
+      "source": "reports/data_profile.json"
+    },
+    {
+      "id": "c1-fix",
+      "title": "Same-library C1 exclusion",
+      "state": "implemented",
+      "detail": "Code excludes complete same-library reference groups, including unsampled equivalent-structure spectra. Synthetic regressions exist; historical scores were not recomputed.",
+      "source": "docs/CASMI26_RESEARCH_ASSESSMENT.md"
+    },
+    {
+      "id": "uncertainty",
+      "title": "Fixed-grid simultaneous uncertainty",
+      "state": "implemented",
+      "detail": "Paired bootstrap bands account for a predeclared novelty-mixture grid. Repeated model selection and domain shift remain outside that guarantee.",
+      "source": "EXPERIMENTS.md"
+    },
+    {
+      "id": "revalidation",
+      "title": "Full corrected-protocol revalidation",
+      "state": "pending",
+      "detail": "Requires licensed data, immutable input hashes, verified fingerprints, fresh analog indices and paired per-molecule outputs. No completed full-data rerun is asserted.",
+      "source": "docs/RESEARCH_WORK_PROGRAM.md"
+    },
+    {
+      "id": "overlap",
+      "title": "Exact train / public-example overlap",
+      "state": "measured",
+      "detail": "Executed on Kaggle: all 2,539,608 training rows scanned; 1,213/1,213 public spectra and 400/400 molecules have exact precursor, full m/z and intensity matches, also consistent in adduct/mode. Two coarse candidate pairs were rejected. This concerns public examples, not hidden evaluation.",
+      "source": "reports/public_overlap_audit.json"
+    }
   ]
 }

@@ -81,9 +81,11 @@ Local source-rendered desktop capture; [verification scope](docs/VERIFICATION.md
 
 **Both updated notebooks completed on Kaggle**, with matching source hashes in [publication readback](reports/kaggle_publications.json). The publication bundles retain existing input attachments, CPU execution and internet-disabled computation. Historical tables are labeled explicitly. [Build, publish and verify source/status](kaggle/README.md).
 
+3. [Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit): a completed full-training scan separating exact numeric content from coarse-key collisions. [Executed results and hashes](docs/PUBLIC_EXAMPLE_OVERLAP.md).
+
 ## Limitations that affect interpretation
 
-V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. Later audits corrected sampled-query C1 leakage and D2 shortlist eligibility; their effect on real-data accuracy remains unmeasured. Tautomer identity grouping is not scaffold independence. The recorded public-example overlap used coarse keys, so exact-content overlap remains to be verified.
+V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. Later audits corrected sampled-query C1 leakage and D2 shortlist eligibility; their effect on real-data accuracy remains unmeasured. Tautomer identity grouping is not scaffold independence. The [executed exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
 
 [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) · [Evidence and pending work](reports/research_review.md) · [Archived maintenance notes](docs/MAINTENANCE_HISTORY.md).
 

@@ -12,6 +12,7 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 | What happened in each experiment? | [Original experiment log](../EXPERIMENTS.md), [historical handoff](../HANDOFF.md) |
 | How is inference assembled? | [Original architecture](../ARCHITECTURE.md) |
 | What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
+| Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
 | How are Kaggle publications maintained? | [Kaggle guide](../kaggle/README.md) |
 | What was actually checked in this update? | [Verification record](VERIFICATION.md) |
 | Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |
