@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 KERNEL = "senanuretin/casmi26-fresh-training-family-holdout"
 OUTPUT = ROOT / "kaggle/audits/advanced-internal"
 DATASETS = ["senanuretin/casmi-coconut-b", "senanuretin/casmi-pubchemlite-b", "metric/rdkit-2026-3-3-wheel"]
@@ -13,6 +15,18 @@ SCRIPTS = ["build_structures.py", "build_store.py", "build_pool.py", "build_fing
 
 
 def build():
+    publication_path = ROOT / "reports/advanced_publication.json"
+    if publication_path.exists():
+        from scripts.research_snapshot import snapshot_hashes
+        from scripts.check_kaggle_publications import source_hash
+        publication = json.loads(publication_path.read_text(encoding="utf-8"))
+        report = json.loads((ROOT / "reports/advanced_study.json").read_text(encoding="utf-8"))
+        notebook = json.loads((OUTPUT / "notebook.ipynb").read_text(encoding="utf-8"))
+        if (source_hash(notebook) != publication["source_sha256"]
+                or snapshot_hashes(OUTPUT / "notebook.ipynb") != report["source_code_sha256"]):
+            raise ValueError("Completed fresh-study source snapshot was altered")
+        print("Verified frozen completed fresh-training bundle")
+        return
     import nbformat
     from nbformat.v4 import new_code_cell as C, new_markdown_cell as M, new_notebook
 
@@ -107,7 +121,7 @@ The declared population is 600 training, 150 development and 250 test molecules.
         cell.id = hashlib.sha256(f"{i}:{cell.cell_type}:{cell.source}".encode()).hexdigest()[:12]
     OUTPUT.mkdir(parents=True, exist_ok=True)
     nbformat.write(notebook, OUTPUT / "notebook.ipynb")
-    meta = {"id":KERNEL,"title":"CASMI26: Fresh Training and Chemical-Family Holdout","code_file":"notebook.ipynb",
+    meta = {"id":KERNEL,"title":"CASMI26: Fresh Training Family Holdout","code_file":"notebook.ipynb",
             "language":"python","kernel_type":"notebook","is_private":False,"enable_gpu":True,
             "enable_tpu":False,"enable_internet":False,"competition_sources":["enveda-CASMI26-molecule-id-mass-spectra"],
             "dataset_sources":DATASETS,"kernel_sources":[]}

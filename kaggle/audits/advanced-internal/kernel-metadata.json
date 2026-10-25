@@ -1,6 +1,6 @@
 {
   "id": "senanuretin/casmi26-fresh-training-family-holdout",
-  "title": "CASMI26: Fresh Training and Chemical-Family Holdout",
+  "title": "CASMI26: Fresh Training Family Holdout",
   "code_file": "notebook.ipynb",
   "language": "python",
   "kernel_type": "notebook",
