@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 from scripts.build_revalidation_notebook import DATASETS, KERNEL, SCRIPTS
 from scripts.check_kaggle_publications import source_hash
+from scripts.research_snapshot import snapshot_hashes
 from casmi.validate.source_manifest import required_validation_inputs, _canonical_files_digest
 
 COMPETITION = "enveda-CASMI26-molecule-id-mass-spectra"
@@ -29,12 +30,11 @@ def validate_result(result, root=ROOT):
     if (set(result) != expected or result["schema_version"] != 1
             or result["status"] != "COMPLETE_RETROSPECTIVE_REVALIDATION"):
         raise ValueError("Unexpected or incomplete study report")
-    sources = {path.relative_to(root).as_posix() for path in (root / "src").rglob("*.py")}
-    sources.update("scripts/" + name for name in SCRIPTS)
-    if set(result["source_code_sha256"]) != sources:
+    snapshot = snapshot_hashes(root / "kaggle/audits/corrected-revalidation/notebook.ipynb")
+    if set(result["source_code_sha256"]) != set(snapshot):
         raise ValueError("Executed source inventory differs")
     for name, digest in result["source_code_sha256"].items():
-        if hashlib.sha256((root / name).read_text(encoding="utf-8").encode()).hexdigest() != digest:
+        if snapshot[name] != digest:
             raise ValueError("Executed source hash differs: " + name)
     count = result["cohort"]["n_molecules"]
     if isinstance(count, bool) or not isinstance(count, int) or count < 1:

@@ -8,6 +8,7 @@ from pathlib import Path
 from scripts.build_revalidation_notebook import DATASETS, SCRIPTS
 from scripts.check_revalidation_publication import COMPETITION, validate_result
 from scripts.check_kaggle_publications import source_hash
+from scripts.research_snapshot import snapshot_hashes
 from casmi.validate.source_manifest import required_validation_inputs, _canonical_files_digest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,7 +34,7 @@ def synthetic_report():
                                                                              "control_minus_reference": 0.0} for cls in ("C1", "C2", "C3")}}
                                                    for mode in ("blank", "intensity_shuffle")}}
                               for model in ("d1", "d1_d2", "frozen_v16")},
-                   "source_code_sha256": {path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_text(encoding="utf-8").encode()).hexdigest() for path in paths},
+                   "source_code_sha256": snapshot_hashes(ROOT / "kaggle/audits/corrected-revalidation/notebook.ipynb"),
                    "raw_inputs": {name: {"bytes": 1, "sha256": "a" * 64} for name in ("train.parquet", "coconut.csv", "pubchemlite.csv")},
                    "execution": {"platform": "Kaggle", "competition_source": COMPETITION,
                                  "dataset_sources": DATASETS, "internet_enabled": False, "submitted_predictions": False}})
