@@ -6,7 +6,7 @@ Assessment date: **2026-10-18**. This review concerns the existing **non-commerc
 
 ## Scope and evidence
 
-Inspected: `README.md`, `EXPERIMENTS.md`, `HANDOFF.md`, C1/C2/C3 knockout logic, query sampling, rank-data construction, analog/library indices, the paired-bootstrap comparator and repository CI. The latest archived leaderboard figures are from **2026-10-08**, not new independent model evaluations. No new Kaggle training/leaderboard result or live BigQuery verification was performed in this review.
+Inspected: `README.md`, `EXPERIMENTS.md`, the then-current historical handoff (retained in Git history), C1/C2/C3 knockout logic, query sampling, rank-data construction, analog/library indices, the paired-bootstrap comparator and repository CI. The latest archived leaderboard figures are from **2026-10-08**, not new independent model evaluations. No new Kaggle training/leaderboard result or live BigQuery verification was performed in this review.
 
 | Research criterion | Assessment | Evidence |
 | --- | --- | --- |
