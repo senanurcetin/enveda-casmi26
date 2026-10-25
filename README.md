@@ -25,10 +25,10 @@ The original pipeline combines mass-constrained retrieval, four evidence channel
 | + PubChemLite, retrained | 0.273 | Candidate-source extension |
 | + Fragments and candidate generation | 0.298 | Structural evidence and recall |
 | Extended generation | **0.309** | Best recorded own pipeline |
-| External v4n base | 0.420 | Third-party solution, attributed in handoff |
+| External v4n base | 0.420 | Third-party v4n solution, not original model work |
 | v4n + own rank-list fusion | **0.422** | Separate fusion result |
 
-Sources: [experiment log](EXPERIMENTS.md), [historical handoff](HANDOFF.md), [machine-readable evidence registry](reports/research_evidence.json). Snapshot: **8 October 2026**. The +0.002 fusion difference is not established as a transferable or statistically significant improvement. The 0.422 result must not be attributed entirely to the original pipeline.
+Sources: [experiment log](EXPERIMENTS.md), [machine-readable evidence registry](reports/research_evidence.json). Snapshot: **8 October 2026**. The +0.002 fusion difference is not established as a transferable or statistically significant improvement. The 0.422 result must not be attributed entirely to the original pipeline.
 
 ## What this project demonstrates
 
