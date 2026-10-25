@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from rdkit import Chem
 
-from casmi.pool.pool import CandidatePool
+from casmi.pool.pool import CandidatePool, generated_candidate_identity
 
 
 def make_pool():
@@ -95,3 +95,28 @@ def test_unregistered_key_cannot_use_empty_or_unrelated_fingerprint():
     pool = make_pool()
     with pytest.raises(KeyError, match="absent"):
         pool.packed_fps(["unknown-key"], np.zeros((len(pool), 256), np.uint8))
+
+
+def test_same_standard_inchi_tautomers_have_order_invariant_content_fingerprints():
+    smiles = ["O=c1cccc[nH]1", "Oc1ccccn1"]
+    assert generated_key(smiles[0]) == generated_key(smiles[1])
+    identities = [generated_candidate_identity(Chem.MolFromSmiles(value))[0] for value in smiles]
+    assert identities[0] != identities[1]
+    first, reverse = make_pool(), make_pool()
+    first.register_generated(identities, smiles)
+    reverse.register_generated(list(reversed(identities)), list(reversed(smiles)))
+    assert first.extra_smiles == reverse.extra_smiles
+    for key in identities:
+        np.testing.assert_array_equal(first.extra_fp[key], reverse.extra_fp[key])
+    assert not np.array_equal(first.extra_fp[identities[0]], first.extra_fp[identities[1]])
+
+
+def test_legacy_tautomer_identity_collision_fails_closed_without_replacing_cache():
+    pool = make_pool()
+    a, b = "O=c1cccc[nH]1", "Oc1ccccn1"
+    key = generated_key(a)
+    pool.register_generated([key], [a])
+    previous = pool.extra_fp[key].copy()
+    with pytest.raises(ValueError, match="row 0"):
+        pool.register_generated([key], [b])
+    np.testing.assert_array_equal(previous, pool.extra_fp[key])

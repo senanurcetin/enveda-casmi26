@@ -77,6 +77,7 @@ class BaselineEngine:
         from rdkit import Chem
         from rdkit.Chem.Descriptors import ExactMolWt
         from casmi.generate.transforms import propose, propose_agg
+        from casmi.pool.pool import generated_candidate_identity
         order = sorted(analogs.items(), key=lambda kv: -kv[1][0])[: self.cfg.gen_max_analogs]
         seeds = [(self.pool.smiles_of(k), sim, am) for k, (sim, am) in order if k in self.pool.row_of]
         rows, seen = [], {}
@@ -99,7 +100,8 @@ class BaselineEngine:
                     row[7] += r["n_paths"]
                 continue
             seen[ik] = len(rows)
-            row = ["G" + ik, smi, (mass - ExactMolWt(mol)) / ExactMolWt(mol) * 1e6, r["sim_max"], r["depth"]]
+            generated_key, smi = generated_candidate_identity(mol)
+            row = [generated_key, smi, (mass - ExactMolWt(mol)) / ExactMolWt(mol) * 1e6, r["sim_max"], r["depth"]]
             if self.cfg.gen_consensus:
                 row += [r["sim_sum"], r["n_seeds"], r["n_paths"], r["t1"], r["t2"]]
             rows.append(row)

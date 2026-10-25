@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-25T22:52:06.621928+00:00",
+  "attempts": [
+    {
+      "version": 1,
+      "source_sha256": "b959b63c79f236be90bcd0888659ff9d1a246acf1d14fef650d85ec422380b17",
+      "last_observed_status": "RUNNING",
+      "scientific_status": "SUPERSEDED_BEFORE_RESULT_INSPECTION",
+      "experimental_scores_inspected": false,
+      "reason": "Representation-sensitive generated features were cached by connectivity-only identity; synthetic counterexample demonstrated order dependence.",
+      "amendment": "protocols/advanced-internal-v1-amendment.json"
+    }
+  ]
+}

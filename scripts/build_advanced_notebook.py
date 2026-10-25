@@ -62,6 +62,7 @@ env = {**os.environ,'CASMI_DATA':str(train.parent),'CASMI_ARTIFACTS':str(artifac
        'CASMI_COCONUT':str(coconut),'CASMI_PUBCHEMLITE':str(pcl),'CASMI_POOL_TAG':'_advanced_internal',
        'CASMI_QUARANTINE_MASS_CONFLICTS':'1','CASMI_QUARANTINE_INVALID_STRUCTURES':'1',
        'PYTHONPATH':str(code / 'src')+os.pathsep+str(code),'PYTHONUNBUFFERED':'1',
+       'PYTHONHASHSEED':'20261025',
        'OMP_NUM_THREADS':'2','OPENBLAS_NUM_THREADS':'2','MKL_NUM_THREADS':'2',
        'CUBLAS_WORKSPACE_CONFIG':':4096:8','CASMI_ADVANCED_OUTPUT':'/kaggle/working/advanced_study.json'}
 print('Fresh supervised training configured; no pretrained model dataset is attached.',flush=True)
@@ -102,12 +103,14 @@ report['execution'] = {'platform':'Kaggle','competition_source':'enveda-CASMI26-
                        'dataset_sources':DATASET_LITERAL,'pretrained_models_attached':False,
                        'internet_enabled':False,'submitted_predictions':False,
                        'protocol_preregistered_commit':'4f8ed74','protocol_registered_before_any_new_test_results':True}
+report['execution']['source_amendment_sha256'] = AMENDMENT_HASH
 # Record exact installed versions without filesystem paths, URLs or environment secrets.
 report['installed_packages'] = dict(sorted((d.metadata['Name'],d.version) for d in importlib.metadata.distributions()
                                    if d.metadata['Name'] and re.fullmatch(r'[A-Za-z0-9_.+-]+',d.version)))
 output.write_text(json.dumps(report,indent=2,allow_nan=False)+'\\n')
 print('Completed fresh-training family holdout; aggregate report sealed.',flush=True)
-""".replace("DATASET_LITERAL", repr(DATASETS))
+""".replace("DATASET_LITERAL", repr(DATASETS)).replace("AMENDMENT_HASH", repr(hashlib.sha256(
+        (ROOT / "protocols/advanced-internal-v1-amendment.json").read_text(encoding="utf-8").encode()).hexdigest()))
     notebook = new_notebook(cells=[M("""<img src="https://raw.githubusercontent.com/senanurcetin/enveda-casmi26/main/site/assets/nexus-midnight.svg" width="360" alt="NEXUS research identity">
 
 # CASMI26: Fresh Training and Chemical-Family Holdout
