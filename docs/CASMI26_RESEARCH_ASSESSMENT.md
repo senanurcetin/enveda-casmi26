@@ -2,6 +2,8 @@
 
 Assessment date: **2026-10-18**. This review concerns the existing **non-commercial scientific research codebase**. It is not a market, product or deployment review.
 
+**Current evidence update — 25 October 2026:** the [full-source frozen-model/control study](../reports/revalidation_review.md) has completed, with authenticated publication readback, all 250 V-in molecules retained, verified fingerprints and a freshly rebuilt D2 index. It closes the historical review's retrospective rerun/negative-control gap for this population. v16 C1/C2/C3 MRR is 0.8324/0.6241/0.2374; blank fragments improve simple-model C2, an adverse diagnostic reported explicitly. Historical leaderboard scores remain unchanged. Full weight-training lineage, untouched external validation and live BigQuery reconciliation remain distinct limitations. The dated assessment below records the original review state.
+
 ## Scope and evidence
 
 Inspected: `README.md`, `EXPERIMENTS.md`, `HANDOFF.md`, C1/C2/C3 knockout logic, query sampling, rank-data construction, analog/library indices, the paired-bootstrap comparator and repository CI. The latest archived leaderboard figures are from **2026-10-08**, not new independent model evaluations. No new Kaggle training/leaderboard result or live BigQuery verification was performed in this review.

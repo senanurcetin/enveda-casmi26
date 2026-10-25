@@ -1,4 +1,18 @@
-# Portfolio maintenance verification — 24 October 2026
+# Portfolio maintenance verification — 25 October 2026
+
+## Completed model/control extension
+
+The [retrospective study](../reports/revalidation_review.md) completed on Kaggle on 24 October; source, inputs, public visibility, completion status and aggregate artifact identity were authenticated on 25 October. All 250 eligible molecules were retained across three models, three novelty classes and three spectral conditions. The build quarantined 1,710 mass-conflicting identities and 13 unparseable candidates, verified 1,071,863 candidate fingerprints and rebuilt D2 without cache. No raw source rows or model files were exported.
+
+All four owned Kaggle publications were rechecked on 25 October: public, `COMPLETE`, and matching their tracked source hashes. Dashboard JavaScript passed Node syntax checking and every local HTML asset/document link resolved without browser or screen interaction.
+
+The complete updated local suite passed **297 tests and 101 subtests, with 2 skipped**. Source-bound evidence regressions check the executed code inventory, model/input manifest, notebook source, aggregate artifact hash, unchanged training input relative to the earlier overlap audit, paired-control summaries and retained denominators. CI regenerates both evidence reviews and notebook bundles to detect drift.
+
+This extension used **CLI, filesystem and authenticated APIs only**. No computer-screen interaction, browser automation or Playwright was used. Dashboard changes were verified through source/data integrity checks; no new visual-rendering claim or screenshot is made. Earlier screenshots and their dated verification boundaries are retained below.
+
+The study is retrospective, with historical selection and incomplete original weight-lineage limitations. It is not an untouched external generalization result or a new competition submission.
+
+## Earlier verification record — 23–24 October 2026
 
 ## Delivered scope
 

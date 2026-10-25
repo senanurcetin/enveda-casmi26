@@ -7,6 +7,7 @@ from pathlib import Path
 
 from scripts.build_revalidation_notebook import DATASETS, SCRIPTS
 from scripts.check_revalidation_publication import COMPETITION, validate_result
+from scripts.check_kaggle_publications import source_hash
 from casmi.validate.source_manifest import required_validation_inputs, _canonical_files_digest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,6 +55,19 @@ def synthetic_report():
 
 
 class StudyReadbackTests(unittest.TestCase):
+    def test_committed_evidence_matches_executed_code_notebook_and_artifact(self):
+        path = ROOT / "reports/revalidation_study.json"
+        result = json.loads(path.read_text(encoding="utf-8"))
+        validate_result(result)
+        publication = json.loads((ROOT / "reports/revalidation_publication.json").read_text(encoding="utf-8"))
+        self.assertEqual(hashlib.sha256(path.read_text(encoding="utf-8").encode()).hexdigest(), publication["aggregate_artifact_sha256"])
+        notebook = json.loads((ROOT / "kaggle/audits/corrected-revalidation/notebook.ipynb").read_text(encoding="utf-8"))
+        self.assertEqual(source_hash(notebook), publication["source_sha256"])
+        self.assertEqual(publication["latest_run_status"], "COMPLETE")
+        self.assertTrue(publication["source_matches"] and publication["public"])
+        prior_audit = json.loads((ROOT / "reports/public_overlap_audit.json").read_text(encoding="utf-8"))
+        self.assertEqual(result["raw_inputs"]["train.parquet"], prior_audit["inputs"]["train.parquet"])
+
     def test_rejects_incomplete_stale_and_private_details(self):
         result = synthetic_report()
         validate_result(result)

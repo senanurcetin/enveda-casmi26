@@ -1,8 +1,8 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-24. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-25. Score snapshot: 2026-10-08.
 
-Noncommercial research: historical model scores and executed data-quality evidence; no new competition submission or accuracy claim.
+Noncommercial research: historical competition scores, executed data audits and retrospective frozen-model/control evidence; no new competition submission or untouched-holdout accuracy claim.
 
 These are source-file integrity hashes, not external verification of the claims.
 
@@ -30,9 +30,9 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 ## Same-library C1 exclusion — implemented
 
-Code excludes complete same-library reference groups, including unsampled equivalent-structure spectra. Synthetic regressions exist; historical scores were not recomputed.
+Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `498aa860f51af1915fc9956fdd3ddb00132e09555d189d21a2ada3e72424c2dd`.
+Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `12cea0b2fc063719785eb4234b6b3d3bc118ee38c6f4a189976a9d9ccfd4972f`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -40,14 +40,32 @@ Paired bootstrap bands account for a predeclared novelty-mixture grid. Repeated 
 
 Source: [EXPERIMENTS.md](../EXPERIMENTS.md). SHA-256 (UTF-8 / LF): `ab3d140294c7d7065d7c07b5014981301b605e9bd578a36bfea3db8573e15ac9`.
 
-## Full corrected-protocol revalidation — pending
+## Corrected-protocol retrospective revalidation — measured
 
-Requires licensed data, immutable input hashes, verified fingerprints, fresh analog indices and paired per-molecule outputs. No completed full-data rerun is asserted.
+Completed Kaggle run with matching code/artifact hashes: all 250 V-in molecules, rebuilt full-source artifacts, verified fingerprints and fresh D2 index. Frozen v16 C1/C2/C3 MRR: 0.8324/0.6241/0.2374. Historical selection and incomplete original weight lineage limit interpretation.
 
-Source: [docs/RESEARCH_WORK_PROGRAM.md](../docs/RESEARCH_WORK_PROGRAM.md). SHA-256 (UTF-8 / LF): `e21f53c21404c68b03903305a82883d429ab33086d122f8cc708f0a5e53af8dc`.
+Source: [reports/revalidation_study.json](../reports/revalidation_study.json). SHA-256 (UTF-8 / LF): `32a2211c52f1f0c5f85d7556e84e12df0a917a140a50597be1ef055d8fe7055e`.
 
 ## Exact train / public-example overlap — measured
 
 Executed on Kaggle: all 2,539,608 training rows scanned; 1,213/1,213 public spectra and 400/400 molecules have exact precursor, full m/z and intensity matches, also consistent in adduct/mode. Two coarse candidate pairs were rejected. This concerns public examples, not hidden evaluation.
 
 Source: [reports/public_overlap_audit.json](../reports/public_overlap_audit.json). SHA-256 (UTF-8 / LF): `1884f12c133da90612ab9312ad267a8d533fed9057e08a972775fe89ab2be895`.
+
+## Molecule-paired spectral controls — measured
+
+Blank and intensity-shuffle treatments completed for all three models and novelty classes. Blank fragments reduce v16 C2 MRR by 0.4972, but improve simple-model C2 ranking. Controls expose dependence and failure modes; they do not certify generalization.
+
+Source: [reports/revalidation_review.md](../reports/revalidation_review.md). SHA-256 (UTF-8 / LF): `ff669ac2152f2df7c6cc4fb1b84ab9560cf2cc6fda1ffe70e6d07e5b0fac92db`.
+
+## Executed candidate-source quarantine — measured
+
+1,710 mass-conflicting identities (3,891 provider rows) and 13 unparseable candidates quarantined. 1,071,863 structures fingerprint-verified; all 250 query molecules retained, including one with an absent standard truth key.
+
+Source: [reports/revalidation_study.json](../reports/revalidation_study.json). SHA-256 (UTF-8 / LF): `32a2211c52f1f0c5f85d7556e84e12df0a917a140a50597be1ef055d8fe7055e`.
+
+## Untouched external holdout — pending
+
+The executed study is retrospective. Fresh training with independently attested lineage and an untouched external/scaffold holdout remains a separate research requirement; no such generalization claim is made.
+
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `5e4039b4ba2868693f116129e36ed7182c96dfa764e1b4f51de64cff4aee44ba`.

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this research software or its audit methods, cite this repository and identify the commit used. Cite source datasets and third-party methods separately."
+type: software
+title: "CASMI26: Molecular Identification Research"
+authors:
+  - family-names: Cetin
+    given-names: Senanur
+repository-code: "https://github.com/senanurcetin/enveda-casmi26"
+url: "https://github.com/senanurcetin/enveda-casmi26"
+abstract: "Noncommercial NEXUS research software for mass-constrained molecular candidate retrieval, evidence-based ranking, structure-level knockout validation, paired spectral controls, and data provenance audits. Historical competition results and later retrospective diagnostics have distinct evidence boundaries."
+keywords:
+  - tandem mass spectrometry
+  - molecular identification
+  - candidate ranking
+  - reproducible data science
+  - leakage audits

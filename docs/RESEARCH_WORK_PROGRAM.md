@@ -9,7 +9,15 @@ This is an execution plan **committed to the repository**, not a promise that a 
 
 ## Completed data-evidence gate — 24 October 2026
 
-The [full-content public-example audit](PUBLIC_EXAMPLE_OVERLAP.md) completed on Kaggle: all 2,539,608 training rows scanned; all 1,213 public spectra / 400 molecules matched exact arrays and acquisition mode/adduct. Two coarse candidate pairs were rejected. Input/code hashes and authenticated publication readback are committed. This closes the public-example exact-overlap task for that input snapshot. Full corrected-protocol model evaluation, negative-control runs and live BigQuery reconciliation remain pending. Historical progress notes below retain their original dates.
+The [full-content public-example audit](PUBLIC_EXAMPLE_OVERLAP.md) completed on Kaggle: all 2,539,608 training rows scanned; all 1,213 public spectra / 400 molecules matched exact arrays and acquisition mode/adduct. Two coarse candidate pairs were rejected. Input/code hashes and authenticated publication readback are committed. This closes the public-example exact-overlap task for that input snapshot.
+
+## Completed model/control gate — readback 25 October 2026
+
+The [corrected-protocol retrospective study](../reports/revalidation_review.md) completed on 24 October; authenticated source/status/artifact verification completed on 25 October. All 250 eligible V-in molecules were retained across D1, D1+D2 and frozen v16 under C1/C2/C3, blank fragments and intensity shuffling. Full-source rebuilds exposed and explicitly quarantined 1,710 mass-conflicting identities and 13 unparseable candidates; 1,071,863 fingerprints and a cache-free D2 index were verified. One absent standard truth key remained in the denominator.
+
+v16 C1/C2/C3 MRR is 0.8324/0.6241/0.2374. Blank fragments markedly reduce v16 performance but improve simple-model C2 ranking; both favorable and adverse diagnostics are published with paired uncertainty. Input/model/code hashes and source-matched public readback are committed. No retraining, competition submission, model-promotion decision or untouched-holdout claim follows.
+
+The current implementation and retrospective execution gates are complete. Independently attested new training, untouched external/scaffold validation, broader source/error slices and optional live BigQuery reconciliation are separate research extensions. Historical progress notes below retain their original dates and are superseded by this completed-run evidence where applicable.
 
 ## Prioritization and schedule
 

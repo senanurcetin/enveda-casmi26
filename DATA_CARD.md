@@ -16,6 +16,8 @@ A tautomer-canonical InChIKey14 groups metric-equivalent structures. It does not
 
 ## Distribution and quality risks
 
+The [completed source rebuild and model study](reports/revalidation_review.md) identified 1,710 shared identities with conflicting neutral masses (3,891 provider rows). Its explicit whole-identity quarantine also excluded 13 unparseable selected candidates, leaving **1,071,863** fingerprint-verified candidate structures. All **250** evaluation molecules remained in scoring; one standard truth key was absent from the retained pool. Labels and reference exclusions were derived independently of candidate retention. These checks establish computational consistency, not independent authentication of provider annotations.
+
 Library instrument, ionization mode, adduct, peak count and precursor-error distributions differ. V-in is a small, deliberately common natural-product set; it can conceal decoy costs and fail to represent unknown hidden-test novelty. Pool source composition itself can leak the simulation class into ranker features.
 
 ## Rebuild policy
