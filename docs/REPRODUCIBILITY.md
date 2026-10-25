@@ -17,12 +17,25 @@ The evidence command verifies local source links, allowed evidence states, score
 
 ## Scientific environment
 
-Use Python 3.12 and the pinned versions in `.github/workflows/nexus-research-checks.yml` for official-metric regression. `requirements.txt` pins RDKit 2026.3.3; the remaining full-pipeline dependencies use lower bounds, so it is not a complete environment lock. Capture the environment with each real-data run. Do not interpret synthetic-test success as a reproduced competition result.
+Use **Python 3.12** and [the hash-locked portable profile](../locks/research-py312.txt). `requirements.txt` now enables hash verification and includes exact versions for direct and transitive dependencies; the source pins are in `requirements-research.in`. The universal lock has 63 conditional entries, of which 44 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
+
+This portable profile is distinct from Kaggle's execution image. Each executed notebook records its actual versions; the new fresh-training study additionally records installed package versions. A matching dependency profile is not a promise of bitwise-identical CUDA results across hardware. Synthetic-test success remains separate from dataset-backed experimental evidence.
 
 ```bash
-python -m pip install -r requirements.txt pytest
+python -m pip install --require-hashes -r requirements.txt
+python scripts/check_research_lock.py
 python -m pytest -q
 ```
+
+Create and activate an isolated Python 3.12 virtual environment before these commands. To regenerate the lock deliberately: `uv pip compile requirements-research.in --python-version 3.12 --universal --generate-hashes --output-file locks/research-py312.txt`. Revalidate the resulting environment before replacing the attestation. Do not install the portable profile over an active Kaggle image merely to reproduce a historical notebook.
+
+## Historical source snapshots
+
+Completed experiment bundles retain the source actually executed, embedded in their notebooks. `research_snapshot.py` parses that source inventory as literal data, without executing notebook code. Evidence validation binds results to the embedded snapshot and authenticated notebook hash rather than incorrectly requiring today's main branch to equal historical code. New experiments use distinct bundles and publication records; the completed v16 study is not rebuilt or relabeled when current code advances.
+
+## Fresh training and family holdout
+
+The [predeclared advanced protocol](ADVANCED_INTERNAL_STUDY.md) separates supervised query families before fitting any fresh weights. Build its distinct notebook with `python scripts/build_advanced_notebook.py` and authenticate a completed run with `python scripts/check_advanced_publication.py`. No archived models are attached. Execution status is established by the publication readback, not by the existence of these commands or the protocol.
 
 ## Kaggle publications
 

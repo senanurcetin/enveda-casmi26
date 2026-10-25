@@ -169,3 +169,9 @@ Next: retrain the ranker on the larger pool's candidate lists (its list-context 
 - **What did not transfer:** pool growth beyond PubChemLite, Class-3 up-weighting, v17 features, tuned
   LightGBM, large D3. V-real resolves effects of about ±0.01 and overrates simulated Class-3 gains; a
   significant V-in Class-1 drop has been a reliable warning.
+
+## Archived score provenance — snapshot 8 October 2026
+
+The retired working handoff is preserved in [Git history](https://github.com/senanurcetin/enveda-casmi26/blob/7141a5435b2796bd59d4f98996ef675ffcbfbd47/HANDOFF.md). Its author-recorded snapshot reports the best own pipeline at **0.309 public MRR@25**, the **external v4n base at 0.420**, and **external-base plus own-list fusion at 0.422**. The external base was attributed there to huseyinemreaksoy's v4n Fusion + PubChem solution. The 0.422 result is not wholly attributable to this repository's original model.
+
+These are historical author logs, not a current leaderboard readback, private score or statistically established +0.002 improvement. Current source audits and internal model studies have separate evidence records. The evidence registry now points to this canonical experiment log rather than restoring retired handoff or hiring documents.

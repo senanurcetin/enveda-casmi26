@@ -20,7 +20,7 @@ These are source-file integrity hashes, not external verification of the claims.
 
 Own pipeline 0.309; fusion 0.422 includes the external v4n solution. These are archived author logs, not a fresh leaderboard readback or final private scores.
 
-Source: [HANDOFF.md](../HANDOFF.md). SHA-256 (UTF-8 / LF): `b527d210d530c427926f0683b4ef6b66ca088b7bec0de6f7c94051680c347a18`.
+Source: [EXPERIMENTS.md](../EXPERIMENTS.md). SHA-256 (UTF-8 / LF): `3f3d5bc255dd1b00a57971f288b269d72327c70c44a258b950204daca61976c2`.
 
 ## Source-library composition — historical
 
@@ -32,13 +32,13 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `12cea0b2fc063719785eb4234b6b3d3bc118ee38c6f4a189976a9d9ccfd4972f`.
+Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `53e1e17ddc5e81b8460db48ee9f5c38283923aaa75b7b23c7e03395200519ce2`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
 Paired bootstrap bands account for a predeclared novelty-mixture grid. Repeated model selection and domain shift remain outside that guarantee.
 
-Source: [EXPERIMENTS.md](../EXPERIMENTS.md). SHA-256 (UTF-8 / LF): `ab3d140294c7d7065d7c07b5014981301b605e9bd578a36bfea3db8573e15ac9`.
+Source: [EXPERIMENTS.md](../EXPERIMENTS.md). SHA-256 (UTF-8 / LF): `3f3d5bc255dd1b00a57971f288b269d72327c70c44a258b950204daca61976c2`.
 
 ## Corrected-protocol retrospective revalidation — measured
 

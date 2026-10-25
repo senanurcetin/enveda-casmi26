@@ -38,21 +38,21 @@
       "label": "Extended generation",
       "score": 0.309,
       "family": "own",
-      "source": "HANDOFF.md"
+      "source": "EXPERIMENTS.md"
     },
     {
       "id": "external-base",
       "label": "External v4n base",
       "score": 0.42,
       "family": "external",
-      "source": "HANDOFF.md"
+      "source": "EXPERIMENTS.md"
     },
     {
       "id": "fusion",
       "label": "v4n + own rank-list fusion",
       "score": 0.422,
       "family": "fusion",
-      "source": "HANDOFF.md"
+      "source": "EXPERIMENTS.md"
     }
   ],
   "claims": [
@@ -61,7 +61,7 @@
       "title": "Historical public scores",
       "state": "historical",
       "detail": "Own pipeline 0.309; fusion 0.422 includes the external v4n solution. These are archived author logs, not a fresh leaderboard readback or final private scores.",
-      "source": "HANDOFF.md"
+      "source": "EXPERIMENTS.md"
     },
     {
       "id": "profile",
