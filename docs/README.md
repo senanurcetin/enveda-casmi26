@@ -4,12 +4,12 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 
 | Review question | Start here |
 |---|---|
-| What problem was solved, and what was learned? | [Technical reviewer brief](hiring-summary.md) |
+| What problem was solved, and what was learned? | [Research overview](../README.md) |
 | Which model earned which score? | [Model card](../MODEL_CARD.md) |
 | What data and identity rules apply? | [Data card](../DATA_CARD.md) |
 | How do I reproduce the checks? | [Reproducibility](REPRODUCIBILITY.md) |
 | What is implemented versus measured? | [Evidence registry](../reports/research_evidence.json) |
-| What happened in each experiment? | [Original experiment log](../EXPERIMENTS.md), [historical handoff](../HANDOFF.md) |
+| What happened in each experiment? | [Original experiment log](../EXPERIMENTS.md) |
 | How is inference assembled? | [Original architecture](../ARCHITECTURE.md) |
 | What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
 | Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
@@ -18,4 +18,4 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 | What was actually checked in this update? | [Verification record](VERIFICATION.md) |
 | Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |
 
-The original architecture and handoff are dated design and working records. Current interpretation in the cards and evidence registry takes precedence over their unqualified historical assertions. In particular, standard or tautomer-canonical InChIKey grouping is not a Bemis–Murcko scaffold split; coarse spectrum matches are not exact-content verification.
+The original architecture is a dated design record; legacy handoff notes are retained in Git history rather than published as active guidance. Current interpretation in the cards and evidence registry takes precedence over their unqualified historical assertions. In particular, standard or tautomer-canonical InChIKey grouping is not a Bemis–Murcko scaffold split; coarse spectrum matches are not exact-content verification.
