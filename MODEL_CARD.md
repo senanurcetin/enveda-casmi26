@@ -1,6 +1,6 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 23 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 25 October 2026.
 
 ## Intended use
 
@@ -20,7 +20,9 @@ These are historical author-reported public results recorded by 8 October 2026. 
 
 V-in contains 250 instrument-matched natural-product structures; V-real contains 600 harder held-out library structures. They underrepresent unknown novelty mixtures and instrument/library shift. Historical fusion-weight ordering did not transfer consistently to the public leaderboard.
 
-Later audits corrected sampled-query C1 leakage, D2 eligibility ordering, identity/provenance and numerical edge cases. Existing scores were **not** recomputed under those fixes. The notebook demonstrations use standard-key grouping and simplified cosine retrieval; they are not an end-to-end rerun of the corrected tautomer-aware pipeline. Standard/tautomer keys do not establish scaffold independence.
+Later audits corrected sampled-query C1 leakage, D2 eligibility ordering, identity/provenance and numerical edge cases. Historical leaderboard scores were **not** replaced. A separate [completed retrospective study](reports/revalidation_review.md) now evaluates all 250 eligible V-in molecules through the shared ranking path using rebuilt full-source artifacts and frozen original weights. D1 / D1+D2 / v16 MRR@25 is respectively **0.9033 / 0.9040 / 0.8324 (C1)**, **0.1402 / 0.2272 / 0.6241 (C2)** and **0 / 0 / 0.2374 (C3)**. These are selected-population diagnostics, not new independent generalization estimates. Standard/tautomer keys do not establish scaffold independence.
+
+Blank fragments lower v16 C2 MRR by 0.4972 and C3 by 0.2374, but improve simple-model C2 ranking. That counter-result shows that a negative control is not a universal pass/fail certification: residual similarity can rank decoys above mass-error ordering. Full paired intervals, intensity-shuffle controls and model contrasts are retained in the report. No new weights were trained; complete original training lineage is not independently attested.
 
 Current paired comparisons require matching query identities, spectra signatures and source manifests; D2 decision-grade comparisons also require verified fingerprint and fresh-index evidence. Simultaneous bands cover only the fixed class-mixture grid, not adaptive experiment selection. [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md).
 

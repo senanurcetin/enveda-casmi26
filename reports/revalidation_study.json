@@ -1,0 +1,1811 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETE_RETROSPECTIVE_REVALIDATION",
+  "checked_at": "2026-10-24T16:20:03.235771+00:00",
+  "elapsed_seconds": 2434.5,
+  "cohort": {
+    "library": "enveda-np-examples",
+    "selection": "all eligible molecules; no max-query subsample",
+    "n_molecules": 250,
+    "max_spectra": 5,
+    "query_seed": 0,
+    "identity_sha256": "95b414e43bd7468f2c7a5a1edbc296af11bfc6173886d07d748ea917e4aa36e6",
+    "source_signatures_sha256": "bbef372f7e3760ef04c0c9ce4a1dbd15ea45eed764203cd48dac13e5d27c43c2"
+  },
+  "source_artifact_manifest": {
+    "schema": "casmi-local-artifact-manifest-v1",
+    "method": "streaming SHA-256 per local input file",
+    "files": [
+      {
+        "path": "models/fp_fold0.pt",
+        "bytes": 15794281,
+        "sha256": "ca75537e7a7a1c5d06eb0ddc301c289bfe782df6a736a3a84d8cfe147d1f886e"
+      },
+      {
+        "path": "models/fp_fold1.pt",
+        "bytes": 15794281,
+        "sha256": "204bb914886c623ecf3b0ddc80d36f8252769de4015a9231601d35082cf7065c"
+      },
+      {
+        "path": "models/ranker-v16-gen2_seed0.txt",
+        "bytes": 868091,
+        "sha256": "61473b3a9b4b6cda658698b67daaf3c136ad01dcd4bef10c7017a026af4d263b"
+      },
+      {
+        "path": "models/ranker-v16-gen2_seed1.txt",
+        "bytes": 1131769,
+        "sha256": "95525997f5150b771c51b54468889004895d8d00d8df8abf05d95eface22c1f4"
+      },
+      {
+        "path": "models/ranker-v16-gen2_seed2.txt",
+        "bytes": 810990,
+        "sha256": "9975c9959be4bfd17c81184a549e68e9bad3055098332ea429f05af031caee8b"
+      },
+      {
+        "path": "models/ranker-v16-gen2_seed3.txt",
+        "bytes": 953226,
+        "sha256": "7cdb3d7db9ade111ecdc3785f195fb1e958aec9d9a15b3344ec104b9bbf9ae3c"
+      },
+      {
+        "path": "models/ranker-v16-gen2_seed4.txt",
+        "bytes": 963962,
+        "sha256": "90dd8fd8fc44a99ad01036b8f5cbcdf9453c7ea88e2d6b30c5d4b2c84d22fa71"
+      },
+      {
+        "path": "pool_corrected_study.parquet",
+        "bytes": 48469329,
+        "sha256": "940d904c1c4ccd9fbb4f4e7dd07e1697c1d8271d76ef61ffb50700e7b4d28438"
+      },
+      {
+        "path": "pool_fp2048_corrected_study.npy",
+        "bytes": 274397056,
+        "sha256": "4104b0c963c90f18451c48185436406c394360b3e576af3f4bd05627f91ce8cb"
+      },
+      {
+        "path": "pool_fp_keys_corrected_study.parquet",
+        "bytes": 16979467,
+        "sha256": "2a7cfabbb2d6b51c1b173661f66fb5f9f8bf10cdb33c6a6099d2cae7fa46c4a3"
+      },
+      {
+        "path": "pool_source_quality_corrected_study.json",
+        "bytes": 992,
+        "sha256": "30ef62c64455afdfc9bdb7612c6dbdd69a45f1581eefad1bd0d2621517649837"
+      },
+      {
+        "path": "store/it.f32",
+        "bytes": 436098548,
+        "sha256": "f1a1bbe0c143761ff06da6d7e028fbb7b50034ef2cada82fb119b3cae0e90187"
+      },
+      {
+        "path": "store/meta.parquet",
+        "bytes": 48766764,
+        "sha256": "7185e15986520d4b57a8309fc0f962f911783800b2660f3d627b3fbb87265453"
+      },
+      {
+        "path": "store/mz.f32",
+        "bytes": 436098548,
+        "sha256": "859c76e6ef623c2b03dad0ebf9c171e719d6fc0bc96b6e26ed79257142406291"
+      },
+      {
+        "path": "store/offsets.i64",
+        "bytes": 20316872,
+        "sha256": "91b67e92f84e85fe40b800abcb4b4dacfdee498ba0e85f29cf6bf143a2f26935"
+      },
+      {
+        "path": "structures.parquet",
+        "bytes": 12571432,
+        "sha256": "22dc7592f604ddd608568319254f88bb21d2a8a8c42e858d2148919b5f9f4aec"
+      }
+    ],
+    "files_digest_sha256": "7c20da3c25cfcf7833d5c8c7df7ee6e1072320b8f6dbd53000c4c8044f1231ec",
+    "source_assertion": "local byte identity only; no independent Kaggle/BigQuery validation"
+  },
+  "fingerprint_provenance": {
+    "status": "POOL_FINGERPRINTS_VERIFIED",
+    "schema": "casmi-morgan-fingerprint-provenance-v1",
+    "n_structures": 1071863,
+    "pool_rows_sha256": "4c346290e112f2a92a4ae62238d31df491e8259e4a0121ef398138325944d9d8",
+    "fingerprint_bytes_sha256": "b0bba8ed06e19690cb1c6093c225bb4fa4e9bd594132628493dd7dd670d18c32"
+  },
+  "candidate_source_quality": {
+    "status": "SOURCE_ROWS_RECONCILED",
+    "input_rows": 1182943,
+    "complete_rows": 1179052,
+    "incomplete_rows_excluded": 0,
+    "distinct_pool_keys": 1071876,
+    "shared_pool_keys": 93716,
+    "mass_conflict_groups": 0,
+    "mass_conflict_policy": "quarantine_entire_identity",
+    "quarantined_mass_conflict_groups": 1710,
+    "quarantined_source_rows": 3891,
+    "max_source_mass_spread_da": 9.05649058751004,
+    "mass_threshold_da": 0.01,
+    "mass_threshold_ppm": 20.0,
+    "interpretation": "Pre-aggregation identity consistency only; not RDKit verification",
+    "structure_quarantine": {
+      "policy": "quarantine_invalid_selected_candidate_identity",
+      "input_candidates": 1071876,
+      "retained_candidates": 1071863,
+      "quarantined_candidates": 13,
+      "reasons": {
+        "unparseable": 13,
+        "no_heavy_atoms": 0,
+        "zero_morgan": 0,
+        "fingerprint_error": 0
+      },
+      "scope": "Parseable, heavy-atom-containing, nonzero Morgan structures; not provider identity authentication"
+    }
+  },
+  "queries_with_truth_absent_from_candidate_pool": 1,
+  "analog_index_provenance": {
+    "schema": "casmi-d2-fresh-index-v1",
+    "status": "REBUILT_WITHOUT_CACHE",
+    "index_sha256": "6700236d619238ec893c803690b2e240658b835b37bffe64cb17b15c5b7f421f",
+    "n_references": 1062995,
+    "n_nonzero": 34076549,
+    "reference_policy": "legacy",
+    "cache_used": false
+  },
+  "knockout_audit": {
+    "queries_with_additional_same_library_exclusions": 74,
+    "additional_same_library_rows_excluded": 287,
+    "queries_with_metric_equivalent_pool_variants": 23
+  },
+  "model_configurations": {
+    "d1": {
+      "tol_ppm": 10.0,
+      "mass_offset_ppm": 0.0,
+      "top_n": 25,
+      "library": {
+        "tol_da": 0.02,
+        "max_ppm": 20.0,
+        "max_refs_per_candidate": 40,
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "analog": {
+        "max_shift_da": 200.0,
+        "prefilter_top": 200,
+        "keep_structures": 100,
+        "per_structure_adduct": 3,
+        "reference_policy": "legacy",
+        "tol_da": 0.02,
+        "powers": [
+          1.0,
+          2.0,
+          4.0
+        ],
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "generate": false,
+      "gen_max_analogs": 15,
+      "gen_cap": 300,
+      "gen_consensus": false,
+      "np_score": false
+    },
+    "d1_d2": {
+      "tol_ppm": 10.0,
+      "mass_offset_ppm": 0.0,
+      "top_n": 25,
+      "library": {
+        "tol_da": 0.02,
+        "max_ppm": 20.0,
+        "max_refs_per_candidate": 40,
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "analog": {
+        "max_shift_da": 200.0,
+        "prefilter_top": 200,
+        "keep_structures": 100,
+        "per_structure_adduct": 3,
+        "reference_policy": "legacy",
+        "tol_da": 0.02,
+        "powers": [
+          1.0,
+          2.0,
+          4.0
+        ],
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "generate": false,
+      "gen_max_analogs": 15,
+      "gen_cap": 300,
+      "gen_consensus": false,
+      "np_score": false
+    },
+    "frozen_v16": {
+      "tol_ppm": 10.0,
+      "mass_offset_ppm": 0.0,
+      "top_n": 25,
+      "library": {
+        "tol_da": 0.02,
+        "max_ppm": 20.0,
+        "max_refs_per_candidate": 40,
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "analog": {
+        "max_shift_da": 200.0,
+        "prefilter_top": 200,
+        "keep_structures": 100,
+        "per_structure_adduct": 3,
+        "reference_policy": "legacy",
+        "tol_da": 0.02,
+        "powers": [
+          1.0,
+          2.0,
+          4.0
+        ],
+        "clean": {
+          "max_above_precursor": 2.0,
+          "min_rel_intensity": 0.01,
+          "window_da": 50,
+          "top_k_per_window": 6,
+          "max_peaks": 64,
+          "merge_tol_da": 0.005
+        }
+      },
+      "generate": true,
+      "gen_max_analogs": 15,
+      "gen_cap": 300,
+      "gen_consensus": false,
+      "np_score": false
+    }
+  },
+  "models": {
+    "d1": {
+      "conditions": {
+        "none": {
+          "C1": {
+            "mrr": 0.9033314285714286,
+            "ci_low": 0.8730699047619046,
+            "ci_high": 0.9313916666666666,
+            "top1": 0.844,
+            "top10": 0.992,
+            "recall_at_25": 0.996,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.14018441474261367,
+            "ci_low": 0.11417955377527678,
+            "ci_high": 0.16783171524614018,
+            "top1": 0.044,
+            "top10": 0.416,
+            "recall_at_25": 0.612,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        },
+        "blank": {
+          "C1": {
+            "mrr": 0.3052015847182088,
+            "ci_low": 0.2659999571758875,
+            "ci_high": 0.3443749390092005,
+            "top1": 0.152,
+            "top10": 0.672,
+            "recall_at_25": 0.824,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.3052015847182088,
+            "ci_low": 0.2659999571758875,
+            "ci_high": 0.3443749390092005,
+            "top1": 0.152,
+            "top10": 0.672,
+            "recall_at_25": 0.824,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        },
+        "intensity_shuffle": {
+          "C1": {
+            "mrr": 0.7798536154488785,
+            "ci_low": 0.7364454540035988,
+            "ci_high": 0.8201940250626567,
+            "top1": 0.68,
+            "top10": 0.96,
+            "recall_at_25": 0.992,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.14187755219773124,
+            "ci_low": 0.1155991795076194,
+            "ci_high": 0.16883922843290555,
+            "top1": 0.044,
+            "top10": 0.408,
+            "recall_at_25": 0.628,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        }
+      },
+      "controls": {
+        "blank": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "blank",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.9033314285714286,
+              "control_mrr": 0.3052015847182088,
+              "control_minus_reference": -0.5981298438532199,
+              "ci_low": -0.644940815529242,
+              "ci_high": -0.5495234613581929,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.14018441474261367,
+              "control_mrr": 0.3052015847182088,
+              "control_minus_reference": 0.16501716997559504,
+              "ci_low": 0.13514660504164702,
+              "ci_high": 0.19663384187280764,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.0,
+              "control_mrr": 0.0,
+              "control_minus_reference": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.027391600440475772,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": 0.0175416839061539,
+                "ci_low": -0.009849916534321872,
+                "ci_high": 0.04493328434662967
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": 0.0010399669085944092,
+                "ci_low": -0.026351633531881365,
+                "ci_high": 0.02843156734907018
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.015461750088965125,
+                "ci_low": -0.0428533505294409,
+                "ci_high": 0.011929850351510648
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.020615666785286823,
+                "ci_low": -0.048007267225762595,
+                "ci_high": 0.00677593365518895
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.037117383782846354,
+                "ci_low": -0.06450898422332213,
+                "ci_high": -0.009725783342370582
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.053619100780405875,
+                "ci_low": -0.08101070122088165,
+                "ci_high": -0.026227500339930102
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.05877301747672757,
+                "ci_low": -0.08616461791720334,
+                "ci_high": -0.0313814170362518
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.07527473447428709,
+                "ci_low": -0.10266633491476286,
+                "ci_high": -0.04788313403381132
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.09177645147184663,
+                "ci_low": -0.1191680519123224,
+                "ci_high": -0.06438485103137086
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.09693036816816833,
+                "ci_low": -0.1243219686086441,
+                "ci_high": -0.06953876772769256
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.11343208516572784,
+                "ci_low": -0.14082368560620362,
+                "ci_high": -0.08604048472525207
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.12993380216328737,
+                "ci_low": -0.15732540260376315,
+                "ci_high": -0.1025422017228116
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        },
+        "intensity_shuffle": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "intensity_shuffle",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.9033314285714286,
+              "control_mrr": 0.7798536154488785,
+              "control_minus_reference": -0.12347781312254998,
+              "ci_low": -0.16471146574770257,
+              "ci_high": -0.08560266910866911,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.14018441474261367,
+              "control_mrr": 0.14187755219773124,
+              "control_minus_reference": 0.0016931374551175326,
+              "ci_low": -0.005437124068913543,
+              "ci_high": 0.009537522449171066,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.0,
+              "control_mrr": 0.0,
+              "control_minus_reference": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.01301363196081523,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": -0.017421132622556103,
+                "ci_low": -0.030434764583371333,
+                "ci_high": -0.004407500661740872
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": -0.017590446368067853,
+                "ci_low": -0.030604078328883084,
+                "ci_high": -0.0045768144072526225
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.017759760113579607,
+                "ci_low": -0.030773392074394838,
+                "ci_high": -0.004746128152764376
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.02367968015143948,
+                "ci_low": -0.03669331211225471,
+                "ci_high": -0.01066604819062425
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.023848993896951234,
+                "ci_low": -0.036862625857766465,
+                "ci_high": -0.010835361936136004
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.024018307642462985,
+                "ci_low": -0.03703193960327822,
+                "ci_high": -0.011004675681647754
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.029938227680322855,
+                "ci_low": -0.04295185964113808,
+                "ci_high": -0.016924595719507624
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.03010754142583461,
+                "ci_low": -0.043121173386649836,
+                "ci_high": -0.017093909465019378
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.030276855171346363,
+                "ci_low": -0.04329048713216159,
+                "ci_high": -0.017263223210531132
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.03619677520920623,
+                "ci_low": -0.04921040717002146,
+                "ci_high": -0.023183143248391
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.03636608895471798,
+                "ci_low": -0.049379720915533214,
+                "ci_high": -0.023352456993902752
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.03653540270022974,
+                "ci_low": -0.04954903466104497,
+                "ci_high": -0.023521770739414506
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        }
+      }
+    },
+    "d1_d2": {
+      "conditions": {
+        "none": {
+          "C1": {
+            "mrr": 0.9039980952380952,
+            "ci_low": 0.8737954761904762,
+            "ci_high": 0.932053619047619,
+            "top1": 0.844,
+            "top10": 0.992,
+            "recall_at_25": 0.996,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.22716671782817024,
+            "ci_low": 0.19132317571356422,
+            "ci_high": 0.2658446773897271,
+            "top1": 0.1,
+            "top10": 0.568,
+            "recall_at_25": 0.732,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        },
+        "blank": {
+          "C1": {
+            "mrr": 0.3052015847182088,
+            "ci_low": 0.2659999571758875,
+            "ci_high": 0.3443749390092005,
+            "top1": 0.152,
+            "top10": 0.672,
+            "recall_at_25": 0.824,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.3052015847182088,
+            "ci_low": 0.2659999571758875,
+            "ci_high": 0.3443749390092005,
+            "top1": 0.152,
+            "top10": 0.672,
+            "recall_at_25": 0.824,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        },
+        "intensity_shuffle": {
+          "C1": {
+            "mrr": 0.7799869487822119,
+            "ci_low": 0.736485809893323,
+            "ci_high": 0.8202928669108669,
+            "top1": 0.68,
+            "top10": 0.96,
+            "recall_at_25": 0.992,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.10138706741247865,
+            "ci_low": 0.07707171248341554,
+            "ci_high": 0.12831864305437013,
+            "top1": 0.032,
+            "top10": 0.268,
+            "recall_at_25": 0.448,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        }
+      },
+      "controls": {
+        "blank": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "blank",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.9039980952380952,
+              "control_mrr": 0.3052015847182088,
+              "control_minus_reference": -0.5987965105198865,
+              "ci_low": -0.6456881396316102,
+              "ci_high": -0.5500751577706181,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.22716671782817024,
+              "control_mrr": 0.3052015847182088,
+              "control_minus_reference": 0.07803486689003851,
+              "ci_low": 0.034854785244081685,
+              "ci_high": 0.1235637143829309,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.0,
+              "control_mrr": 0.0,
+              "control_minus_reference": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.033627171042147484,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": -0.03909681309945791,
+                "ci_low": -0.07272398414160539,
+                "ci_high": -0.005469642057310424
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": -0.04690029978846175,
+                "ci_low": -0.08052747083060924,
+                "ci_high": -0.013273128746314262
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.05470378647746561,
+                "ci_low": -0.08833095751961309,
+                "ci_high": -0.02107661543531813
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.07293838196995416,
+                "ci_low": -0.10656555301210163,
+                "ci_high": -0.03931121092780667
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.08074186865895801,
+                "ci_low": -0.11436903970110548,
+                "ci_high": -0.04711469761681052
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.08854535534796186,
+                "ci_low": -0.12217252639010934,
+                "ci_high": -0.054918184305814376
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.10677995084045039,
+                "ci_low": -0.14040712188259788,
+                "ci_high": -0.0731527797983029
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.11458343752945424,
+                "ci_low": -0.14821060857160173,
+                "ci_high": -0.08095626648730675
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.1223869242184581,
+                "ci_low": -0.15601409526060558,
+                "ci_high": -0.08875975317631063
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.14062151971094664,
+                "ci_low": -0.17424869075309413,
+                "ci_high": -0.10699434866879914
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.1484250063999505,
+                "ci_low": -0.18205217744209798,
+                "ci_high": -0.114797835357803
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.15622849308895434,
+                "ci_low": -0.18985566413110183,
+                "ci_high": -0.12260132204680685
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        },
+        "intensity_shuffle": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "intensity_shuffle",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.9039980952380952,
+              "control_mrr": 0.7799869487822119,
+              "control_minus_reference": -0.1240111464558833,
+              "ci_low": -0.1653187691022428,
+              "ci_high": -0.0860223094595463,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.22716671782817024,
+              "control_mrr": 0.10138706741247865,
+              "control_minus_reference": -0.1257796504156916,
+              "ci_low": -0.15729039226619687,
+              "ci_high": -0.09669208916985633,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.0,
+              "control_mrr": 0.0,
+              "control_minus_reference": 0.0,
+              "ci_low": 0.0,
+              "ci_high": 0.0,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.021170861773961745,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": -0.10035844473858203,
+                "ci_low": -0.12152930651254377,
+                "ci_high": -0.07918758296462029
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": -0.08778047969701289,
+                "ci_low": -0.10895134147097463,
+                "ci_high": -0.06660961792305115
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.07520251465544371,
+                "ci_low": -0.09637337642940545,
+                "ci_high": -0.05403165288148197
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.10027001954059164,
+                "ci_low": -0.12144088131455338,
+                "ci_high": -0.0790991577666299
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.08769205449902247,
+                "ci_low": -0.10886291627298421,
+                "ci_high": -0.06652119272506073
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.0751140894574533,
+                "ci_low": -0.09628495123141505,
+                "ci_high": -0.053943227683491565
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.10018159434260121,
+                "ci_low": -0.12135245611656295,
+                "ci_high": -0.07901073256863947
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.08760362930103205,
+                "ci_low": -0.10877449107499379,
+                "ci_high": -0.06643276752707031
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.07502566425946289,
+                "ci_low": -0.09619652603342463,
+                "ci_high": -0.053854802485501146
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.10009316914461079,
+                "ci_low": -0.12126403091857253,
+                "ci_high": -0.07892230737064905
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.08751520410304163,
+                "ci_low": -0.10868606587700337,
+                "ci_high": -0.06634434232907989
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.07493723906147247,
+                "ci_low": -0.09610810083543421,
+                "ci_high": -0.05376637728751073
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        }
+      }
+    },
+    "frozen_v16": {
+      "conditions": {
+        "none": {
+          "C1": {
+            "mrr": 0.8324070465766118,
+            "ci_low": 0.7890818062734367,
+            "ci_high": 0.8705212667405059,
+            "top1": 0.772,
+            "top10": 0.944,
+            "recall_at_25": 0.972,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.6240591493757733,
+            "ci_low": 0.5753310413194364,
+            "ci_high": 0.6694094826536066,
+            "top1": 0.48,
+            "top10": 0.868,
+            "recall_at_25": 0.944,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.23737931670414508,
+            "ci_low": 0.1902568339574232,
+            "ci_high": 0.28229494640339314,
+            "top1": 0.164,
+            "top10": 0.38,
+            "recall_at_25": 0.424,
+            "n": 250
+          }
+        },
+        "blank": {
+          "C1": {
+            "mrr": 0.1269017094456373,
+            "ci_low": 0.09861874758677482,
+            "ci_high": 0.15696750198965717,
+            "top1": 0.052,
+            "top10": 0.312,
+            "recall_at_25": 0.532,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.1269017094456373,
+            "ci_low": 0.09861874758677482,
+            "ci_high": 0.15696750198965717,
+            "top1": 0.052,
+            "top10": 0.312,
+            "recall_at_25": 0.532,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "top1": 0.0,
+            "top10": 0.0,
+            "recall_at_25": 0.0,
+            "n": 250
+          }
+        },
+        "intensity_shuffle": {
+          "C1": {
+            "mrr": 0.25924029412892785,
+            "ci_low": 0.21629886197304288,
+            "ci_high": 0.30348062352168625,
+            "top1": 0.156,
+            "top10": 0.496,
+            "recall_at_25": 0.684,
+            "n": 250
+          },
+          "C2": {
+            "mrr": 0.414628351353706,
+            "ci_low": 0.3615913059579627,
+            "ci_high": 0.46635934705969084,
+            "top1": 0.3,
+            "top10": 0.66,
+            "recall_at_25": 0.788,
+            "n": 250
+          },
+          "C3": {
+            "mrr": 0.04880204397687236,
+            "ci_low": 0.02726589051680585,
+            "ci_high": 0.07334340952843241,
+            "top1": 0.032,
+            "top10": 0.088,
+            "recall_at_25": 0.112,
+            "n": 250
+          }
+        }
+      },
+      "controls": {
+        "blank": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "blank",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.8324070465766118,
+              "control_mrr": 0.1269017094456373,
+              "control_minus_reference": -0.7055053371309745,
+              "ci_low": -0.7498991457237928,
+              "ci_high": -0.6555132297730911,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.6240591493757733,
+              "control_mrr": 0.1269017094456373,
+              "control_minus_reference": -0.4971574399301361,
+              "ci_low": -0.5462689186308375,
+              "ci_high": -0.4451362379534212,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.23737931670414508,
+              "control_mrr": 0.0,
+              "control_minus_reference": -0.23737931670414508,
+              "ci_low": -0.28138655944043245,
+              "ci_high": -0.19194708309806136,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.04278338271407324,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": -0.47645399986506365,
+                "ci_low": -0.5192373825791369,
+                "ci_high": -0.4336706171509904
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": -0.4504761875424646,
+                "ci_low": -0.4932595702565378,
+                "ci_high": -0.4076928048283914
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.4244983752198655,
+                "ci_low": -0.4672817579339387,
+                "ci_high": -0.38171499250579227
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.48687139472510566,
+                "ci_low": -0.5296547774391789,
+                "ci_high": -0.44408801201103243
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.4608935824025065,
+                "ci_low": -0.5036769651165798,
+                "ci_high": -0.41811019968843327
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.43491577007990745,
+                "ci_low": -0.4776991527939807,
+                "ci_high": -0.3921323873658342
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.4972887895851476,
+                "ci_low": -0.5400721722992209,
+                "ci_high": -0.4545054068710744
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.4713109772625484,
+                "ci_low": -0.5140943599766217,
+                "ci_high": -0.42852759454847517
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.44533316493994934,
+                "ci_low": -0.48811654765402257,
+                "ci_high": -0.4025497822258761
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.5077061844451894,
+                "ci_low": -0.5504895671592627,
+                "ci_high": -0.4649228017311162
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.4817283721225903,
+                "ci_low": -0.5245117548366636,
+                "ci_high": -0.43894498940851706
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.4557505597999912,
+                "ci_low": -0.4985339425140644,
+                "ci_high": -0.41296717708591796
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        },
+        "intensity_shuffle": {
+          "status": "DIAGNOSTIC_ONLY",
+          "verified_original_source_pairing": true,
+          "n_molecules": 250,
+          "changed_query_signatures": 250,
+          "mode": "intensity_shuffle",
+          "control_seed": 0,
+          "bootstrap_seed": 0,
+          "n_bootstrap": 4000,
+          "direction": "negative_control_minus_unperturbed_reference",
+          "classes": {
+            "C1": {
+              "reference_mrr": 0.8324070465766118,
+              "control_mrr": 0.25924029412892785,
+              "control_minus_reference": -0.573166752447684,
+              "ci_low": -0.6245580091198455,
+              "ci_high": -0.5193896694621654,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C2": {
+              "reference_mrr": 0.6240591493757733,
+              "control_mrr": 0.414628351353706,
+              "control_minus_reference": -0.2094307980220674,
+              "ci_low": -0.26199089096800066,
+              "ci_high": -0.15701240403753153,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            },
+            "C3": {
+              "reference_mrr": 0.23737931670414508,
+              "control_mrr": 0.04880204397687236,
+              "control_minus_reference": -0.1885772727272727,
+              "ci_low": -0.23396932648237853,
+              "ci_high": -0.14216082315885234,
+              "ci_type": "pointwise paired bootstrap, descriptive diagnostic only"
+            }
+          },
+          "mixture": {
+            "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+            "confidence": 0.95,
+            "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+            "n_molecules": 250,
+            "n_boot": 4000,
+            "seed": 0,
+            "half_width": 0.04414134686258389,
+            "scenarios": [
+              {
+                "f1": 0.15,
+                "f2": 0.6499999999999999,
+                "f3": 0.2,
+                "delta_mrr": -0.25982048612695097,
+                "ci_low": -0.30396183298953483,
+                "ci_high": -0.21567913926436708
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.55,
+                "f3": 0.3,
+                "delta_mrr": -0.2577351335974715,
+                "ci_low": -0.30187648046005544,
+                "ci_high": -0.21359378673488763
+              },
+              {
+                "f1": 0.15,
+                "f2": 0.44999999999999996,
+                "f3": 0.4,
+                "delta_mrr": -0.255649781067992,
+                "ci_low": -0.29979112793057594,
+                "ci_high": -0.21150843420540813
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.6000000000000001,
+                "f3": 0.2,
+                "delta_mrr": -0.2780072838482318,
+                "ci_low": -0.3221486307108157,
+                "ci_high": -0.23386593698564792
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.5,
+                "f3": 0.3,
+                "delta_mrr": -0.27592193131875237,
+                "ci_low": -0.3200632781813363,
+                "ci_high": -0.23178058445616848
+              },
+              {
+                "f1": 0.2,
+                "f2": 0.4,
+                "f3": 0.4,
+                "delta_mrr": -0.2738365787892729,
+                "ci_low": -0.3179779256518568,
+                "ci_high": -0.22969523192668903
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.55,
+                "f3": 0.2,
+                "delta_mrr": -0.29619408156951266,
+                "ci_low": -0.3403354284320965,
+                "ci_high": -0.2520527347069288
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.45,
+                "f3": 0.3,
+                "delta_mrr": -0.2941087290400332,
+                "ci_low": -0.33825007590261713,
+                "ci_high": -0.24996738217744932
+              },
+              {
+                "f1": 0.25,
+                "f2": 0.35,
+                "f3": 0.4,
+                "delta_mrr": -0.2920233765105537,
+                "ci_low": -0.33616472337313763,
+                "ci_high": -0.24788202964796982
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.49999999999999994,
+                "f3": 0.2,
+                "delta_mrr": -0.31438087929079345,
+                "ci_low": -0.35852222615337737,
+                "ci_high": -0.27023953242820953
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.39999999999999997,
+                "f3": 0.3,
+                "delta_mrr": -0.312295526761314,
+                "ci_low": -0.35643687362389787,
+                "ci_high": -0.26815417989873014
+              },
+              {
+                "f1": 0.3,
+                "f2": 0.29999999999999993,
+                "f3": 0.4,
+                "delta_mrr": -0.31021017423183456,
+                "ci_low": -0.3543515210944185,
+                "ci_high": -0.26606882736925064
+              }
+            ],
+            "interpretation": "Approximate simultaneous band on the prespecified novelty grid. Descriptive control-minus-reference effect only; NOT an ACCEPT/REJECT model-improvement or leaderboard significance result."
+          },
+          "limitations": "Intentional fragment perturbations measure model reliance on MS/MS evidence within this selected population; no independence from training or competition domain shift is implied."
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "d1_d2_minus_d1": {
+      "status": "RETROSPECTIVE_PAIRED_DIAGNOSTIC",
+      "classes": {
+        "C1": {
+          "delta_mrr": 0.0006666666666666666,
+          "ci_low": 0.0,
+          "ci_high": 0.002
+        },
+        "C2": {
+          "delta_mrr": 0.08698230308555653,
+          "ci_low": 0.05664403633333657,
+          "ci_high": 0.11831857145680333
+        },
+        "C3": {
+          "delta_mrr": 0.0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        }
+      },
+      "mixture": {
+        "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+        "confidence": 0.95,
+        "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+        "n_molecules": 250,
+        "n_boot": 4000,
+        "seed": 0,
+        "half_width": 0.02012282646985013,
+        "scenarios": [
+          {
+            "f1": 0.15,
+            "f2": 0.6499999999999999,
+            "f3": 0.2,
+            "delta_mrr": 0.05663849700561176,
+            "ci_low": 0.03651567053576163,
+            "ci_high": 0.07676132347546188
+          },
+          {
+            "f1": 0.15,
+            "f2": 0.55,
+            "f3": 0.3,
+            "delta_mrr": 0.047940266697056116,
+            "ci_low": 0.027817440227205985,
+            "ci_high": 0.06806309316690624
+          },
+          {
+            "f1": 0.15,
+            "f2": 0.44999999999999996,
+            "f3": 0.4,
+            "delta_mrr": 0.03924203638850045,
+            "ci_low": 0.019119209918650317,
+            "ci_high": 0.059364862858350576
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.6000000000000001,
+            "f3": 0.2,
+            "delta_mrr": 0.05232271518466727,
+            "ci_low": 0.032199888714817146,
+            "ci_high": 0.0724455416545174
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.5,
+            "f3": 0.3,
+            "delta_mrr": 0.04362448487611161,
+            "ci_low": 0.02350165840626148,
+            "ci_high": 0.06374731134596175
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.4,
+            "f3": 0.4,
+            "delta_mrr": 0.03492625456755596,
+            "ci_low": 0.014803428097705826,
+            "ci_high": 0.05504908103740609
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.55,
+            "f3": 0.2,
+            "delta_mrr": 0.04800693336372278,
+            "ci_low": 0.027884106893872652,
+            "ci_high": 0.06812975983357292
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.45,
+            "f3": 0.3,
+            "delta_mrr": 0.03930870305516712,
+            "ci_low": 0.01918587658531699,
+            "ci_high": 0.05943152952501725
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.35,
+            "f3": 0.4,
+            "delta_mrr": 0.03061047274661146,
+            "ci_low": 0.010487646276761329,
+            "ci_high": 0.050733299216461594
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.49999999999999994,
+            "f3": 0.2,
+            "delta_mrr": 0.04369115154277827,
+            "ci_low": 0.02356832507292814,
+            "ci_high": 0.0638139780126284
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.39999999999999997,
+            "f3": 0.3,
+            "delta_mrr": 0.03499292123422262,
+            "ci_low": 0.014870094764372486,
+            "ci_high": 0.05511574770407275
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.29999999999999993,
+            "f3": 0.4,
+            "delta_mrr": 0.026294690925666962,
+            "ci_low": 0.006171864455816831,
+            "ci_high": 0.0464175173955171
+          }
+        ]
+      }
+    },
+    "frozen_v16_minus_d1_d2": {
+      "status": "RETROSPECTIVE_PAIRED_DIAGNOSTIC",
+      "classes": {
+        "C1": {
+          "delta_mrr": -0.07159104866148346,
+          "ci_low": -0.10746450941811812,
+          "ci_high": -0.0386024499847978
+        },
+        "C2": {
+          "delta_mrr": 0.3968924315476032,
+          "ci_low": 0.349469272103519,
+          "ci_high": 0.442692672336458
+        },
+        "C3": {
+          "delta_mrr": 0.23737931670414508,
+          "ci_low": 0.19194708309806136,
+          "ci_high": 0.28138655944043245
+        }
+      },
+      "mixture": {
+        "method": "paired bootstrap; maximum absolute deviation over fixed mixture grid",
+        "confidence": 0.95,
+        "familywise": "approximate for a fixed prespecified grid; not post-selection corrected",
+        "n_molecules": 250,
+        "n_boot": 4000,
+        "seed": 0,
+        "half_width": 0.036257332233651,
+        "scenarios": [
+          {
+            "f1": 0.15,
+            "f2": 0.6499999999999999,
+            "f3": 0.2,
+            "delta_mrr": 0.2947172865475484,
+            "ci_low": 0.2584599543138974,
+            "ci_high": 0.33097461878119944
+          },
+          {
+            "f1": 0.15,
+            "f2": 0.55,
+            "f3": 0.3,
+            "delta_mrr": 0.2787659750632027,
+            "ci_low": 0.24250864282955173,
+            "ci_high": 0.31502330729685374
+          },
+          {
+            "f1": 0.15,
+            "f2": 0.44999999999999996,
+            "f3": 0.4,
+            "delta_mrr": 0.2628146635788569,
+            "ci_low": 0.22655733134520592,
+            "ci_high": 0.29907199581250793
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.6000000000000001,
+            "f3": 0.2,
+            "delta_mrr": 0.2712931125370942,
+            "ci_low": 0.23503578030344321,
+            "ci_high": 0.3075504447707452
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.5,
+            "f3": 0.3,
+            "delta_mrr": 0.25534180105274834,
+            "ci_low": 0.21908446881909735,
+            "ci_high": 0.29159913328639936
+          },
+          {
+            "f1": 0.2,
+            "f2": 0.4,
+            "f3": 0.4,
+            "delta_mrr": 0.2393904895684026,
+            "ci_low": 0.2031331573347516,
+            "ci_high": 0.2756478218020536
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.55,
+            "f3": 0.2,
+            "delta_mrr": 0.24786893852663985,
+            "ci_low": 0.21161160629298886,
+            "ci_high": 0.28412627076029084
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.45,
+            "f3": 0.3,
+            "delta_mrr": 0.23191762704229404,
+            "ci_low": 0.19566029480864305,
+            "ci_high": 0.26817495927594504
+          },
+          {
+            "f1": 0.25,
+            "f2": 0.35,
+            "f3": 0.4,
+            "delta_mrr": 0.21596631555794826,
+            "ci_low": 0.17970898332429727,
+            "ci_high": 0.2522236477915993
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.49999999999999994,
+            "f3": 0.2,
+            "delta_mrr": 0.22444476451618547,
+            "ci_low": 0.18818743228253448,
+            "ci_high": 0.26070209674983646
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.39999999999999997,
+            "f3": 0.3,
+            "delta_mrr": 0.20849345303183972,
+            "ci_low": 0.17223612079818873,
+            "ci_high": 0.2447507852654907
+          },
+          {
+            "f1": 0.3,
+            "f2": 0.29999999999999993,
+            "f3": 0.4,
+            "delta_mrr": 0.19254214154749394,
+            "ci_low": 0.15628480931384295,
+            "ci_high": 0.22879947378114493
+          }
+        ]
+      }
+    }
+  },
+  "private_detail_sha256": "77a65c2b13bdc43a862897fb2b40d66ae743c25a5a1cc42d3d95dccfaa252490",
+  "environment": {
+    "python": "3.13.15",
+    "device": "cuda",
+    "rdkit": "2026.3.3",
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "pyarrow": "23.0.1",
+    "scipy": "1.16.3",
+    "numba": "0.61.2",
+    "torch": "2.11.0+cu128",
+    "lightgbm": "4.6.0"
+  },
+  "limitations": [
+    "Retrospective designated V-in evaluation, not a new untouched external holdout or competition score.",
+    "Frozen learned weights were not retrained; their complete training-data lineage is not independently attested.",
+    "Cohort was used in historical research; intervals do not remove adaptive model-selection or domain-shift bias.",
+    "Controls diagnose fragment reliance; intensity shuffling retains peak positions and precursor information.",
+    "Mixture intervals cover only the predeclared grid; no ACCEPT/REJECT model-promotion claim.",
+    "No raw spectra, molecular structures, query identifiers, ranks or model files are exported."
+  ],
+  "raw_inputs": {
+    "train.parquet": {
+      "bytes": 3033286496,
+      "sha256": "9423f90ec08b941a9646b535bf0606183e86ff0c5a297978f5a70693d41bcd98"
+    },
+    "coconut.csv": {
+      "bytes": 576946638,
+      "sha256": "6cfaa8685eb9bc44132239ba4544a03d4d3c36b634a0d67a78d55b7b6885bf7f"
+    },
+    "pubchemlite.csv": {
+      "bytes": 224829130,
+      "sha256": "b9bc8960d05561ea50cda2414eef82e19aecc793f49e3c4b79084aba636eecf4"
+    }
+  },
+  "source_code_sha256": {
+    "src/casmi/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/analog.py": "8592dcfc274257db6f4a803cb705ec6be4a5dbba2abddec626eddd01d56b4c19",
+    "src/casmi/channels/bondmodel.py": "1ffb5ce34c7b1a1975277eb9eab76a11e7624ea8740f39e5c2cc19a1340680fb",
+    "src/casmi/channels/fpinfer.py": "58315b7f7288a2988980b19a079ef0eb305897ffcd5094b1dcf5d3b370a71a7b",
+    "src/casmi/channels/fpmodel.py": "1e8a63dcd407f7870918c34fe5dac4f8fbfcbd301d64806d077019e382ad70ea",
+    "src/casmi/channels/fragments.py": "20656968ee6084ed948547a90ca79957a5b3cc6a65002ffb8601a411f0278bc0",
+    "src/casmi/channels/library.py": "96dd852858d6e66319d174306091d05480c965037d8e6dc50a87985f2a4398c2",
+    "src/casmi/channels/prefilter.py": "ac442621394b1d4ad1627f7776cf8f4d704b1a8e3d950f0480168e54d3b22a57",
+    "src/casmi/channels/reference_selection.py": "c043a1ab42126d3b33c5de0870ee1a5922396956a69356a777149ebc9947d88b",
+    "src/casmi/chem/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/chem/canon.py": "6cdb71219a717cbcebefeb9678bec8aff30e8b3aeaa39ce67fd1d499e4f93fdb",
+    "src/casmi/chem/keys.py": "2755a82fe24b854df0326c212df3696f0ac6197e46c3acdc5d33f4264e69aed2",
+    "src/casmi/chem/masses.py": "1831039a9dd48ddfd92482b361c3c28353a0fc1fbff98aa72c5273adcb948cf5",
+    "src/casmi/chem/npscore.py": "5fa24e1495bed25dfcd7001bb412e738d32148c5b3cab9dd3f25a28bb99a8945",
+    "src/casmi/config.py": "5f8dc8985d2789bd93ae55b8bec11964f89472e3e710012c86c2c186e547b876",
+    "src/casmi/engine.py": "509ce1353ec58bef766c39b243710e84dca666f7ce179030d44a749868d8ff34",
+    "src/casmi/generate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/generate/transforms.py": "20345fb5e22aa5e48da97c0d88ede2a9176be65c2b18935322437d20696f18ef",
+    "src/casmi/pool/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/pool/build_safety.py": "2421c9f41d26ab6e17ac20956ef1bfd5552ed28ae7255f13ca8b4fd585a79305",
+    "src/casmi/pool/fingerprint_audit.py": "d0197f06cbe89d54494eed5bf8693f8ab0944668ce006012726b758c6b44c358",
+    "src/casmi/pool/fingerprint_provenance.py": "ec64027e7120b8636408f13d2a617a012c5ddb1f97dae7c475d341f44b8e97fe",
+    "src/casmi/pool/pool.py": "34a50502b268d6dfbafde916b6f7c9aef97c8208850042ad401061c0c96161bf",
+    "src/casmi/pool/source_reconciliation.py": "268cf27522e22659fdb0560784ef787c7b25f66dc739a135e5d8d5b97e5fe4c2",
+    "src/casmi/pool/structure_identity.py": "39519cf6128de5a8677e5675ac9f691b8943fb5386337320ff1d05bfdb2c146a",
+    "src/casmi/pool/structure_quality.py": "654d3c57b836d857367c404c6eeb6f9d010ef710c36a3874dafbe2382f31d646",
+    "src/casmi/predict.py": "2b37bbfd763be85a522d313facf8cbc0e5580f77a77d12c6111e8a601bcddf83",
+    "src/casmi/rank/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/rank/features.py": "35479b0b218163f94b495ca1af66f7949bd1dc5ba0404e02fe3a9e63b26c81f8",
+    "src/casmi/rank/ranker.py": "8b58478f310016485d8a877ff96f3fbac96278497dc0885ec267d294b11c3665",
+    "src/casmi/spectra/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/spectra/build_safety.py": "b70cab5a2af895061c6786811a2277e899475b7f9eaad29033f2b8990e8e04c0",
+    "src/casmi/spectra/clean.py": "af67f80cbd5e5d6b489ed110be5dd943446a6e38d45a8976365a3c13c07a2bb6",
+    "src/casmi/spectra/similarity.py": "4c63e21f048facdf4a1fbf2e07ec840a078c77b4f1b99f553d77db66cec70b4c",
+    "src/casmi/spectra/store.py": "6b7cd04ac0350ce204a066a82bc250b8e60b552bdfbb95221152399bfdffe13c",
+    "src/casmi/spectra/store_integrity.py": "3664d4c6278bea71c3fa403f017deda8af8dde7de9cb0afbf4c9424835d68243",
+    "src/casmi/submit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/analog_index_evidence.py": "2dac213fd7629937ea3198cd7cc4c36ee1daab92439e832bbabcbefec0952e3a",
+    "src/casmi/validate/control_alignment.py": "4996027acd3d4c1b79c2d4e3351e325ad6278323c340af36ad0e63a2bd722cfb",
+    "src/casmi/validate/error_slices.py": "ad0a7df1c02d2dc867e1a80e027ed8d665fad64b694a1ddb1ae04d0169e8baf1",
+    "src/casmi/validate/fingerprint_evidence.py": "1d2d123d68a2f1a8005179c5b95ac5d3437e83a7c9d58df7276e77eb13b5b3da",
+    "src/casmi/validate/knockout.py": "7c9e54a77d9d7d7cef98b0aadcdba5b918427c053af655c7ffe3e6e3ef01d238",
+    "src/casmi/validate/metric.py": "b5c2ab1252a10d442399d140beea01f64d21df1c9ddbda5baf1803738dba3ed1",
+    "src/casmi/validate/overlap_audit.py": "23ef2d7108c2a1f7ed93b3a469af0a6dd853c4d8850e270958e134d538f3df05",
+    "src/casmi/validate/paired_bootstrap.py": "d40724ebf029d8eed57858cc6ec512b1d30672c50af0c9293504f0e2c9961695",
+    "src/casmi/validate/ranked_slots.py": "3dec0248951c1d54ff4a91fafe6173b2e19854739be48041aca4c5ea681b53e0",
+    "src/casmi/validate/run_alignment.py": "bcaed43318285185a8572c7ae2ce2fe53e341814821d9a2bfeaa92ba7f70860e",
+    "src/casmi/validate/simultaneous_ci.py": "990b45160da2287eb9debfa4c6e2b96bc5bd6e9fe3b27949877bb05c442159da",
+    "src/casmi/validate/source_manifest.py": "d3a37d2b4879c0735e6998c0d40cc011cb4a6a9c5a1e8325be9443c536e262a0",
+    "src/casmi/validate/spectral_controls.py": "12a49aeb2c72899993a178bda6e505ae382d5f0771df4a2af169343466d9828e",
+    "src/casmi/validate/spectrum_overlap.py": "ed06679f55192f44b1f8db3596ec4be8ff279fce2e813544e5464e015b984aec",
+    "scripts/build_structures.py": "e6a8e08b4146e0a8d77b11f820027afa5de48450d430b353dad961c25646fbe9",
+    "scripts/build_store.py": "e3976223c78d0f926b0668608fff19668c1d75e11f220ed410764114736bd0a3",
+    "scripts/build_pool.py": "49750d7f6c304bd93799f92a297abda6ec78c47ccaca1fee02505a9227ed6434",
+    "scripts/build_fingerprints.py": "7cfd346ba76fcdbb65c8f0e3d726051b4eb09923026f00db0bac51b9c9f49c32",
+    "scripts/run_revalidation_study.py": "1c2bb3298cc2b802c96b5698946f8b985e8fce81df5d2fa5aa3faf3221e76cb3",
+    "scripts/run_validation.py": "4a412e6e264f7e36b747f55ce96a1d9b988982ab42b1cf704a8e5807144042fc",
+    "scripts/make_submission.py": "1f9a5bcb61abcb3db6504cf88d91404b2d5dc69fa3b60a5cfad0b0c33684198b",
+    "scripts/compare_control_runs.py": "d422a68c2dd692371a8b96287155e1d626068c65f347a07e72ecf236ceb26d60"
+  },
+  "execution": {
+    "platform": "Kaggle",
+    "competition_source": "enveda-CASMI26-molecule-id-mass-spectra",
+    "dataset_sources": [
+      "senanuretin/casmi-coconut-b",
+      "senanuretin/casmi-pubchemlite-b",
+      "senanuretin/casmi-models-b",
+      "metric/rdkit-2026-3-3-wheel"
+    ],
+    "internet_enabled": false,
+    "submitted_predictions": false
+  }
+}

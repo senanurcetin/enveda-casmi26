@@ -1,6 +1,6 @@
 # CASMI26 research documentation
 
-This is an English-first, noncommercial data science portfolio by Senanur Cetin under the NEXUS personal brand. The competition experiment campaign stopped on 8 October 2026; subsequent work improves research communication and reliability. It does not establish new model performance.
+This is an English-first, noncommercial data science portfolio by Senanur Cetin under the NEXUS personal brand. The competition experiment campaign stopped on 8 October 2026. Subsequent work includes completed source audits and frozen-model retrospective controls, with authenticated Kaggle readbacks. These establish selected-population diagnostics, not new competition scores or untouched-holdout generalization.
 
 | Review question | Start here |
 |---|---|
@@ -13,6 +13,7 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 | How is inference assembled? | [Original architecture](../ARCHITECTURE.md) |
 | What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
 | Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
+| What did corrected models and negative controls measure? | [Executed results](../reports/revalidation_review.md), [study protocol](CORRECTED_MODEL_REVALIDATION.md) |
 | How are Kaggle publications maintained? | [Kaggle guide](../kaggle/README.md) |
 | What was actually checked in this update? | [Verification record](VERIFICATION.md) |
 | Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |

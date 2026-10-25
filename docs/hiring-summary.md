@@ -19,7 +19,7 @@ Sources: [data profile](../reports/data_profile.json), [experiment log](../EXPER
 
 1. **Simulated missingness can become the answer key.** Reference counts and source-membership priors distinguish artificially withheld answers from decoys. Removing those priors improved a recorded public comparison from 0.245 to 0.258. That single comparison is descriptive, not a universal causal effect.
 2. **Retrieval coverage and ranking compete.** New databases can contain more answers while adding many mass-compatible isomers. Pool evaluation therefore needs both answer coverage and candidate-window density.
-3. **Validation integrity is a separate deliverable.** Later audits found sampled-query C1 reference leakage and prefilter eligibility problems. Corrections have regression coverage, but their real-data effect remains unmeasured. Historic validation values must not be reused as corrected-protocol estimates.
+3. **Validation integrity is a separate deliverable.** Later audits found sampled-query C1 reference leakage and prefilter eligibility problems. The [completed corrected-protocol study](../reports/revalidation_review.md) evaluates frozen models on all 250 V-in molecules with paired controls and verified rebuilt artifacts. v16 C2/C3 MRR is 0.6241/0.2374; simple-model C2 improves with blank fragments, exposing a residual-similarity failure. This is retrospective evidence, with historical selection and weight-lineage limitations.
 
 ## What a reviewer can inspect
 

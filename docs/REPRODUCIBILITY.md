@@ -32,7 +32,11 @@ Run `python scripts/build_research_publications.py` to generate the two owned no
 
 Use licensed competition files and the matching public structure releases, then follow [the original architecture](../ARCHITECTURE.md), [fingerprint provenance](KAGGLE_ACCESS_AND_FP_PROVENANCE.md), [snapshot inventory](INPUT_SNAPSHOT_MANIFEST.md) and [fresh-index protocol](D2_FRESH_INDEX_EVIDENCE.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py` and audit ranked candidates with `scripts/audit_submission.py` before any separately chosen competition submission.
 
-No new competition submission is part of this portfolio maintenance. Full GPU training and corrected-protocol evaluation remain pending. The static dashboard has zero infrastructure spend; hosted Kaggle execution is CPU-only for these publication bundles and subject to account quotas. Optional BigQuery scans and GPU retraining are not part of the default workflow.
+No new competition submission is part of this portfolio maintenance. New training remains outside this update; corrected-protocol **frozen-model retrospective evaluation has completed**. The two explanatory publications and overlap audit use CPU; the separate model study used the free Kaggle GPU allocation with internet disabled. The static dashboard has zero infrastructure spend. Optional BigQuery scans and GPU retraining are not part of the default workflow.
+
+## Reproduce the completed model/control study
+
+See [the protocol](CORRECTED_MODEL_REVALIDATION.md) and [verified results](../reports/revalidation_review.md). Generate the scratch-only bundle with `python scripts/build_revalidation_notebook.py`; authenticate its completed public execution with `python scripts/check_revalidation_publication.py`; render the report with `python scripts/build_revalidation_report.py`. The study rebuilds inputs, quarantines conflicting/unusable candidates explicitly, retains all eligible query molecules and records data/model/code hashes and runtime versions. Its approximately 41-minute ranking/control phase is a recorded duration for that run, not a runtime guarantee. Source rebuild time is additional.
 
 ## Reproduce the executed public-example content audit
 

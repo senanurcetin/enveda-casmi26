@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-25T17:10:55.808822+00:00",
+  "id": "senanuretin/casmi26-corrected-models-and-negative-controls",
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-corrected-models-and-negative-controls",
+  "latest_run_status": "COMPLETE",
+  "public": true,
+  "source_matches": true,
+  "source_sha256": "7269152702a91ad3872424ff96ff2f29bc386b3eb574f7e3877b030a04c3fade",
+  "aggregate_artifact_sha256": "32a2211c52f1f0c5f85d7556e84e12df0a917a140a50597be1ef055d8fe7055e",
+  "status": "pass",
+  "scope": "Retrospective frozen-model diagnostics; not a new untouched generalization score"
+}

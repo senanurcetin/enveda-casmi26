@@ -8,7 +8,7 @@
 
 [![Research checks](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml/badge.svg)](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml)
 
-**Research review: 23 October 2026.** The competition experiment campaign stopped on 8 October. Subsequent work improves reliability, reproducibility and communication. Historical scores have not been recomputed under later validation corrections. No new competition submission or final private score is claimed.
+**Research review: 25 October 2026.** The competition experiment campaign stopped on 8 October. A corrected-protocol retrospective study has now completed on all 250 designated V-in molecules with frozen original weights, rebuilt inputs and paired negative controls. Historical leaderboard scores remain separate. No new competition submission or final private score is claimed.
 
 ## The research question
 
@@ -83,9 +83,19 @@ Local source-rendered desktop capture; [verification scope](docs/VERIFICATION.md
 
 3. [Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit): a completed full-training scan separating exact numeric content from coarse-key collisions. [Executed results and hashes](docs/PUBLIC_EXAMPLE_OVERLAP.md).
 
+4. [Corrected Models and Negative Controls](https://www.kaggle.com/code/senanuretin/casmi26-corrected-models-and-negative-controls): **COMPLETE**, with authenticated source/artifact readback. All 250 molecules retained; 1,710 mass-conflicting identities and 13 unparseable candidates quarantined; 1,071,863 candidate structures fingerprint-verified. [Full results, uncertainty and provenance](reports/revalidation_review.md).
+
+| Retrospective MRR@25 | C1 | C2 | C3 |
+|---|---:|---:|---:|
+| D1 | 0.9033 | 0.1402 | 0.0000 |
+| D1+D2 | 0.9040 | 0.2272 | 0.0000 |
+| Frozen v16 learned ranker | 0.8324 | 0.6241 | 0.2374 |
+
+The learned model trades lower C1 performance for higher C2/C3 performance in this selected population. Blank fragments reduce its C2 MRR by 0.4972 and C3 by 0.2374. Conversely, blank spectra **improve the simple models' C2 results**: mass-error tie-breaking can outperform their misleading residual similarities after truth-reference exclusion. The controls do not validate every scoring channel. [Paired confidence intervals and limits](reports/revalidation_review.md).
+
 ## Limitations that affect interpretation
 
-V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. Later audits corrected sampled-query C1 leakage and D2 shortlist eligibility; their effect on real-data accuracy remains unmeasured. Tautomer identity grouping is not scaffold independence. The [executed exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
+V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. The completed corrected-protocol study evaluates frozen models retrospectively; it does not isolate the causal effect of each fix, undo historical model selection or independently attest the weights' full training lineage. A newly trained, untouched external/scaffold holdout remains a separate research requirement. Tautomer identity grouping is not scaffold independence. The [executed exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
 
 [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) · [Evidence and pending work](reports/research_review.md) · [Archived maintenance notes](docs/MAINTENANCE_HISTORY.md).
 
@@ -103,3 +113,5 @@ docs/                  reviewer guide, methodology, reproducibility and audit hi
 ```
 
 **Research-only scope:** no billing, customer onboarding, paid inference or recurring infrastructure. Competition data is not redistributed; source datasets and third-party notebooks retain their own terms and attribution. NEXUS is a personal brand and implies no organizer endorsement. [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md).
+
+[Citation metadata](CITATION.cff). Cite the commit used and attribute input datasets and external methods separately.

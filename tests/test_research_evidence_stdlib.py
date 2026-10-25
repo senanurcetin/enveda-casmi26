@@ -17,7 +17,8 @@ class ResearchEvidenceTests(unittest.TestCase):
         text = report(self.ledger, ROOT)
         self.assertIn("0.309 | own", text)
         self.assertIn("0.422 | fusion", text)
-        self.assertIn("revalidation — pending", text)
+        self.assertIn("revalidation — measured", text)
+        self.assertIn("Untouched external holdout — pending", text)
         self.assertIn("not external verification", text)
 
     def test_unsafe_missing_sources_and_unknown_states_are_rejected(self):

@@ -26,3 +26,11 @@ Authentication uses the already configured Kaggle CLI. Tokens and local credenti
 [Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit) is a separate third research notebook. It scanned all training rows and confirmed 1,213/1,213 public spectra and 400/400 molecules as exact numeric-content matches, including adduct/mode consistency, while rejecting two coarse candidate pairs. It does not train or score a model. [Protocol, input hashes and limits](../docs/PUBLIC_EXAMPLE_OVERLAP.md).
 
 Its source bundle lives under `kaggle/audits/public-overlap`, outside the two historical-publication bundles. Generate it with `python scripts/build_overlap_notebook.py` and verify its completed source, input attachments and aggregate JSON with `python scripts/check_overlap_publication.py`. The existing two-notebook readback remains scoped to those two publications.
+
+## Corrected-model retrospective study
+
+[Corrected Models and Negative Controls](https://www.kaggle.com/code/senanuretin/casmi26-corrected-models-and-negative-controls) rebuilds full-source artifacts and compares D1, D1+D2 and the frozen five-seed v16 ranker under C1/C2/C3 and paired spectral perturbations. Its first build exposed 1,710 mass-conflicting identities. The revised protocol quarantines those identities explicitly and keeps every eligible query in the denominator using independent training labels.
+
+The bundle lives under `kaggle/audits/corrected-revalidation`. Build with `python scripts/build_revalidation_notebook.py`, push that directory and read back only a completed matching run with `python scripts/check_revalidation_publication.py`. A notebook URL alone does not attest completion. [Full protocol and interpretation limits](../docs/CORRECTED_MODEL_REVALIDATION.md). This study uses attached original owned model files, not an external solution, and submits no predictions.
+
+**Completed and authenticated:** execution 24 October 2026, readback 25 October 2026. [Result tables and adverse controls](../reports/revalidation_review.md) · [Source/artifact readback](../reports/revalidation_publication.json). All four owned publications are complete; their distinct evidence scopes remain explicit. The model study uses free GPU execution with disabled internet and exports aggregates only.
