@@ -4,7 +4,7 @@
 
 **An evidence-led, noncommercial data science portfolio:** retrieving and ranking molecular structures from tandem mass spectra under incomplete reference coverage.
 
-[Research brief](docs/hiring-summary.md) · [Documentation](docs/README.md) · [Model card](MODEL_CARD.md) · [Kaggle notebooks](kaggle/README.md) · [Interactive research dashboard](site/index.html)
+[Documentation](docs/README.md) · [Model card](MODEL_CARD.md) · [Kaggle notebooks](kaggle/README.md) · [Interactive research dashboard](site/index.html)
 
 [![Research checks](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml/badge.svg)](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml)
 
