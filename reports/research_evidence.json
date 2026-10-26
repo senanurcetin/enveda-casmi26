@@ -139,6 +139,20 @@
       "state": "implemented",
       "detail": "Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.",
       "source": "reports/research_environment_validation.json"
+    },
+    {
+      "id": "coverage-loss-accounting",
+      "title": "Candidate coverage and ranking loss accounting",
+      "state": "measured",
+      "detail": "Post hoc algebraic decomposition of the authenticated frozen internal test. C3: 224/250 truths absent, 24/26 covered truths in top 25, 6 rank first. Existing-list oracle ceiling 0.1040 MRR versus observed 0.0373. Conditional metrics retain explicit denominators; no new validation, causal gain or model promotion.",
+      "source": "reports/candidate_loss_budget.json"
+    },
+    {
+      "id": "rank-input-validation",
+      "title": "Fail-closed numerical rank contracts",
+      "state": "implemented",
+      "detail": "Summary and paired bootstrap reject noninteger, negative, out-of-top-25, nonfinite and malformed rank arrays before scoring. Fixed-seed valid results remain unchanged. Completed experiment source bundles remain frozen.",
+      "source": "src/casmi/validate/rank_inputs.py"
     }
   ]
 }

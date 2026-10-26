@@ -36,6 +36,8 @@ This is an internal query-family benchmark. Evaluation structures may occur as n
 
 ## Operational and scientific failure modes
 
+The [aggregate-only loss decomposition](reports/candidate_loss_review.md) shows 224/250 C3 queries lack the correct candidate. Of the 26 covered molecules, 24 reach top 25 and 6 rank first. The existing-pool oracle MRR ceiling is 0.1040, versus observed 0.0373; this hypothetical ceiling cannot be presented as achieved accuracy. Conditional MRR on the 26 covered molecules is descriptive and does not replace population MRR. No conditional uncertainty or causal generation improvement can be recovered from aggregate-only evidence.
+
 Missing true structures in the candidate pool impose a hard recall ceiling. Isomers share masses and may have similar spectra. Adduct errors, spectral contamination, mode mismatches, limited cross-instrument references, generated-structure identity errors and unknown chemistry can all produce confident-looking but incorrect rankings. Rank scores are not calibrated identification probabilities.
 
 No clinical, toxicological, regulatory, synthesis or other consequential chemical decision should rely on this project. Source code and source datasets have separate licensing; third-party solutions retain their original attribution and terms. [Data card](DATA_CARD.md).

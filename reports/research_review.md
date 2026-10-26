@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `ba96d6152c7c98ce59cbdca770f91ab64eb6ba18ee18847ed844f22b0ae0b161`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `3597fc8088bea7fe6a1b7b3545effa2c0d002fbce8c97633b74bed2ec589aaed`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -86,4 +86,16 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `7125e1f5b10d3129e56106300930aeda2cc4ca12272aad0aaac3cf5dc3c779a8`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `20509644093fff8169fbd5659f6db3f31ff3b289f147e8c0989fdcfbb9565b57`.
+
+## Candidate coverage and ranking loss accounting — measured
+
+Post hoc algebraic decomposition of the authenticated frozen internal test. C3: 224/250 truths absent, 24/26 covered truths in top 25, 6 rank first. Existing-list oracle ceiling 0.1040 MRR versus observed 0.0373. Conditional metrics retain explicit denominators; no new validation, causal gain or model promotion.
+
+Source: [reports/candidate_loss_budget.json](../reports/candidate_loss_budget.json). SHA-256 (UTF-8 / LF): `8df9ff35b89ba55de2617ee385c90bf237ed838f8762e28600891dac093d06d6`.
+
+## Fail-closed numerical rank contracts — implemented
+
+Summary and paired bootstrap reject noninteger, negative, out-of-top-25, nonfinite and malformed rank arrays before scoring. Fixed-seed valid results remain unchanged. Completed experiment source bundles remain frozen.
+
+Source: [src/casmi/validate/rank_inputs.py](../src/casmi/validate/rank_inputs.py). SHA-256 (UTF-8 / LF): `c6faf51be68b80ba2f50bc5324ab802ffd1ebd9134eb71005d8dcb9123f8de62`.

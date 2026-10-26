@@ -1,5 +1,13 @@
 # Portfolio maintenance verification — 26 October 2026
 
+## Aggregate loss diagnosis and numerical scoring contracts
+
+The [candidate/ranking loss report](../reports/candidate_loss_review.md) derives exact accounting from the authenticated, unchanged fresh-study artifact. All 11 models and three novelty classes are retained. C3 has 224 absent truths, 24 top-25 hits among 26 covered truths and 6 top-1 hits; fixed-list oracle MRR is only 0.1040. Conditional means are labeled descriptive, with no reconstructed bootstrap interval, causal improvement claim, retraining or test-selected model. Derived JSON binds the source artifact and notebook hashes. NEXUS PNG/SVG/PDF figures were inspected as generated artifacts.
+
+Code review reproduced two numerical input failures: `summarize([26])` scored a rank outside the top-25 contract, and paired bootstrap silently treated a NaN rank as a miss. The current summary and paired-comparison paths now require nonempty one-dimensional integer arrays in 0–25 and valid integer bootstrap settings. Fixed-seed valid scores/intervals are unchanged. Completed experiment notebooks preserve their original source snapshots; the recorded runner generates bounded integer ranks, so this correction does not revise historical metrics.
+
+The updated locked suite passed **335 tests and 132 subtests, with 2 Windows symlink skips** (469 JUnit cases, zero failures/errors). The standalone stdlib suite passed 103 tests with the same 2 skips. Coverage tests reject impossible molecule counts, inconsistent MRR/cutoff summaries, altered source provenance and zero-coverage conditional division. CI regenerates the derived reports and runs the numerical rank-contract regressions. [Current environment/JUnit attestation](../reports/research_environment_validation.json).
+
 ## Completed advanced internal research extension
 
 The fifth owned [Kaggle study](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout) is public and **COMPLETE**, with exact notebook source, input attachments and aggregate-artifact SHA-256 [authenticated on 26 October](../reports/advanced_publication.json). It fits two new fingerprint networks and eight three-seed rankers on 600 training / 150 development queries. All 26 learned artifacts and feature lists are sealed before final-test features for 250 query families. Selected supervised query/metric/family overlap is zero. No archived model dataset, raw record export, competition submission or production deployment was used.

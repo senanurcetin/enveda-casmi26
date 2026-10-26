@@ -9,6 +9,9 @@ on:
       - "kaggle/publications/**"
       - "reports/research_evidence.json"
       - "reports/advanced*.json"
+      - "reports/candidate_loss*"
+      - "scripts/build_coverage_report.py"
+      - "tests/test_rank_summary_contracts.py"
       - "scripts/research_evidence.py"
       - "scripts/audit_public_overlap.py"
       - "scripts/build_overlap_notebook.py"
@@ -95,6 +98,9 @@ on:
       - "kaggle/publications/**"
       - "reports/research_evidence.json"
       - "reports/advanced*.json"
+      - "reports/candidate_loss*"
+      - "scripts/build_coverage_report.py"
+      - "tests/test_rank_summary_contracts.py"
       - "scripts/research_evidence.py"
       - "scripts/audit_public_overlap.py"
       - "scripts/build_overlap_notebook.py"
@@ -198,12 +204,13 @@ jobs:
           python scripts/research_evidence.py
           python scripts/build_revalidation_report.py
           python scripts/build_advanced_report.py --tables-only
+          python scripts/build_coverage_report.py --tables-only
           python -m pip install nbformat==5.10.4
           python scripts/build_research_publications.py
           python scripts/build_overlap_notebook.py
           python scripts/build_revalidation_notebook.py
           python scripts/build_advanced_notebook.py
-          git diff --exit-code -- reports/research_review.md reports/revalidation_review.md reports/advanced_review.md kaggle/publications kaggle/audits
+          git diff --exit-code -- reports/research_review.md reports/revalidation_review.md reports/advanced_review.md reports/candidate_loss_review.md reports/candidate_loss_budget.json kaggle/publications kaggle/audits
       - name: Install synthetic integration dependencies
         run: python -m pip install numpy==2.3.5 pandas==2.3.3 pytest==9.0.2 pyarrow==24.0.0
       - name: Run paired-comparison integration checks
@@ -224,7 +231,7 @@ jobs:
       - name: Install official-metric compatible chemistry stack
         run: python -m pip install numpy==2.3.5 pandas==2.3.3 rdkit==2026.3.3 pytest==9.0.2 scipy==1.16.2 numba==0.62.1 pyarrow==24.0.0
       - name: Run chemistry, tautomer and MRR rank-slot regressions
-        run: python -m pytest tests/test_foundations.py tests/test_knockout_leakage.py tests/test_analog_index_knockout.py tests/test_analog_retention_audit.py tests/test_d2_reference_selection.py tests/test_store_integrity.py tests/test_spectra.py tests/test_revalidation_truth.py tests/test_candidate_structure_quality.py tests/test_advanced_scaffolds.py tests/test_exact_sanity_answers.py tests/test_generated_pool_integrity.py -q
+        run: python -m pytest tests/test_foundations.py tests/test_knockout_leakage.py tests/test_analog_index_knockout.py tests/test_analog_retention_audit.py tests/test_d2_reference_selection.py tests/test_store_integrity.py tests/test_spectra.py tests/test_revalidation_truth.py tests/test_candidate_structure_quality.py tests/test_advanced_scaffolds.py tests/test_exact_sanity_answers.py tests/test_generated_pool_integrity.py tests/test_rank_summary_contracts.py -q
 
   fresh-training-contracts:
     runs-on: ubuntu-latest
