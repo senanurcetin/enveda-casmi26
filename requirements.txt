@@ -1,10 +1,4 @@
-# Pinned where the result depends on it. RDKit must equal the version the official metric uses.
-rdkit==2026.3.3
-numpy>=2.0
-pandas>=2.2
-pyarrow>=15
-scikit-learn>=1.6
-lightgbm>=4.3
-numba>=0.60
-torch>=2.3
-pyyaml>=6
+# Portable research profile, verified in an isolated Python 3.12 environment.
+# Kaggle execution images have their own per-study package snapshots.
+--require-hashes
+-r locks/research-py312.txt

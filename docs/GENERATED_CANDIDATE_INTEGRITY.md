@@ -2,6 +2,8 @@
 
 **2026-10-19 | Non-commercial scientific research**
 
+**26 October representation-cache amendment:** the active generated ID now binds standard InChI14 plus the full SHA-256 of canonical isomeric SMILES. A synthetic tautomer pair demonstrated that connectivity-only IDs could share different Morgan/fragment/NP-score features depending on query order. Representation-specific IDs isolate these caches; ambiguous legacy-ID reuse fails closed. Reverse-registration-order regressions cover the counterexample. This correction was declared before inspecting fresh-study outcomes and executed in its authenticated version 2. The frozen retrospective notebook keeps its historical source and this known limitation; no causal performance improvement is attributed to the cache fix. [Protocol amendment and execution history](ADVANCED_INTERNAL_STUDY.md).
+
 ## Finding
 
 `CandidatePool.register_generated`, used by the optional D3

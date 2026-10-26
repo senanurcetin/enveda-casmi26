@@ -1,6 +1,6 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 25 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 26 October 2026.
 
 ## Intended use
 
@@ -22,11 +22,19 @@ V-in contains 250 instrument-matched natural-product structures; V-real contains
 
 Later audits corrected sampled-query C1 leakage, D2 eligibility ordering, identity/provenance and numerical edge cases. Historical leaderboard scores were **not** replaced. A separate [completed retrospective study](reports/revalidation_review.md) now evaluates all 250 eligible V-in molecules through the shared ranking path using rebuilt full-source artifacts and frozen original weights. D1 / D1+D2 / v16 MRR@25 is respectively **0.9033 / 0.9040 / 0.8324 (C1)**, **0.1402 / 0.2272 / 0.6241 (C2)** and **0 / 0 / 0.2374 (C3)**. These are selected-population diagnostics, not new independent generalization estimates. Standard/tautomer keys do not establish scaffold independence.
 
-Blank fragments lower v16 C2 MRR by 0.4972 and C3 by 0.2374, but improve simple-model C2 ranking. That counter-result shows that a negative control is not a universal pass/fail certification: residual similarity can rank decoys above mass-error ordering. Full paired intervals, intensity-shuffle controls and model contrasts are retained in the report. No new weights were trained; complete original training lineage is not independently attested.
+Blank fragments lower v16 C2 MRR by 0.4972 and C3 by 0.2374, but improve simple-model C2 ranking. That counter-result shows that a negative control is not a universal pass/fail certification: residual similarity can rank decoys above mass-error ordering. Full paired intervals, intensity-shuffle controls and model contrasts are retained in the report. That retrospective study fitted no new weights; complete original training lineage is not independently attested.
 
 Current paired comparisons require matching query identities, spectra signatures and source manifests; D2 decision-grade comparisons also require verified fingerprint and fresh-index evidence. Simultaneous bands cover only the fixed class-mixture grid, not adaptive experiment selection. [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md).
 
-## Failure modes
+## Fresh supervised weights and sealed internal families
+
+The [completed fresh-training study](reports/advanced_review.md) uses 600/150/250 train/development/test molecules, one per conservative generic chemical family, with no selected query/metric/family crossing supervised partitions. Two new D3 networks supply cross-fitted training features; eight prespecified three-seed rankers and all feature lists are sealed before test features. The exact executed source, 26 learned-file hashes and public completion are [authenticated](reports/advanced_publication.json).
+
+Fresh full C1/C2/C3 MRR@25 is **0.8665/0.8388/0.0373**. The predeclared C2 full-minus-D1+D2 contrast is **+0.6322 [+0.5816, +0.6829]**. Among 27 jointly assessed secondary contrasts, C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 effects are -0.5119/-0.0936. C3 candidate coverage is only 26/250. No automatic promotion follows from testing several variants.
+
+This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. Independent external spectra/laboratory replication remain absent.
+
+## Operational and scientific failure modes
 
 Missing true structures in the candidate pool impose a hard recall ceiling. Isomers share masses and may have similar spectra. Adduct errors, spectral contamination, mode mismatches, limited cross-instrument references, generated-structure identity errors and unknown chemistry can all produce confident-looking but incorrect rankings. Rank scores are not calibrated identification probabilities.
 

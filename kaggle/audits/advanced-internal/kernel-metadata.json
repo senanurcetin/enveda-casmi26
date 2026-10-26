@@ -1,0 +1,20 @@
+{
+  "id": "senanuretin/casmi26-fresh-training-family-holdout",
+  "title": "CASMI26: Fresh Training Family Holdout",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "competition_sources": [
+    "enveda-CASMI26-molecule-id-mass-spectra"
+  ],
+  "dataset_sources": [
+    "senanuretin/casmi-coconut-b",
+    "senanuretin/casmi-pubchemlite-b",
+    "metric/rdkit-2026-3-3-wheel"
+  ],
+  "kernel_sources": []
+}

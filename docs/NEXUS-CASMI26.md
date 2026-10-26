@@ -58,7 +58,7 @@ python -m http.server 8000
 
 Open http://localhost:8000/site/ .
 
-The site is self-contained: no tracking scripts, third-party CSS/fonts, API keys, BigQuery credentials or Kaggle private data. It dynamically reads the **historical** `reports/data_profile.json` from the same repository; the stored leaderboard numbers come from the documented README/HANDOFF experiment snapshot. Opening `site/index.html` directly as a `file://` URL can prevent the browser from loading the profile. Serve over HTTP instead.
+The site is self-contained: no tracking scripts, third-party CSS/fonts, API keys, BigQuery credentials or Kaggle private data. It dynamically reads the **historical** `reports/data_profile.json` from the same repository; the stored leaderboard numbers come from the canonical `EXPERIMENTS.md` snapshot and evidence registry. Opening `site/index.html` directly as a `file://` URL can prevent the browser from loading the profile. Serve over HTTP instead.
 
 Design references: NEXUS 2.0 official transparent SVG and midnight palette `#0B0F19 / #061524 / #00E0FF / #4EA8FF / #8F9BFF / #6E55C6 / #B9C5CE`. Branding belongs to NEXUS; the competition itself belongs to its organizers.
 

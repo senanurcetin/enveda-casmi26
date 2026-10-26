@@ -53,6 +53,18 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
     <div class="kpi"><div class="eyebrow">Distinct training structures</div><div class="value" id="structures-kpi">275.8K</div><div class="sub">Labels aggregated by 2D structure</div></div>
   </section>
 
+  <section class="section" id="fresh-study">
+    <div class="section-head"><h2>Fresh training / sealed internal families</h2><p>Completed and source-authenticated · 26 October 2026. Internal test MRR, separate from historical public scores.</p></div>
+    <div class="panel">
+      <p class="panel-desc">600 training / 150 development / 250 test queries. Two fresh fingerprint networks and eight three-seed rankers; all learned weights sealed before final-test features. No selected query-family or metric identity crosses supervised partitions.</p>
+      <div class="statline"><span>Fresh full MRR@25 · C1 / C2 / C3</span><strong>0.8665 / 0.8388 / 0.0373</strong></div>
+      <div class="statline"><span>Primary C2 full − D1+D2 · paired 95% CI</span><strong>+0.6322 [+0.5816, +0.6829]</strong></div>
+      <div class="evidence-note"><strong>C3 remains limited.</strong> Generated candidates contain the truth for only 26/250 test molecules. Joint secondary intervals do not establish incremental D3 or NP-score benefit. Query-family separation retains task-defined candidate/reference knowledge; no external laboratory validation or automatic model promotion follows.</div>
+      <img src="../docs/assets/advanced-internal-study.png" alt="Fresh internal benchmark with C1 C2 C3 MRR and joint C2 ablation intervals" loading="lazy" style="width:100%;height:auto;margin-top:20px;border-radius:10px">
+      <div class="footlinks"><a href="../reports/advanced_review.md">All results and error slices</a><a href="../docs/assets/advanced-internal-study.pdf">Research figure / PDF</a><a href="../protocols/advanced-internal-v1.json">Predeclared protocol</a><a href="https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout">Completed Kaggle study</a></div>
+    </div>
+  </section>
+
   <section class="section" id="models">
     <div class="section-head"><div><div class="micro">02 / EXPERIMENTS</div><h2>Model performance &amp; research channels</h2></div><p>Recorded public leaderboard experiments, not confidence intervals or a prediction of the final private score.</p></div>
     <div class="grid">
@@ -67,7 +79,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
           <div class="score-row fused"><div><div class="score-info"><span>External v4n base</span><strong>0.420</strong></div><div class="track"><span class="fill" style="width:84%"></span></div></div><span class="tag">BASE</span></div>
           <div class="score-row fused"><div><div class="score-info"><span>v4n + NEXUS rank-list fusion</span><strong>0.422</strong></div><div class="track"><span class="fill" style="width:84.4%"></span></div></div><span class="tag">FUSION</span></div>
         </div>
-        <div class="provenance">Source: reports/research_evidence.json → EXPERIMENTS.md / HANDOFF.md · Last recorded result 2026-10-08 · Scores shown on a 0–0.50 visual scale.</div>
+        <div class="provenance">Source: reports/research_evidence.json → EXPERIMENTS.md · Last recorded result 2026-10-08 · Scores shown on a 0–0.50 visual scale.</div>
       </article>
       <article class="panel"><h3>Four complementary evidence channels</h3><p class="panel-desc">The system retrieves mass-compatible structures, scores candidates, then aggregates per molecule.</p>
         <div class="channel"><div class="channel-mark">D1</div><div><strong>Direct library search</strong><small>Measured MS/MS entropy similarity to known reference spectra.</small></div></div>
@@ -123,7 +135,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
     <div class="readiness">
       <article class="readiness-step"><div class="phase">01 / SOURCE ACCESS</div><h3>Full-source study completed</h3><p>Licensed inputs were rebuilt in scratch storage. All 250 V-in molecules were retained across three models, three novelty classes and paired spectral controls. Source and result hashes were read back on 25 October 2026.</p><div class="state">COMPLETE · retrospective population</div></article>
       <article class="readiness-step"><div class="phase">02 / SCIENTIFIC REBUILD</div><h3>Verified candidates &amp; fresh D2</h3><p>1,710 mass-conflicting identities and 13 unparseable candidates were quarantined. 1,071,863 structures have verified fingerprints; the D2 reference index was rebuilt without cache. One absent truth remained in the scoring denominator.</p><div class="state">Real-data execution verified · immutable input inventory</div></article>
-      <article class="readiness-step"><div class="phase">03 / PUBLICATIONS</div><h3>Owned research notebooks</h3><p>Two explanatory publications, the exact-content audit and the corrected-model/control study completed. Historical scores and retrospective diagnostics remain separate.</p><div class="state">4 / 4 COMPLETE · source readbacks verified</div><a class="pill" href="../reports/kaggle_publications.json">Historical publications</a><a class="pill" href="../reports/public_overlap_publication.json">Data audit</a><a class="pill" href="../reports/revalidation_publication.json">Model/control study</a></article>
+      <article class="readiness-step"><div class="phase">03 / PUBLICATIONS</div><h3>Owned research notebooks</h3><p>Five publications completed: historical explanations, exact-content audit, frozen retrospective controls and a fresh-training internal-family benchmark. Evidence scopes remain separate.</p><div class="state">5 / 5 COMPLETE · source readbacks verified</div><a class="pill" href="../reports/kaggle_publications.json">Historical publications</a><a class="pill" href="../reports/public_overlap_publication.json">Data audit</a><a class="pill" href="../reports/revalidation_publication.json">Model/control study</a><a class="pill" href="../reports/advanced_publication.json">Fresh training</a></article>
     </div>
     <div class="evidence-note"><strong>Historical evidence ≠ current score.</strong> The 0.422 public MRR@25 is the recorded result from 8 October 2026. Repository integrity improvements since that date have not been measured on the hidden Kaggle evaluation set.</div>
     <div class="evidence-note"><strong>Retrospective model findings.</strong> Frozen v16 C1/C2/C3 MRR@25: 0.8324 / 0.6241 / 0.2374. Blank fragments reduce its C2 by 0.4972, yet improve simple-model C2 ranking: mass-error ordering can beat misleading residual similarities. Historical model selection and incomplete weight lineage prevent an untouched-holdout claim. <a href="../reports/revalidation_review.md">Inspect all models, paired intervals and adverse controls →</a></div>
@@ -149,7 +161,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
   <section class="section" id="sources">
     <div class="section-head"><div><div class="micro">07 / PROVENANCE</div><h2>Evidence &amp; reproducibility</h2></div><p>This is an intentionally read-only historical dashboard. It does not fetch private Kaggle results or query BigQuery.</p></div>
     <div class="panel"><h3>Review underlying artifacts</h3><p class="panel-desc">All conclusions link back to named source files. The published brand identity is the approved Google Drive NEXUS SVG.</p>
-      <div class="footlinks"><a href="../README.md">Project README ↗</a><a href="../EXPERIMENTS.md">Experiment log ↗</a><a href="../HANDOFF.md">Handoff &amp; caveats ↗</a><a href="../ARCHITECTURE.md">Architecture ↗</a><a href="../reports/data_profile.json">Dataset profile JSON ↗</a><a href="https://github.com/senanurcetin/enveda-casmi26" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
+      <div class="footlinks"><a href="../README.md">Project README ↗</a><a href="../EXPERIMENTS.md">Experiment log ↗</a><a href="../MODEL_CARD.md">Model card &amp; limits ↗</a><a href="../ARCHITECTURE.md">Architecture ↗</a><a href="../reports/data_profile.json">Dataset profile JSON ↗</a><a href="https://github.com/senanurcetin/enveda-casmi26" target="_blank" rel="noopener noreferrer">Repository ↗</a></div>
       <p class="provenance">Run via <code>python -m http.server 8000</code> in the repository root, then open <code>http://localhost:8000/site/</code>. The profile graph requires an HTTP server because browser file:// access can block JSON fetches.</p>
     </div>
   </section>

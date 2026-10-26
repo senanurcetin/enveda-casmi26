@@ -1,4 +1,16 @@
-# Portfolio maintenance verification — 25 October 2026
+# Portfolio maintenance verification — 26 October 2026
+
+## Completed advanced internal research extension
+
+The fifth owned [Kaggle study](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout) is public and **COMPLETE**, with exact notebook source, input attachments and aggregate-artifact SHA-256 [authenticated on 26 October](../reports/advanced_publication.json). It fits two new fingerprint networks and eight three-seed rankers on 600 training / 150 development queries. All 26 learned artifacts and feature lists are sealed before final-test features for 250 query families. Selected supervised query/metric/family overlap is zero. No archived model dataset, raw record export, competition submission or production deployment was used.
+
+The [full result report](../reports/advanced_review.md) retains every model, all three novelty classes, spectral controls, 27 joint secondary contrasts, coverage ceilings and descriptive source/adduct/mode/mass/spectrum-count/instrument slices. C2 primary delta is +0.6322 [paired 95% CI +0.5816, +0.6829]. C3 remains limited (MRR 0.0373, truth coverage 26/250); D3 and NP-score incremental benefits remain unresolved. Source concentration, shared candidate/reference knowledge and the fixed NP-score prior limit interpretation. This is internal validation, without external acquired spectra or laboratory replication.
+
+The full hash-locked Python 3.12 suite passed **314 tests and 123 subtests, with 2 Windows symlink skips**; JUnit contains 439 cases, zero failures/errors. All 50 applicable installed package versions match the 69-entry conditional SHA-256 lock and pass dependency compatibility checks. The [environment/JUnit attestation](../reports/research_environment_validation.json) records exact versions and hashes. A separate dependency-free run passed 99 tests with the same 2 skips. Tamper regressions reject changed source, split leakage, altered seals, incomplete fitting, hidden pretrained weights, private rows, impossible coverage and contradictory primary/joint effects.
+
+NEXUS quantitative figures were exported as standalone PNG/SVG/PDF and visually inspected as generated files. Tables are regenerated in CI; chemistry, official metric and fresh CPU neural/ranker contracts are exercised separately. Interface changes are checked through source, links and data integrity. All work used CLI, filesystem and authenticated APIs, without PC-screen interaction or Playwright. Historical screenshots below retain their original dates and scope.
+
+## Earlier completed extension — 25 October 2026
 
 ## Completed model/control extension
 

@@ -41,21 +41,43 @@ class LoadedRanker:
 
 
 def sanity_answers(test):
-    """Recover the public test answers by exact spectrum match against train (see --sanity)."""
-    keys = {(round(r.precursor_mz, 4), len(r.ms2_mzs), round(float(r.ms2_mzs[0]), 4)): r.molecule_id for r in test.itertuples()}
-    pf, found = pq.ParquetFile(DATA_DIR / "train.parquet"), {}
-    precs = {k[0] for k in keys}
-    for rg in range(pf.num_row_groups):
-        t = pf.read_row_group(rg, columns=["precursor_mz", "normalized_smiles"]).to_pandas()
-        cand = np.flatnonzero(t.precursor_mz.round(4).isin(precs).to_numpy())
-        if len(cand):
-            mz = pf.read_row_group(rg, columns=["ms2_mzs"]).column(0)
-            for i in cand:
-                m = mz[int(i)].as_py()
-                mid = keys.get((round(t.precursor_mz.iat[i], 4), len(m), round(float(m[0]), 4)))
-                if mid:
-                    found[mid] = t.normalized_smiles.iat[i]
-    return pd.DataFrame({"molecule_id": list(found), "smiles": list(found.values())})
+    """Recover only full-content, metadata-consistent public matches; reject ambiguity."""
+    import pyarrow as pa
+    import pyarrow.compute as pc
+    from casmi.chem.canon import canonical_ik14
+    from casmi.validate.spectrum_overlap import coarse_spectrum_bucket, full_spectrum_match
+
+    fields = ["precursor_mz", "ms2_mzs", "ms2_normalized_intensities", "adduct", "ionization_mode"]
+    if not set(fields + ["molecule_id"]) <= set(test) or not 0 < len(test) <= 100_000:
+        raise ValueError("A bounded nonempty public-example table with full spectra is required")
+    buckets = {}
+    for target in test[fields + ["molecule_id"]].to_dict("records"):
+        bucket = coarse_spectrum_bucket(target["precursor_mz"], target["ms2_mzs"])
+        if bucket is None:
+            raise ValueError("Public example has invalid or empty spectrum")
+        buckets.setdefault(bucket, []).append(target)
+    precursors = pa.array(sorted(set(float(value) for value in test.precursor_mz)), type=pa.float64())
+    found, canonical = {}, {}
+    pf = pq.ParquetFile(DATA_DIR / "train.parquet")
+    for batch in pf.iter_batches(batch_size=8192, columns=fields + ["normalized_smiles"]):
+        selected = batch.filter(pc.is_in(pc.cast(batch.column("precursor_mz"), pa.float64()), value_set=precursors))
+        for row in selected.to_pylist():
+            bucket = coarse_spectrum_bucket(row["precursor_mz"], row["ms2_mzs"])
+            for target in buckets.get(bucket, []):
+                if any(row[field] != target[field] for field in ("adduct", "ionization_mode")):
+                    continue
+                if not full_spectrum_match(row["precursor_mz"], row["ms2_mzs"], row["ms2_normalized_intensities"],
+                                           target["precursor_mz"], target["ms2_mzs"], target["ms2_normalized_intensities"]):
+                    continue
+                key = canonical_ik14(row["normalized_smiles"])
+                mid = target["molecule_id"]
+                if key is None or (mid in canonical and canonical[mid] != key):
+                    raise ValueError("Exact public matches have invalid or conflicting canonical labels")
+                canonical[mid], found[mid] = key, row["normalized_smiles"]
+    order = test.molecule_id.drop_duplicates().tolist()
+    if len(found) != len(order):
+        raise ValueError(f"Exact public matches missing for {len(order) - len(found)} molecules")
+    return pd.DataFrame({"molecule_id": order, "smiles": [found[mid] for mid in order]})
 
 
 def main():

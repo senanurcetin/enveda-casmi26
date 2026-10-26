@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 OUTPUT = ROOT / "kaggle/audits/corrected-revalidation"
 KERNEL = "senanuretin/casmi26-corrected-models-and-negative-controls"
 SCRIPTS = ["build_structures.py", "build_store.py", "build_pool.py", "build_fingerprints.py",
@@ -15,6 +17,19 @@ DATASETS = ["senanuretin/casmi-coconut-b", "senanuretin/casmi-pubchemlite-b",
 
 
 def build():
+    # An executed public bundle is a historical experiment, not a moving copy
+    # of main. New experiments get a distinct notebook and source snapshot.
+    if (ROOT / "reports/revalidation_publication.json").exists():
+        from scripts.research_snapshot import snapshot_hashes
+        from scripts.check_kaggle_publications import source_hash
+        publication = json.loads((ROOT / "reports/revalidation_publication.json").read_text(encoding="utf-8"))
+        result = json.loads((ROOT / "reports/revalidation_study.json").read_text(encoding="utf-8"))
+        notebook = json.loads((OUTPUT / "notebook.ipynb").read_text(encoding="utf-8"))
+        if (source_hash(notebook) != publication["source_sha256"]
+                or snapshot_hashes(OUTPUT / "notebook.ipynb") != result["source_code_sha256"]):
+            raise ValueError("Executed historical source snapshot was altered")
+        print("Verified frozen executed revalidation bundle; new work requires a distinct study")
+        return
     import nbformat
     from nbformat.v4 import new_code_cell as C, new_markdown_cell as M, new_notebook
 

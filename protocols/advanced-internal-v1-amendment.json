@@ -1,0 +1,11 @@
+{
+  "id": "representation-cache-correction-v1",
+  "review_date_local": "2026-10-26",
+  "timezone": "Europe/Istanbul",
+  "reason": "Synthetic pyridone/hydroxypyridine representations share a standard InChI connectivity block but have different Morgan vectors. A first-representation-wins global generated cache can make features depend on query order.",
+  "change": "Generated cache IDs bind standard InChIKey14 plus SHA-256 of full canonical isomeric SMILES. Ambiguous reuse of legacy connectivity-only IDs fails closed. Metric-key deduplication is unchanged.",
+  "outcome_blind": true,
+  "prior_execution": "Kaggle version 1 superseded before inspecting any experimental score output",
+  "unchanged": ["partition salt and counts", "query eligibility and sampling", "fingerprint epochs and architecture", "ranker hyperparameters", "primary contrast", "secondary contrast family", "negative controls", "slice thresholds"],
+  "interpretation": "An implementation correction demonstrated on synthetic molecules, not tuning chosen after seeing held-out outcomes. No isolated score-improvement claim follows."
+}

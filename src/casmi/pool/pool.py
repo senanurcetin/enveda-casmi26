@@ -5,11 +5,25 @@ only from the drug-like enveda-180 library are unlikely answers for a natural-pr
 and so validation can knock out a structure from the pool (Class-3 simulation).
 """
 from dataclasses import dataclass
+import hashlib
 
 import numpy as np
 import pandas as pd
 
 SOURCE_BITS = {"train": 1, "enveda180_only": 2, "coconut": 4, "chebi": 8, "lipidmaps": 16, "pubchem": 32, "pubchem_lit": 64}
+
+
+def generated_candidate_identity(mol):
+    """Bind generated cache identity to full canonical representation, not InChI14 alone.
+
+    Standard InChI can merge tautomers whose representation-sensitive Morgan
+    fingerprints and fragments differ. Content IDs keep those caches independent;
+    official metric identity is still handled separately by MetricKeys.
+    """
+    from rdkit import Chem
+    smiles = Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+    standard = Chem.MolToInchiKey(mol)[:14]
+    return "G" + standard + ":" + hashlib.sha256(smiles.encode()).hexdigest(), smiles
 
 
 @dataclass
@@ -51,8 +65,9 @@ class CandidatePool:
     def register_generated(self, keys, smiles):
         """Atomically register chemically valid generated structures.
 
-        Generated candidate IDs are 'G' + standard InChIKey14, as produced
-        by BaselineEngine._generated. Invalid records cannot contribute
+        Active IDs bind standard InChIKey14 and canonical-SMILES SHA-256.
+        Legacy 'G'+InChIKey14 remains readable but ambiguous reuse is rejected.
+        Invalid records cannot contribute
         all-zero fingerprints or leave a half-written candidate overlay.
         """
         from rdkit import Chem
@@ -65,8 +80,6 @@ class CandidatePool:
         gen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=2048)
         staged = {}
         for i, (key, smi) in enumerate(zip(keys, smiles)):
-            if key in self.extra_smiles or key in staged:
-                continue
             if not isinstance(key, str) or not isinstance(smi, str):
                 raise ValueError(f"Malformed generated candidate at row {i}")
             try:
@@ -74,15 +87,22 @@ class CandidatePool:
                 if mol is None or mol.GetNumHeavyAtoms() == 0:
                     raise ValueError
                 expected = "G" + Chem.MolToInchiKey(mol)[:14]
-                if key != expected:
+                content_key, canonical_smiles = generated_candidate_identity(mol)
+                if key not in (expected, content_key):
                     raise ValueError
+                previous = self.extra_smiles.get(key, staged.get(key, (None, None))[0])
+                if previous is not None:
+                    prior = Chem.MolToSmiles(Chem.MolFromSmiles(previous), canonical=True, isomericSmiles=True)
+                    if prior != canonical_smiles:
+                        raise ValueError
+                    continue
                 bits = gen.GetFingerprintAsNumPy(mol).astype(np.uint8)
                 if bits.size != 2048 or not np.any(bits):
                     raise ValueError
             except (ValueError, TypeError, RuntimeError):
                 # Never log the source SMILES or derived molecular identity.
                 raise ValueError(f"Invalid generated candidate identity at row {i}") from None
-            staged[key] = (smi, np.packbits(bits))
+            staged[key] = (canonical_smiles, np.packbits(bits))
         for key, (smi, fp) in staged.items():
             self.extra_smiles[key] = smi
             self.extra_fp[key] = fp

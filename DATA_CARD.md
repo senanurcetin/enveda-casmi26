@@ -20,6 +20,12 @@ The [completed source rebuild and model study](reports/revalidation_review.md) i
 
 Library instrument, ionization mode, adduct, peak count and precursor-error distributions differ. V-in is a small, deliberately common natural-product set; it can conceal decoy costs and fail to represent unknown hidden-test novelty. Pool source composition itself can leak the simulation class into ranker features.
 
-## Rebuild policy
+## Fresh-study population and information boundaries
+
+The [executed internal benchmark](reports/advanced_review.md) selects one representative per generic Murcko/acyclic connectivity family: 600 training, 150 development and 250 test molecules, excluding historical V-in families. Selected metric identities and families do not cross supervised splits. This reuses existing source libraries; it is not newly acquired external data. The 250 test queries include 141 pluskal_ms2 and 56 GNPS molecules, so family balancing does not imply source balancing. Cells below 20 are suppressed in descriptive slices.
+
+Candidate/reference structures remain task-defined and can occur as negatives for other training queries. All query outcomes stay in denominators: C1/C2 pool truth coverage is 246/250; C3 truth coverage after generation is only 26/250. The fixed NP-score prior has unverified upstream training overlap. These boundaries prevent interpreting the result as universal unseen-chemistry performance. Only aggregates, hashes and version inventories are committed; private row details and weights remain scratch artifacts.
+
+## Reproduction and redistribution
 
 Keep all raw files and generated molecular artifacts outside Git. Record content hashes with `scripts/manifest_artifacts.py`, verify candidate fingerprint provenance, and publish new stores/pools into separate immutable destinations. Revalidation requires the same queries and exclusions across models, negative controls and untouched evaluation data. Cloud warehouses are optional; the public dashboard reads committed aggregates only.

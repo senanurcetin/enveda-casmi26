@@ -42,16 +42,18 @@ class Predictor:
         self.timings["d3"] += time.perf_counter() - t
         return f
 
-    def rank(self, spectra, top_n=25, *, excluded_rows=None, excluded_keys=None,
-             knocked_keys=frozenset()):
+    def features(self, spectra, *, excluded_rows=None, excluded_keys=None,
+                 knocked_keys=frozenset()):
         """Use the inference path with explicit research-only reference/pool knockouts.
 
         Defaults preserve ordinary inference. Validation also clears reference-count
         priors for withheld structures rather than leaking their original membership.
         """
+        started = time.perf_counter()
         f = self.engine.features([dict(s) for s in spectra], excluded_rows, excluded_keys)
+        self.timings["features"] += time.perf_counter() - started
         if f.empty:
-            return []
+            return f
         f = add_context(add_priors(f, self.pool, knocked_keys))
         if self.fp_models:
             f = self._d3(f, spectra)
@@ -67,6 +69,14 @@ class Predictor:
                     self.frag_x = FragmentScorer(self.pool.smiles_of, **D4X)
                 f = add_d4(f, self.frag_x, spectra, "d4x")
             self.timings["d4"] += time.perf_counter() - t
+        return f
+
+    def rank(self, spectra, top_n=25, *, excluded_rows=None, excluded_keys=None,
+             knocked_keys=frozenset()):
+        f = self.features(spectra, excluded_rows=excluded_rows, excluded_keys=excluded_keys,
+                          knocked_keys=knocked_keys)
+        if f.empty:
+            return []
         t = time.perf_counter()
         if self.ranker is not None:
             order = np.argsort(-self.ranker.predict(f), kind="stable")
