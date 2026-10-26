@@ -11,7 +11,7 @@ Rank up to 25 candidate molecular structures per unknown molecule from MS/MS spe
 | System | Components | Recorded public MRR@25 |
 |---|---|---:|
 | Own pipeline `ranker-v16-gen2` | ±10 ppm candidate retrieval, D1 library, D2 analog, D3 fingerprint, D4 fragments, generated candidates, LambdaRank | 0.309 |
-| External v4n base | Third-party fusion solution attributed in the handoff | 0.420 |
+| External v4n base | Third-party fusion solution attributed in the dated experiment log | 0.420 |
 | `casmi26-fusion-ours-d` | External base plus own list as a gated reciprocal-rank channel | 0.422 |
 
 These are historical author-reported public results recorded by 8 October 2026. The registry links them to [source logs](reports/research_evidence.json). No final private score, present rank, independent server attestation or statistical significance for +0.002 is asserted. No trained model is served by the dashboard.
@@ -24,7 +24,7 @@ Later audits corrected sampled-query C1 leakage, D2 eligibility ordering, identi
 
 Blank fragments lower v16 C2 MRR by 0.4972 and C3 by 0.2374, but improve simple-model C2 ranking. That counter-result shows that a negative control is not a universal pass/fail certification: residual similarity can rank decoys above mass-error ordering. Full paired intervals, intensity-shuffle controls and model contrasts are retained in the report. That retrospective study fitted no new weights; complete original training lineage is not independently attested.
 
-Current paired comparisons require matching query identities, spectra signatures and source manifests; D2 decision-grade comparisons also require verified fingerprint and fresh-index evidence. Simultaneous bands cover only the fixed class-mixture grid, not adaptive experiment selection. [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md).
+Current paired comparisons require matching query identities, spectra signatures and source manifests; D2 decision-grade comparisons also require verified fingerprint and fresh-index evidence. Simultaneous bands cover only the fixed class-mixture grid, not adaptive experiment selection. [Research assessment](docs/research-assessment.md).
 
 ## Fresh supervised weights and sealed internal families
 

@@ -104,7 +104,7 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
         <div class="statline"><span>Public example test spectra</span><strong id="public-test">1,213</strong></div>
         <div class="statline"><span>Public example molecules</span><strong id="public-molecules">400</strong></div>
         <div class="statline"><span>Public example instrument</span><strong>timsTOF</strong></div>
-        <div class="callout"><strong>Do not evaluate on the public example file</strong><p>The completed Kaggle audit scanned 2,539,608 training rows: all 1,213 public spectra match exact precursor, full m/z and intensity arrays, plus adduct/mode. Two coarse candidate pairs were rejected. This does not establish hidden-test contamination. <a href="../docs/PUBLIC_EXAMPLE_OVERLAP.md">Inspect executed evidence →</a></p></div>
+        <div class="callout"><strong>Do not evaluate on the public example file</strong><p>The completed Kaggle audit scanned 2,539,608 training rows: all 1,213 public spectra match exact precursor, full m/z and intensity arrays, plus adduct/mode. Two coarse candidate pairs were rejected. This does not establish hidden-test contamination. <a href="../docs/studies/public-example-overlap.md">Inspect executed evidence →</a></p></div>
       </article>
     </div>
   </section>
@@ -140,8 +140,8 @@ select:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(-
     <div class="evidence-note"><strong>Historical evidence ≠ current score.</strong> The 0.422 public MRR@25 is the recorded result from 8 October 2026. Repository integrity improvements since that date have not been measured on the hidden Kaggle evaluation set.</div>
     <div class="evidence-note"><strong>Retrospective model findings.</strong> Frozen v16 C1/C2/C3 MRR@25: 0.8324 / 0.6241 / 0.2374. Blank fragments reduce its C2 by 0.4972, yet improve simple-model C2 ranking: mass-error ordering can beat misleading residual similarities. Historical model selection and incomplete weight lineage prevent an untouched-holdout claim. <a href="../reports/revalidation_review.md">Inspect all models, paired intervals and adverse controls →</a></div>
     <div class="reference">
-      <a href="../docs/KAGGLE_ACCESS_AND_FP_PROVENANCE.md">Access and fingerprint protocol ↗</a>
-      <a href="../docs/D2_FRESH_INDEX_EVIDENCE.md">Fresh-index evidence ↗</a>
+      <a href="../docs/guides/data-integrity.md">Access and fingerprint protocol ↗</a>
+      <a href="../docs/guides/evaluation.md">Fresh-index evidence ↗</a>
       <a href="../scripts/audit_submission.py">Submission audit ↗</a>
       <a href="../kaggle/submission_driver.py">Notebook driver ↗</a>
       <a href="https://www.kaggle.com/competitions/enveda-CASMI26-molecule-id-mass-spectra/rules" target="_blank" rel="noopener noreferrer">Official rules ↗</a>

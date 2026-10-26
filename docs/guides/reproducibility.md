@@ -9,6 +9,7 @@ From the repository root, run `python -m http.server 8000`, then open `http://lo
 ```bash
 python -m pytest tests/*_stdlib.py -q
 python scripts/research_evidence.py
+python scripts/check_documentation_links.py
 ```
 
 Pytest loads `src` through `pytest.ini`; on shells without wildcard expansion use `python -m pytest -q` for the full suite. For a dependency-free run set `PYTHONPATH=src` in your shell, then run `python -m unittest discover -s tests -p '*_stdlib.py' -v`. Windows skips the symlink-containment case only when the OS denies link creation; Linux CI executes it.
@@ -17,7 +18,7 @@ The evidence command verifies local source links, allowed evidence states, score
 
 ## Scientific environment
 
-Use **Python 3.12** and [the hash-locked portable profile](../locks/research-py312.txt). `requirements.txt` enables hash verification and includes exact versions for direct and transitive dependencies, including Matplotlib for standalone scientific figures; the source pins are in `requirements-research.in`. The universal lock has 69 conditional entries, of which 50 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
+Use **Python 3.12** and [the hash-locked portable profile](../../locks/research-py312.txt). `requirements.txt` enables hash verification and includes exact versions for direct and transitive dependencies, including Matplotlib for standalone scientific figures; the source pins are in `requirements-research.in`. The universal lock has 69 conditional entries, of which 50 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
 
 This portable profile is distinct from Kaggle's execution image. Each executed notebook records its actual versions; the new fresh-training study additionally records installed package versions. A matching dependency profile is not a promise of bitwise-identical CUDA results across hardware. Synthetic-test success remains separate from dataset-backed experimental evidence.
 
@@ -39,22 +40,22 @@ Completed experiment bundles retain the source actually executed, embedded in th
 
 ## Fresh training and family holdout
 
-The [predeclared advanced protocol](ADVANCED_INTERNAL_STUDY.md) separates supervised query families before fitting any fresh weights. Build its distinct notebook with `python scripts/build_advanced_notebook.py` and authenticate a completed run with `python scripts/check_advanced_publication.py`. No archived models are attached. Execution status is established by the publication readback, not by the existence of these commands or the protocol.
+The [predeclared advanced protocol](../studies/fresh-training-family-holdout.md) separates supervised query families before fitting any fresh weights. Build its distinct notebook with `python scripts/build_advanced_notebook.py` and authenticate a completed run with `python scripts/check_advanced_publication.py`. No archived models are attached. Execution status is established by the publication readback, not by the existence of these commands or the protocol.
 
 ## Kaggle publications
 
-Run `python scripts/build_research_publications.py` to generate the two owned notebook publication bundles from the tracked notebook builders. [Publication operations](../kaggle/README.md) covers source hashes, remote status and readback. The source builders contain the editorial corrections and NEXUS chart defaults; generated notebook outputs are cleared before publication.
+Run `python scripts/build_research_publications.py` to generate the two owned notebook publication bundles from the tracked notebook builders. [Publication operations](../../kaggle/README.md) covers source hashes, remote status and readback. The source builders contain the editorial corrections and NEXUS chart defaults; generated notebook outputs are cleared before publication.
 
 ## Full model rebuild
 
-Use licensed competition files and the matching public structure releases, then follow [the original architecture](../ARCHITECTURE.md), [fingerprint provenance](KAGGLE_ACCESS_AND_FP_PROVENANCE.md), [snapshot inventory](INPUT_SNAPSHOT_MANIFEST.md) and [fresh-index protocol](D2_FRESH_INDEX_EVIDENCE.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py` and audit ranked candidates with `scripts/audit_submission.py` before any separately chosen competition submission.
+Use licensed competition files and the matching public structure releases, then follow the [architecture](../../ARCHITECTURE.md), [data integrity guide](data-integrity.md) and [evaluation contracts](evaluation.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py`; any separately chosen competition submission requires its own explicit scope and ranked-output audit.
 
 No competition submission is part of this update. Both **frozen-model retrospective evaluation and fresh supervised internal-family training have completed**. The explanatory publications and overlap audit use CPU; the model studies used free Kaggle GPU allocation with internet disabled. The static dashboard has zero infrastructure spend. Live BigQuery scans remain optional and unexecuted. Rebuild verified tables with `python scripts/build_advanced_report.py --tables-only`; omit the flag in the locked scientific environment to export standalone PNG/SVG/PDF figures. Plot files are checked visually as generated artifacts; no PC-screen interaction is required.
 
 ## Reproduce the completed model/control study
 
-See [the protocol](CORRECTED_MODEL_REVALIDATION.md) and [verified results](../reports/revalidation_review.md). Generate the scratch-only bundle with `python scripts/build_revalidation_notebook.py`; authenticate its completed public execution with `python scripts/check_revalidation_publication.py`; render the report with `python scripts/build_revalidation_report.py`. The study rebuilds inputs, quarantines conflicting/unusable candidates explicitly, retains all eligible query molecules and records data/model/code hashes and runtime versions. Its approximately 41-minute ranking/control phase is a recorded duration for that run, not a runtime guarantee. Source rebuild time is additional.
+See [the protocol](../studies/frozen-model-revalidation.md) and [verified results](../../reports/revalidation_review.md). Generate the scratch-only bundle with `python scripts/build_revalidation_notebook.py`; authenticate its completed public execution with `python scripts/check_revalidation_publication.py`; render the report with `python scripts/build_revalidation_report.py`. The study rebuilds inputs, quarantines conflicting/unusable candidates explicitly, retains all eligible query molecules and records data/model/code hashes and runtime versions. Its approximately 41-minute ranking/control phase is a recorded duration for that run, not a runtime guarantee. Source rebuild time is additional.
 
 ## Reproduce the executed public-example content audit
 
-Install PyArrow (tested with Kaggle 23.0.1 and local/CI 24.0.0), then run `scripts/audit_public_overlap.py` on already-authorized train/public inputs. It streams Arrow batches, exports only aggregates and hashes, and refuses to overwrite reports. Alternatively build the internet-disabled CPU bundle with `scripts/build_overlap_notebook.py`; its completed Kaggle readback is checked by `scripts/check_overlap_publication.py`. [Executed counts and methodology](PUBLIC_EXAMPLE_OVERLAP.md).
+Install PyArrow (tested with Kaggle 23.0.1 and local/CI 24.0.0), then run `scripts/audit_public_overlap.py` on already-authorized train/public inputs. It streams Arrow batches, exports only aggregates and hashes, and refuses to overwrite reports. Alternatively build the internet-disabled CPU bundle with `scripts/build_overlap_notebook.py`; its completed Kaggle readback is checked by `scripts/check_overlap_publication.py`. [Executed counts and methodology](../studies/public-example-overlap.md).

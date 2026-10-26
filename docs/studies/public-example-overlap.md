@@ -16,7 +16,7 @@
 | Rejected coarse-bucket pairs | 2 |
 | Source library of the exact matches | enveda-180 |
 
-The [Kaggle notebook](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit) completed with CPU execution and internet disabled. Its downloaded source matches the tracked bundle. [Aggregate result and complete input/source hashes](../reports/public_overlap_audit.json) · [Authenticated publication readback](../reports/public_overlap_publication.json).
+The [Kaggle notebook](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit) completed with CPU execution and internet disabled. Its downloaded source matches the tracked bundle. [Aggregate result and complete input/source hashes](../../reports/public_overlap_audit.json) · [Authenticated publication readback](../../reports/public_overlap_publication.json).
 
 Run timestamp: 23 October 2026, 22:03 UTC / **24 October 2026, 01:03 Europe/Istanbul**. The run used Python 3.13.15 and PyArrow 23.0.1 on Kaggle. Local Parquet regression tests use the installed PyArrow 24.0.0; the executed environment is recorded separately, not inferred from the local environment.
 

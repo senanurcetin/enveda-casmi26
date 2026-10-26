@@ -1,23 +1,31 @@
-# CASMI26 research documentation
+# Documentation
 
-This is an English-first, noncommercial data science portfolio by Senanur Cetin under the NEXUS personal brand. The competition experiment campaign stopped on 8 October 2026. Subsequent work includes completed source audits and frozen-model retrospective controls, with authenticated Kaggle readbacks. These establish selected-population diagnostics, not new competition scores or untouched-holdout generalization.
+CASMI26 is a noncommercial molecular-identification research project by Senanur Cetin under the NEXUS identity. Documentation describes the current implementation and distinguishes historical competition results, completed internal experiments and unresolved external-validation questions.
 
-| Review question | Start here |
+| Purpose | Document |
 |---|---|
-| What problem was solved, and what was learned? | [Research overview](../README.md) |
-| Which model earned which score? | [Model card](../MODEL_CARD.md) |
-| What data and identity rules apply? | [Data card](../DATA_CARD.md) |
-| How do I reproduce the checks? | [Reproducibility](REPRODUCIBILITY.md) |
-| What is implemented versus measured? | [Evidence registry](../reports/research_evidence.json) |
-| What happened in each experiment? | [Original experiment log](../EXPERIMENTS.md) |
-| How is inference assembled? | [Original architecture](../ARCHITECTURE.md) |
-| What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
-| Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
-| What did corrected models and negative controls measure? | [Executed results](../reports/revalidation_review.md), [study protocol](CORRECTED_MODEL_REVALIDATION.md) |
-| What did fresh training on separated chemical families establish? | [Sealed internal benchmark](../reports/advanced_review.md), [predeclared protocol and limits](ADVANCED_INTERNAL_STUDY.md) |
-| Is C3 limited by missing candidates or their ordering? | [Candidate-coverage and ranking loss accounting](../reports/candidate_loss_review.md) |
-| How are Kaggle publications maintained? | [Kaggle guide](../kaggle/README.md) |
-| What was actually checked in this update? | [Verification record](VERIFICATION.md) |
-| Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |
+| Research question, principal results and repository layout | [Project overview](../README.md) |
+| Components, data flow and implementation boundaries | [Architecture](../ARCHITECTURE.md) |
+| Setup, checks and report regeneration | [Reproducibility](guides/reproducibility.md) |
+| Source reconciliation, spectrum stores and fingerprint provenance | [Data integrity](guides/data-integrity.md) |
+| Knockouts, controls, pairing, uncertainty and coverage | [Evaluation methodology](guides/evaluation.md) |
+| Approved logo, palette and attribution | [NEXUS identity](guides/brand-identity.md) |
+| Model attribution and intended use | [Model card](../MODEL_CARD.md) |
+| Dataset access, information boundaries and licensing | [Data card](../DATA_CARD.md) |
+| Present scientific strengths and remaining limitations | [Research assessment](research-assessment.md) |
+| Executed checks and their scope | [Verification](verification.md) |
 
-The original architecture is a dated design record; legacy handoff notes are retained in Git history rather than published as active guidance. Current interpretation in the cards and evidence registry takes precedence over their unqualified historical assertions. In particular, standard or tautomer-canonical InChIKey grouping is not a Bemis–Murcko scaffold split; coarse spectrum matches are not exact-content verification.
+## Completed studies
+
+| Study | Method | Results |
+|---|---|---|
+| Exact public-example overlap | [Full-content audit](studies/public-example-overlap.md) | [Aggregate evidence](../reports/public_overlap_audit.json) |
+| Frozen-model retrospective controls | [Design and source policy](studies/frozen-model-revalidation.md) | [Results and intervals](../reports/revalidation_review.md) |
+| Fresh training on separated query families | [Predeclared design](studies/fresh-training-family-holdout.md) | [Results, ablations and slices](../reports/advanced_review.md) |
+| Candidate versus ranking loss | Post hoc accounting on the frozen internal study | [Coverage diagnosis](../reports/candidate_loss_review.md) |
+
+## Source and maintenance policy
+
+[EXPERIMENTS.md](../EXPERIMENTS.md) is the original dated experiment log. Historical entries are evidence records, not current execution instructions. The [evidence registry](../reports/research_evidence.json) links claims to source files; its [generated review](../reports/research_review.md) records their integrity hashes. [Kaggle publication operations](../kaggle/README.md), [script entry points](../scripts/README.md) and [report ownership](../reports/README.md) describe the executable artifacts.
+
+Earlier overlapping audit notes and maintenance diaries were consolidated into these guides. Their original text remains recoverable in Git history. Completed notebook source snapshots, protocol files and experimental JSON remain intact.
