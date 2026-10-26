@@ -8,7 +8,7 @@
 
 [![Research checks](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml/badge.svg)](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml)
 
-**Research review: 25 October 2026.** The competition experiment campaign stopped on 8 October. A corrected-protocol retrospective study has now completed on all 250 designated V-in molecules with frozen original weights, rebuilt inputs and paired negative controls. Historical leaderboard scores remain separate. No new competition submission or final private score is claimed.
+**Research review: 26 October 2026.** A predeclared fresh-training study has completed with 600 training, 150 development and 250 sealed test query families. It supplements the completed frozen-model retrospective study. Historical leaderboard scores remain separate; neither study is a competition submission or external laboratory validation.
 
 ## The research question
 
@@ -93,9 +93,22 @@ Local source-rendered desktop capture; [verification scope](docs/VERIFICATION.md
 
 The learned model trades lower C1 performance for higher C2/C3 performance in this selected population. Blank fragments reduce its C2 MRR by 0.4972 and C3 by 0.2374. Conversely, blank spectra **improve the simple models' C2 results**: mass-error tie-breaking can outperform their misleading residual similarities after truth-reference exclusion. The controls do not validate every scoring channel. [Paired confidence intervals and limits](reports/revalidation_review.md).
 
+## Fresh training and sealed internal families — completed 26 October
+
+5. [Fresh Training Family Holdout](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout): **COMPLETE**, authenticated against the exact executed source, raw inputs and aggregate artifact. Two fingerprint networks and eight three-seed rankers were fitted from scratch; all 26 learned artifacts were sealed before final-test feature generation. Selected query families and metric identities do not cross supervised partitions.
+
+| New internal test MRR@25 | C1 | C2 | C3 |
+|---|---:|---:|---:|
+| D1+D2 | 0.4608 | 0.2066 | 0.0000 |
+| Fresh full ranker | 0.8665 | 0.8388 | 0.0373 |
+
+The single predeclared primary C2 difference is **+0.6322, paired 95% CI [+0.5816, +0.6829]**. Joint intervals over 27 secondary contrasts support C2 contributions from D1, D2, D4 and generator features; the D3 and NP-score intervals include zero. C3 truth coverage after generation is only **26/250**, limiting discovery. Blank fragments reduce full-model C2 by 0.5119; intensity shuffling reduces it by 0.0936. [Complete results, slices and figures](reports/advanced_review.md) · [Protocol and limits](docs/ADVANCED_INTERNAL_STUDY.md).
+
+![NEXUS fresh-training research results](docs/assets/advanced-internal-study.png)
+
 ## Limitations that affect interpretation
 
-V-in (250 natural-product structures) and V-real (600 harder library structures) do not establish hidden-test representativeness. Historical fusion-weight ordering did not transfer consistently. The completed corrected-protocol study evaluates frozen models retrospectively; it does not isolate the causal effect of each fix, undo historical model selection or independently attest the weights' full training lineage. A newly trained, untouched external/scaffold holdout remains a separate research requirement. Tautomer identity grouping is not scaffold independence. The [executed exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
+V-in and V-real do not establish hidden-test representativeness. The fresh study establishes supervised query-family separation on internal sources; candidate structures may occur as training negatives and the task-defined retrieval corpus remains available. The fixed RDKit NP-score is an external chemical prior. Newly acquired external spectra and independent laboratory replication remain unmeasured. Its population, architecture and training differ from historical v16, so comparing their raw scores does not isolate improvement. The frozen retrospective study retains its executed legacy generated-cache behavior; the new representation-specific cache fix does not retroactively change its results. The [exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
 
 [Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) · [Evidence and pending work](reports/research_review.md) · [Archived maintenance notes](docs/MAINTENANCE_HISTORY.md).
 

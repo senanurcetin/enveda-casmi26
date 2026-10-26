@@ -73,6 +73,8 @@ def validate_result(result, root=ROOT):
             raise ValueError("Fresh fingerprint fitting lineage differs")
         if any(not math.isfinite(value) or value < 0 for value in lineage["training_bce_by_epoch"]):
             raise ValueError("Invalid fingerprint training loss history")
+    if sum(lineage["n_structures"] for lineage in seal["fingerprint_training"]) != protocol["split_counts"]["train"]:
+        raise ValueError("Fingerprint cross-fitting omitted declared training identities")
     for name, training in seal["models"].items():
         if training["model_sha256"] != [files[f"advanced_{name}_{i}.txt"] for i in range(3)]:
             raise ValueError("Ranker weights differ from their sealed identities")
@@ -95,19 +97,49 @@ def validate_result(result, root=ROOT):
                 for field in ("mrr", "ci_low", "ci_high", "top1", "top10", "recall_at_25"):
                     if type(values[field]) not in (int, float) or not math.isfinite(values[field]) or not 0 <= values[field] <= 1:
                         raise ValueError("Invalid test metric")
-                if not values["top1"] <= values["top10"] <= values["recall_at_25"] or values["ci_low"] > values["ci_high"]:
+                if (not values["top1"] <= values["top10"] <= values["recall_at_25"]
+                        or not values["top1"] <= values["mrr"] <= values["recall_at_25"]
+                        or values["ci_low"] > values["ci_high"]):
                     raise ValueError("Impossible rank summary")
     delta = result["models"]["full"]["none"]["C2"]["mrr"] - result["models"]["d1_d2"]["none"]["C2"]["mrr"]
     if not math.isclose(delta, result["primary"]["delta_mrr"], abs_tol=1e-12):
         raise ValueError("Primary contrast contradicts absolute model summaries")
+    if (result["primary"]["contrast"] != protocol["primary"]
+            or not -1 <= result["primary"]["ci_low"] <= result["primary"]["ci_high"] <= 1):
+        raise ValueError("Invalid primary contrast or paired uncertainty")
     joint = result["secondary_joint_intervals"]
     if joint["family_size"] != 27 or len(joint["outcomes"]) != 27 or joint["n_molecules"] != count or joint["n_bootstrap"] != protocol["bootstrap_draws"]:
         raise ValueError("Secondary joint comparison family changed")
+    comparisons = {}
+    for name in protocol["ablations"]:
+        if name != "full":
+            for cls in ("C1", "C2", "C3"):
+                comparisons[f"{name}_minus_full:{cls}"] = (result["models"][name]["none"][cls]["mrr"]
+                    - result["models"]["full"]["none"][cls]["mrr"])
+    for mode in protocol["controls"][1:]:
+        for cls in ("C1", "C2", "C3"):
+            comparisons[f"full_{mode}_minus_none:{cls}"] = (result["models"]["full"][mode][cls]["mrr"]
+                - result["models"]["full"]["none"][cls]["mrr"])
+    radius = joint["joint_radius"]
+    if set(joint["outcomes"]) != set(comparisons) or not math.isfinite(radius) or radius < 0:
+        raise ValueError("Secondary joint comparison identities or radius changed")
+    for name, effect in comparisons.items():
+        values = joint["outcomes"][name]
+        if any(not math.isclose(values[field], expected, abs_tol=1e-12) for field, expected in
+               (("delta_mrr", effect), ("ci_low", effect - radius), ("ci_high", effect + radius))):
+            raise ValueError("Secondary contrast contradicts absolute metrics or joint radius")
+    if set(result["candidate_coverage"]) != {"C1", "C2", "C3"}:
+        raise ValueError("Incomplete candidate coverage classes")
     for cls, coverage in result["candidate_coverage"].items():
         if not 0 <= coverage["pool_truth_present"] <= coverage["with_generation_truth_present"] <= count:
             raise ValueError("Impossible candidate coverage accounting")
     if result["candidate_coverage"]["C3"]["pool_truth_present"] != 0:
         raise ValueError("Truth remained in original C3 candidate pool")
+    for cls, coverage in result["candidate_coverage"].items():
+        for name in result["models"]:
+            ceiling = coverage["pool_truth_present"] if name in ("mass_only", "d1", "d1_d2") else coverage["with_generation_truth_present"]
+            if result["models"][name]["none"][cls]["recall_at_25"] > ceiling / count + 1e-12:
+                raise ValueError("Observed ranking recall exceeds measured candidate coverage")
     for blocks in result["error_slices"].values():
         if sum(block["n"] for block in blocks.values()) != count:
             raise ValueError("Error slice denominator differs")
@@ -121,6 +153,13 @@ def validate_result(result, root=ROOT):
     if (len(entries) != len(required) or {entry["path"] for entry in entries} != required
             or manifest["files_digest_sha256"] != _canonical_files_digest(entries)):
         raise ValueError("Static input inventory is incomplete or altered")
+    raw = result["raw_inputs"]
+    if set(raw) != {"train.parquet", "coconut.csv", "pubchemlite.csv"}:
+        raise ValueError("Incomplete raw input inventory")
+    for entry in list(raw.values()) + entries:
+        if (type(entry.get("bytes")) is not int or entry["bytes"] <= 0
+                or not re.fullmatch(r"[0-9a-f]{64}", entry.get("sha256", ""))):
+            raise ValueError("Invalid input byte/hash provenance")
     if result["fingerprint_provenance"]["status"] != "POOL_FINGERPRINTS_VERIFIED" or result["analog_index_provenance"]["cache_used"] is not False:
         raise ValueError("Unverified fingerprints or stale reference index")
     execution = result["execution"]
@@ -129,6 +168,9 @@ def validate_result(result, root=ROOT):
             or execution["internet_enabled"] is not False or execution["submitted_predictions"] is not False
             or execution["protocol_preregistered_commit"] != "4f8ed74"):
         raise ValueError("Unexpected data, model attachment or submission execution")
+    amendment = (root / "protocols/advanced-internal-v1-amendment.json").read_text(encoding="utf-8")
+    if execution.get("source_amendment_sha256") != hashlib.sha256(amendment.encode()).hexdigest():
+        raise ValueError("Representation-cache methodological amendment is not bound to execution")
     def reject_private(value):
         if isinstance(value, dict):
             if set(value) & {"qid", "query_ids", "test_ids", "smiles", "normalized_smiles", "ranks", "spectrum_rows", "selected_rows"}:

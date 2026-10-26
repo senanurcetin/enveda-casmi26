@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-25T22:52:06.621928+00:00",
+  "checked_at": "2026-10-26T09:29:46.340306+00:00",
   "attempts": [
     {
       "version": 1,
@@ -9,6 +9,15 @@
       "experimental_scores_inspected": false,
       "reason": "Representation-sensitive generated features were cached by connectivity-only identity; synthetic counterexample demonstrated order dependence.",
       "amendment": "protocols/advanced-internal-v1-amendment.json"
+    },
+    {
+      "version": 2,
+      "source_sha256": "934b4860d1bc1257178fc44e60181941e83d5e57762435e193630f06ca15651d",
+      "last_observed_status": "COMPLETE",
+      "scientific_status": "AUTHENTICATED_COMPLETED_INTERNAL_STUDY",
+      "experimental_scores_inspected": true,
+      "aggregate_artifact_sha256": "9f6ebf28dccf433dc4a8077f907535d11d775ac5e4700ca0760fc9b18f2c8ee9",
+      "publication_record": "reports/advanced_publication.json"
     }
   ]
 }

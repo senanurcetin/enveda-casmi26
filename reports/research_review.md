@@ -1,8 +1,8 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-25. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-26. Score snapshot: 2026-10-08.
 
-Noncommercial research: historical competition scores, executed data audits and retrospective frozen-model/control evidence; no new competition submission or untouched-holdout accuracy claim.
+Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation.
 
 These are source-file integrity hashes, not external verification of the claims.
 
@@ -32,7 +32,7 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `53e1e17ddc5e81b8460db48ee9f5c38283923aaa75b7b23c7e03395200519ce2`.
+Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `2fdd5f8703baf2a24011fc4e6ee0b1ca6be4d8b35d2d9f2f09f46bf9d8e6e589`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -66,6 +66,24 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 ## Untouched external holdout — pending
 
-The executed study is retrospective. Fresh training with independently attested lineage and an untouched external/scaffold holdout remains a separate research requirement; no such generalization claim is made.
+Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `5e4039b4ba2868693f116129e36ed7182c96dfa764e1b4f51de64cff4aee44ba`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `ba96d6152c7c98ce59cbdca770f91ab64eb6ba18ee18847ed844f22b0ae0b161`.
+
+## Fresh training and sealed internal query families — measured
+
+Completed source-matched Kaggle run: 600/150/250 training/development/test queries, two fresh fingerprint models and eight three-seed rankers, all 26 learned artifacts sealed before test features. Full C1/C2/C3 MRR 0.8665/0.8388/0.0373; primary C2 delta +0.6322 [0.5816, 0.6829]. Internal supervised query-family separation, not external validation.
+
+Source: [reports/advanced_study.json](../reports/advanced_study.json). SHA-256 (UTF-8 / LF): `9f6ebf28dccf433dc4a8077f907535d11d775ac5e4700ca0760fc9b18f2c8ee9`.
+
+## Refitted ablations and joint secondary controls — measured
+
+27 prespecified contrasts share paired joint intervals. C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 deltas -0.5119/-0.0936. C3 truth coverage only 26/250.
+
+Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UTF-8 / LF): `d229b13eb1b274b4222bdf067e56ca48a565aeece693b20803dafaea8e005fa4`.
+
+## Hash-locked and installed scientific environment — implemented
+
+Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
+
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `7125e1f5b10d3129e56106300930aeda2cc4ca12272aad0aaac3cf5dc3c779a8`.

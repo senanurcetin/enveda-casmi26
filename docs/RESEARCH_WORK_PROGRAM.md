@@ -19,7 +19,13 @@ v16 C1/C2/C3 MRR is 0.8324/0.6241/0.2374. Blank fragments markedly reduce v16 pe
 
 The current implementation and retrospective execution gates are complete. Independently attested new training, untouched external/scaffold validation, broader source/error slices and optional live BigQuery reconciliation are separate research extensions. Historical progress notes below retain their original dates and are superseded by this completed-run evidence where applicable.
 
-## Prioritization and schedule
+## Completed advanced internal study — 26 October 2026
+
+The [fresh-training study](../reports/advanced_review.md) completed and passed authenticated publication readback. It adds 600/150/250 family-separated supervised queries, cross-fitted new D3 networks, eight refitted three-seed rankers, a pre-test 26-artifact seal, 27 jointly assessed secondary contrasts, candidate-coverage ceilings and six descriptive slice dimensions. C2 full-minus-D1+D2 is +0.6322 [paired 95% CI +0.5816, +0.6829]; C3 remains weak at 0.0373 with 26/250 candidate coverage. D3 and NP-score incremental effects remain unresolved. An outcome-blind representation-cache amendment and superseded first attempt are retained in the execution history.
+
+Future work requires a separately declared experiment: external acquired spectra/laboratory replication, improved C3 candidate recall and larger cross-instrument samples. The current test must not become a tuning set. New scientific work is optional follow-on research, not a missing deployment phase; no commercial or hosted system is planned.
+
+## Historical prioritization and schedule
 
 | Period | Priority | Work package | Acceptance criteria | Status on 2026-10-18 |
 | --- | --- | --- | --- | --- |

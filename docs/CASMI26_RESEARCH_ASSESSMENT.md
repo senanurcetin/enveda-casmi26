@@ -6,6 +6,8 @@ Assessment date: **2026-10-18**. This review concerns the existing **non-commerc
 
 ## Scope and evidence
 
+**Advanced evidence update — 26 October 2026:** a [predeclared fresh-training internal benchmark](../reports/advanced_review.md) now closes the new supervised-training lineage, internal chemical-family split, refitted channel ablation and descriptive error-slice gaps. It fits two fingerprint transformers and eight three-seed rankers on 600 training / 150 development queries, seals their weights before test features and retains all 250 test molecules. C2 full-minus-D1+D2 is +0.6322 [paired 95% CI +0.5816, +0.6829]. All 27 secondary comparisons and adverse outcomes are published: C3 MRR is only 0.0373 with 26/250 truth coverage, and D3/NP-score incremental benefits remain unresolved after joint uncertainty. Query-family separation does not remove shared candidate/reference knowledge. External spectra, laboratory replication and live warehouse reconciliation remain absent. The project now supports an advanced, auditable research portfolio assessment; it does not establish state-of-the-art performance or deployment readiness. Historical findings below retain their dates.
+
 Inspected: `README.md`, `EXPERIMENTS.md`, the then-current historical handoff (retained in Git history), C1/C2/C3 knockout logic, query sampling, rank-data construction, analog/library indices, the paired-bootstrap comparator and repository CI. The latest archived leaderboard figures are from **2026-10-08**, not new independent model evaluations. No new Kaggle training/leaderboard result or live BigQuery verification was performed in this review.
 
 | Research criterion | Assessment | Evidence |

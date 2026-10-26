@@ -1,6 +1,6 @@
 # Fresh training and internal chemical-family holdout
 
-Status: protocol registered before execution in commit `4f8ed74`. Runtime completion and results must be verified separately; implementation is not experimental evidence.
+Status: **COMPLETE**, with source/status/input/artifact readback authenticated on 26 October 2026. Protocol registered before execution in commit `4f8ed74`. [Full results and figures](../reports/advanced_review.md) · [Aggregate evidence](../reports/advanced_study.json) · [Publication verification](../reports/advanced_publication.json).
 
 The [fixed protocol](../protocols/advanced-internal-v1.json) declares 600 training, 150 development and 250 final-test molecules. Generic Murcko ring topology, generic acyclic connectivity and metric identity prevent supervised query identities/families crossing partitions. Historical V-in families are excluded. One representative per family defines a family-balanced internal research population, not prevalence-weighted real-world accuracy.
 
@@ -15,3 +15,7 @@ Partition disjointness concerns supervised fitting. The retrieval corpus remains
 The distinct [owned notebook](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout) rebuilds source artifacts in scratch storage, attaches no pretrained-model dataset, and uses existing free Kaggle GPU execution with internet disabled. Only aggregates, hashes, training lineage and exact package versions may be exported. No raw molecular records, per-query ranks, weights, commercial infrastructure or competition submissions are part of this study.
 
 Historical [retrospective v16 evidence](../reports/revalidation_review.md) is preserved against the actual source embedded in its executed notebook. Current implementation changes do not rewrite that experiment or retroactively attribute new code to its results.
+
+The [outcome-blind implementation amendment](../protocols/advanced-internal-v1-amendment.json) records a synthetic counterexample: tautomers can share standard InChI14 but have different representation-sensitive fingerprints. Active generated IDs now bind canonical isomeric SMILES by SHA-256, making fingerprint/fragment/NP-score caches representation-specific. Ambiguous legacy key reuse fails closed. Version 1 was superseded before inspecting any experimental scores; protocol populations, model settings, contrasts and stopping rules are unchanged. The attempt history is retained in `reports/advanced_execution_history.json`.
+
+Freshness applies to the learned fingerprint and ranking parameters. The fixed RDKit NP-score is an external chemical prior; its training-structure overlap is not independently attested. Candidate structures may occur as negatives in other training query lists, and the reference corpus remains task-defined. The claim is held-out query-family fitting, not total absence of evaluation chemistry from all feature dictionaries and candidate sources.

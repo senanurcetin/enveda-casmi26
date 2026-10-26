@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-25",
-  "scope": "Noncommercial research: historical competition scores, executed data audits and retrospective frozen-model/control evidence; no new competition submission or untouched-holdout accuracy claim",
+  "reviewed_on": "2026-10-26",
+  "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
   "experiments": [
@@ -116,8 +116,29 @@
       "id": "external-holdout",
       "title": "Untouched external holdout",
       "state": "pending",
-      "detail": "The executed study is retrospective. Fresh training with independently attested lineage and an untouched external/scaffold holdout remains a separate research requirement; no such generalization claim is made.",
+      "detail": "Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.",
       "source": "MODEL_CARD.md"
+    },
+    {
+      "id": "fresh-family-study",
+      "title": "Fresh training and sealed internal query families",
+      "state": "measured",
+      "detail": "Completed source-matched Kaggle run: 600/150/250 training/development/test queries, two fresh fingerprint models and eight three-seed rankers, all 26 learned artifacts sealed before test features. Full C1/C2/C3 MRR 0.8665/0.8388/0.0373; primary C2 delta +0.6322 [0.5816, 0.6829]. Internal supervised query-family separation, not external validation.",
+      "source": "reports/advanced_study.json"
+    },
+    {
+      "id": "fresh-ablations",
+      "title": "Refitted ablations and joint secondary controls",
+      "state": "measured",
+      "detail": "27 prespecified contrasts share paired joint intervals. C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 deltas -0.5119/-0.0936. C3 truth coverage only 26/250.",
+      "source": "reports/advanced_review.md"
+    },
+    {
+      "id": "locked-environment",
+      "title": "Hash-locked and installed scientific environment",
+      "state": "implemented",
+      "detail": "Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.",
+      "source": "reports/research_environment_validation.json"
     }
   ]
 }

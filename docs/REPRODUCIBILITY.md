@@ -17,7 +17,7 @@ The evidence command verifies local source links, allowed evidence states, score
 
 ## Scientific environment
 
-Use **Python 3.12** and [the hash-locked portable profile](../locks/research-py312.txt). `requirements.txt` now enables hash verification and includes exact versions for direct and transitive dependencies; the source pins are in `requirements-research.in`. The universal lock has 63 conditional entries, of which 44 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
+Use **Python 3.12** and [the hash-locked portable profile](../locks/research-py312.txt). `requirements.txt` enables hash verification and includes exact versions for direct and transitive dependencies, including Matplotlib for standalone scientific figures; the source pins are in `requirements-research.in`. The universal lock has 69 conditional entries, of which 50 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
 
 This portable profile is distinct from Kaggle's execution image. Each executed notebook records its actual versions; the new fresh-training study additionally records installed package versions. A matching dependency profile is not a promise of bitwise-identical CUDA results across hardware. Synthetic-test success remains separate from dataset-backed experimental evidence.
 
@@ -45,7 +45,7 @@ Run `python scripts/build_research_publications.py` to generate the two owned no
 
 Use licensed competition files and the matching public structure releases, then follow [the original architecture](../ARCHITECTURE.md), [fingerprint provenance](KAGGLE_ACCESS_AND_FP_PROVENANCE.md), [snapshot inventory](INPUT_SNAPSHOT_MANIFEST.md) and [fresh-index protocol](D2_FRESH_INDEX_EVIDENCE.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py` and audit ranked candidates with `scripts/audit_submission.py` before any separately chosen competition submission.
 
-No new competition submission is part of this portfolio maintenance. New training remains outside this update; corrected-protocol **frozen-model retrospective evaluation has completed**. The two explanatory publications and overlap audit use CPU; the separate model study used the free Kaggle GPU allocation with internet disabled. The static dashboard has zero infrastructure spend. Optional BigQuery scans and GPU retraining are not part of the default workflow.
+No competition submission is part of this update. Both **frozen-model retrospective evaluation and fresh supervised internal-family training have completed**. The explanatory publications and overlap audit use CPU; the model studies used free Kaggle GPU allocation with internet disabled. The static dashboard has zero infrastructure spend. Live BigQuery scans remain optional and unexecuted. Rebuild verified tables with `python scripts/build_advanced_report.py --tables-only`; omit the flag in the locked scientific environment to export standalone PNG/SVG/PDF figures. Plot files are checked visually as generated artifacts; no PC-screen interaction is required.
 
 ## Reproduce the completed model/control study
 

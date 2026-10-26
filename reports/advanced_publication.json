@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-26T09:29:46.340306+00:00",
+  "id": "senanuretin/casmi26-fresh-training-family-holdout",
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout",
+  "latest_run_status": "COMPLETE",
+  "public": true,
+  "source_matches": true,
+  "source_sha256": "934b4860d1bc1257178fc44e60181941e83d5e57762435e193630f06ca15651d",
+  "aggregate_artifact_sha256": "9f6ebf28dccf433dc4a8077f907535d11d775ac5e4700ca0760fc9b18f2c8ee9",
+  "status": "pass",
+  "scope": "Fresh supervised weights and sealed internal chemical-family holdout; not external validation or competition scoring"
+}

@@ -14,6 +14,7 @@ This is an English-first, noncommercial data science portfolio by Senanur Cetin 
 | What remains scientifically unresolved? | [Research assessment](CASMI26_RESEARCH_ASSESSMENT.md), [work program](RESEARCH_WORK_PROGRAM.md) |
 | Was public-example overlap actually verified? | [Executed full-content audit](PUBLIC_EXAMPLE_OVERLAP.md) |
 | What did corrected models and negative controls measure? | [Executed results](../reports/revalidation_review.md), [study protocol](CORRECTED_MODEL_REVALIDATION.md) |
+| What did fresh training on separated chemical families establish? | [Sealed internal benchmark](../reports/advanced_review.md), [predeclared protocol and limits](ADVANCED_INTERNAL_STUDY.md) |
 | How are Kaggle publications maintained? | [Kaggle guide](../kaggle/README.md) |
 | What was actually checked in this update? | [Verification record](VERIFICATION.md) |
 | Where did the visual identity come from? | [Brand identity](BRAND_IDENTITY.md) |
