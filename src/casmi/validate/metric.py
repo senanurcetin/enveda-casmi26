@@ -13,6 +13,7 @@ import pandas as pd
 from casmi.chem.canon import canonical_ik14, heavy_atom_key
 from casmi.validate.paired_bootstrap import paired_difference
 from casmi.validate.ranked_slots import split_ranked_guesses
+from casmi.validate.rank_inputs import validated_ranks, validated_bootstrap
 
 MAX_RANK = 25
 
@@ -81,7 +82,8 @@ class Summary:
 
 def summarize(ranks, n_boot=2000, seed=0) -> Summary:
     """MRR with a molecule-level bootstrap 95% CI, from 1-based ranks (0 = not in top 25)."""
-    ranks = np.asarray(ranks)
+    ranks = validated_ranks(ranks)
+    validated_bootstrap(n_boot, seed)
     rr = np.where(ranks > 0, 1.0 / np.maximum(ranks, 1), 0.0)
     rng = np.random.default_rng(seed)
     boots = rr[rng.integers(0, len(rr), size=(n_boot, len(rr)))].mean(axis=1)

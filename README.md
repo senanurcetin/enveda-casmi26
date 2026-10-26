@@ -106,6 +106,8 @@ The single predeclared primary C2 difference is **+0.6322, paired 95% CI [+0.581
 
 ![NEXUS fresh-training research results](docs/assets/advanced-internal-study.png)
 
+[C3 loss accounting](reports/candidate_loss_review.md): 224/250 truths are absent from candidates; 24/26 covered truths reach the top 25 and 6 rank first. Even perfect ordering of the same lists could reach only 0.1040 MRR. This post hoc decomposition preserves the full denominator and does not select a new model.
+
 ## Limitations that affect interpretation
 
 V-in and V-real do not establish hidden-test representativeness. The fresh study establishes supervised query-family separation on internal sources; candidate structures may occur as training negatives and the task-defined retrieval corpus remains available. The fixed RDKit NP-score is an external chemical prior. Newly acquired external spectra and independent laboratory replication remain unmeasured. Its population, architecture and training differ from historical v16, so comparing their raw scores does not isolate improvement. The frozen retrospective study retains its executed legacy generated-cache behavior; the new representation-specific cache fix does not retroactively change its results. The [exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.

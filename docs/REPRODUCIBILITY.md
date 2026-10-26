@@ -29,6 +29,10 @@ python -m pytest -q
 
 Create and activate an isolated Python 3.12 virtual environment before these commands. To regenerate the lock deliberately: `uv pip compile requirements-research.in --python-version 3.12 --universal --generate-hashes --output-file locks/research-py312.txt`. Revalidate the resulting environment before replacing the attestation. Do not install the portable profile over an active Kaggle image merely to reproduce a historical notebook.
 
+## Numerical rank and coverage contracts
+
+Current numerical summaries and paired comparisons require nonempty integer rank arrays in 0–25 (`0` is a miss); out-of-range, floating, nonfinite and malformed inputs fail closed. This hardening does not rewrite completed experiment snapshots. `python scripts/build_coverage_report.py --tables-only` deterministically reconstructs aggregate-only candidate/ranking loss accounting after checking source/artifact hashes. Omit the flag in the locked environment to regenerate its PNG/SVG/PDF figures. Conditional coverage metrics preserve their explicit subset denominator and carry no reconstructed uncertainty claim.
+
 ## Historical source snapshots
 
 Completed experiment bundles retain the source actually executed, embedded in their notebooks. `research_snapshot.py` parses that source inventory as literal data, without executing notebook code. Evidence validation binds results to the embedded snapshot and authenticated notebook hash rather than incorrectly requiring today's main branch to equal historical code. New experiments use distinct bundles and publication records; the completed v16 study is not rebuilt or relabeled when current code advances.

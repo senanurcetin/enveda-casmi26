@@ -6,6 +6,7 @@ experiment comparisons need only NumPy, not the entire inference stack.
 from __future__ import annotations
 
 import numpy as np
+from casmi.validate.rank_inputs import validated_ranks, validated_bootstrap
 
 
 def paired_difference(ranks_a, ranks_b, n_boot=4000, seed=0):
@@ -14,11 +15,10 @@ def paired_difference(ranks_a, ranks_b, n_boot=4000, seed=0):
     Input sequences MUST already have been aligned on verified query IDs and
     spectra. This routine does not infer or validate pairing.
     """
-    a, b = np.asarray(ranks_a), np.asarray(ranks_b)
-    if a.ndim != 1 or b.ndim != 1 or len(a) == 0 or a.shape != b.shape:
+    a, b = validated_ranks(ranks_a), validated_ranks(ranks_b)
+    if a.shape != b.shape:
         raise ValueError("Paired ranks must be nonempty, one-dimensional and equal length")
-    if n_boot < 100:
-        raise ValueError("At least 100 bootstrap draws are required")
+    validated_bootstrap(n_boot, seed)
     to_rr = lambda r: np.where(r > 0, 1.0 / np.maximum(r, 1), 0.0)
     d = to_rr(b) - to_rr(a)
     rng = np.random.default_rng(seed)
