@@ -20,7 +20,7 @@ def audit(train_path, external_path, manifest_path, protocol_path):
     import pyarrow as pa
     import pyarrow.compute as pc
     import pyarrow.parquet as pq
-    from casmi.chem.canon import skeleton_key, canonical_ik14
+    from casmi.chem.canon import heavy_atom_key, canonical_ik14
     from casmi.validate.overlap_audit import PublicOverlapAudit
     from casmi.validate.source_manifest import sha256_file
 
@@ -34,10 +34,13 @@ def audit(train_path, external_path, manifest_path, protocol_path):
         raise ValueError("External license or accession contract failed")
     targets = external.rename(columns={"accession": "spectrum_id", "metric_key": "molecule_id"}).to_dict("records")
     content = PublicOverlapAudit(targets)
-    target_skeletons = set(external.skeleton)
+    # Metric InChIKey14 discards isotopic layers. The legacy connectivity helper
+    # retains isotope labels, so it is not a safe necessary-condition filter here.
+    # Heavy-element composition is deliberately broader and isotope/H agnostic.
+    target_compositions = {heavy_atom_key(smiles) for smiles in external.smiles}
     target_metrics = set(external.metric_key)
     training_standard, overlapping_metrics, seen_smiles = set(), set(), set()
-    invalid_structures = matching_skeletons = 0
+    invalid_structures = matching_compositions = 0
     train = pq.ParquetFile(train_path)
     precursors = pa.array(sorted(content.precursors), type=pa.float64())
     columns = ["normalized_smiles", "inchikey14", "precursor_mz", "ms2_mzs", "ms2_normalized_intensities", "adduct", "ionization_mode", "ingest_lib"]
@@ -51,14 +54,14 @@ def audit(train_path, external_path, manifest_path, protocol_path):
             if smiles in seen_smiles:
                 continue
             seen_smiles.add(smiles)
-            skeleton = skeleton_key(smiles)
-            if skeleton is None:
+            composition = heavy_atom_key(smiles)
+            if composition is None:
                 invalid_structures += 1
-            elif skeleton in target_skeletons:
-                matching_skeletons += 1
+            elif composition in target_compositions:
+                matching_compositions += 1
                 metric = canonical_ik14(smiles)
                 if metric is None:
-                    raise ValueError("Matching training skeleton has unverifiable metric identity")
+                    raise ValueError("Matching training composition has unverifiable metric identity")
                 if metric in target_metrics:
                     overlapping_metrics.add(metric)
         mask = pc.is_in(pc.cast(batch.column("precursor_mz"), pa.float64()), value_set=precursors)
@@ -84,7 +87,7 @@ def audit(train_path, external_path, manifest_path, protocol_path):
         "external_source": source,
         "identity_audit": {"training_rows_scanned": content.scanned, "training_standard_identities": len(training_standard),
                            "distinct_training_smiles": len(seen_smiles), "unparseable_training_labels": invalid_structures,
-                           "training_smiles_sharing_external_skeleton": matching_skeletons,
+                           "training_smiles_sharing_external_composition": matching_compositions,
                            "external_standard_overlap_molecules": len(standard_metrics),
                            "external_metric_overlap_molecules": len(overlapping_metrics),
                            "external_exact_content_overlap_molecules": len(content_metrics),
