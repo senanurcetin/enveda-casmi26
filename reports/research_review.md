@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `0ba68105ad3782a5725decb3d818c4f48219c6eea029a93d28b0cfef29fe71fb`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `64cdc8de2b53fa1b6c34d791ddf5e96b4a92e6c3d19fed06e05c8881f2005868`.
 
 ## Fresh training and sealed internal query families — measured
 
