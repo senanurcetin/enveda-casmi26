@@ -1,0 +1,19 @@
+{
+  "id": "senanuretin/casmi26-massbank-external-independence",
+  "title": "CASMI26: MassBank External Independence",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "competition_sources": [
+    "enveda-CASMI26-molecule-id-mass-spectra"
+  ],
+  "dataset_sources": [
+    "senanuretin/casmi26-massbank-cc0-202603",
+    "metric/rdkit-2026-3-3-wheel"
+  ],
+  "kernel_sources": []
+}

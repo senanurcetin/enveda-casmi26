@@ -53,4 +53,4 @@ def add_context(feats: pd.DataFrame) -> pd.DataFrame:
 
 def feature_columns(feats: pd.DataFrame):
     drop = {"pool_key", "ppm", "n_cand", "label", "qid", "cls", "gen_smiles", "stratum"}
-    return [c for c in feats.columns if c not in drop]
+    return [c for c in feats.columns if c not in drop and not c.startswith("audit_")]

@@ -26,6 +26,7 @@ class EngineConfig:
     gen_max_analogs: int = 15
     gen_cap: int = 300
     gen_consensus: bool = False       # v17 features: seed / route consensus and transform type
+    gen_expand: bool = False          # research opt-in, legacy-preserving ordered-pair expansion
     np_score: bool = False            # RDKit NP-likeness for every candidate (chemistry, not membership)
 
 
@@ -61,6 +62,8 @@ class BaselineEngine:
             if analogs is None and self.analog is not None:
                 analogs = self.analog.search(spectra, mass, excluded_rows)
             f = f.assign(gen=0, gen_sim=0.0, gen_depth=0)
+            if self.cfg.gen_expand:
+                f = f.assign(audit_legacy=1)
             if self.cfg.gen_consensus:
                 f = f.assign(gen_sim_sum=0.0, gen_n_seeds=0, gen_n_paths=0, gen_t1=-1, gen_t2=-1)
             g = self._generated(analogs or {}, mass, excluded_keys or set())
@@ -82,9 +85,18 @@ class BaselineEngine:
         seeds = [(self.pool.smiles_of(k), sim, am) for k, (sim, am) in order if k in self.pool.row_of]
         rows, seen = [], {}
         if self.cfg.gen_consensus:
-            props = propose_agg(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap)
-            items = sorted(props.items(), key=lambda kv: -kv[1]["sim_max"])
+            if self.cfg.gen_expand:
+                from casmi.generate.expanded import expanded_proposals
+                legacy_seeds = [(self.pool.smiles_of(k), sim, am) for k, (sim, am) in order[:15] if k in self.pool.row_of]
+                props = expanded_proposals(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap,
+                                           legacy_analogs=legacy_seeds)
+                items = sorted(props.items(), key=lambda kv: (not kv[1]["audit_legacy"], -kv[1]["sim_max"]))
+            else:
+                props = propose_agg(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap)
+                items = sorted(props.items(), key=lambda kv: -kv[1]["sim_max"])
         else:
+            if self.cfg.gen_expand:
+                raise ValueError("Expanded generation requires consensus features")
             items = [(smi, dict(sim_max=sim, depth=path.count("+") + 1))
                      for smi, sim, path in propose(seeds, mass, self.cfg.tol_ppm, self.cfg.gen_max_analogs, self.cfg.gen_cap)]
         for smi, r in items:
@@ -95,6 +107,8 @@ class BaselineEngine:
             if ik in seen:                                     # same structure reached as another SMILES
                 if self.cfg.gen_consensus:
                     row = rows[seen[ik]]
+                    if self.cfg.gen_expand and row[-1] != r["audit_legacy"]:
+                        continue  # Do not alter legacy candidate features with new routes.
                     row[5] += r["sim_sum"]
                     row[6] += r["n_seeds"]
                     row[7] += r["n_paths"]
@@ -104,12 +118,16 @@ class BaselineEngine:
             row = [generated_key, smi, (mass - ExactMolWt(mol)) / ExactMolWt(mol) * 1e6, r["sim_max"], r["depth"]]
             if self.cfg.gen_consensus:
                 row += [r["sim_sum"], r["n_seeds"], r["n_paths"], r["t1"], r["t2"]]
+            if self.cfg.gen_expand:
+                row += [r["audit_legacy"]]
             rows.append(row)
         if not rows:
             return pd.DataFrame()
         cols = ["pool_key", "gen_smiles", "ppm", "gen_sim", "gen_depth"]
         if self.cfg.gen_consensus:
             cols += ["gen_sim_sum", "gen_n_seeds", "gen_n_paths", "gen_t1", "gen_t2"]
+        if self.cfg.gen_expand:
+            cols += ["audit_legacy"]
         g = pd.DataFrame(rows, columns=cols)
         self.pool.register_generated(g.pool_key, g.gen_smiles)
         g = g.drop(columns="gen_smiles").assign(d1_max=0.0, d1_mean=0.0, d1_nref=0, gen=1)
