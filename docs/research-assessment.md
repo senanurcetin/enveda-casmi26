@@ -1,6 +1,6 @@
 # Research assessment
 
-Reviewed 26 October 2026. CASMI26 is an advanced, noncommercial research software and data science portfolio for molecular identification from MS/MS spectra. The assessment concerns reproducibility, experimental discipline and evidence boundaries; it does not claim state-of-the-art accuracy or deployment readiness.
+Reviewed 27 October 2026. CASMI26 is an advanced, noncommercial research software and data science portfolio for molecular identification from MS/MS spectra. The assessment concerns reproducibility, experimental discipline and evidence boundaries; it does not claim state-of-the-art accuracy or deployment readiness.
 
 | Area | Current evidence | Remaining limit |
 |---|---|---|
@@ -21,6 +21,8 @@ The [C3 diagnosis](../reports/candidate_loss_review.md) finds 224/250 truths abs
 The [public-example audit](studies/public-example-overlap.md) confirms exact training overlap for all 1,213 public spectra. These examples cannot establish independent generalization. The [frozen-model study](studies/frozen-model-revalidation.md) supplies separate retrospective diagnostics; comparing its scores directly with the fresh study does not isolate improvement because population, fitting and architecture differ.
 
 ## Follow-on research
+
+The [external-source feasibility study](studies/external-source-validation.md) has now tested two independent downloads against every training row: MassBank leaves zero novel molecules among 491 eligible identities, and two GNPS2 standard libraries leave seven among 85. Neither meets the predeclared minimum of 30. This is measured negative feasibility evidence; external model accuracy remains unmeasured. C3 expansion preserves historical candidates in implementation tests, but no real coverage-improvement claim is established yet.
 
 External acquired spectra or independent laboratory replication would address evidence not supplied by internal splitting. C3 generation recall and broader cross-instrument samples are justified research priorities. Any follow-on experiment must declare its population and selection policy before results, use a separate evaluation set and preserve all favorable/adverse outcomes. The completed test must not become a tuning set.
 

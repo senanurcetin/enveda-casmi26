@@ -9,6 +9,8 @@ Run commands from the repository root in the [documented scientific environment]
 | Audit stores and fingerprints | `audit_store_integrity.py`, `audit_pool_fingerprints.py`, `manifest_artifacts.py` | Bounded aggregates and explicit SHA-256 inventories |
 | Generic baseline validation | `run_validation.py`, `compare_runs.py`, `compare_control_runs.py` | Signed query/source pairing and scoped comparisons |
 | Complete scientific studies | `run_revalidation_study.py`, `run_advanced_study.py` | Fixed model/control or fresh-training contracts |
+| External-source preparation and feasibility | `prepare_massbank_external.py`, `prepare_gnps_external.py`, `run_external_audit.py`; `build_external_audit_notebook.py`, `build_gnps_audit_notebook.py` and corresponding readback checkers | Pinned CC0 inputs, full-training molecular/content exclusions and explicit insufficient-population outcomes |
+| Gated C3/external follow-on | `build_external_c3_notebook.py`, `run_external_c3_study.py`, `external_study_training.py` | Experimental implementation; requires authenticated sufficient external novelty, fresh fitting and a pre-test seal; no performance result established yet |
 | Build/verify publication bundles | `build_research_publications.py`, `build_overlap_notebook.py`, `build_revalidation_notebook.py`, `build_advanced_notebook.py`; corresponding `check_*publication*.py` | [Kaggle operations](../kaggle/README.md) |
 | Regenerate reviews and figures | `research_evidence.py`, `build_revalidation_report.py`, `build_advanced_report.py`, `build_coverage_report.py` | [Generated reports](../reports/README.md) |
 | Optional source diagnostics | `profile_data.py`, `audit_analog_retention.py`, `diagnose_validation_slices.py` | Descriptive data/reference/slice analysis |

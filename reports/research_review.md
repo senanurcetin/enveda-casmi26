@@ -1,6 +1,6 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-26. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-27. Score snapshot: 2026-10-08.
 
 Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation.
 
@@ -32,7 +32,7 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `bf1d331b425ad46a03ecd671b084c27d330f32499df68a529e7c9e374440742b`.
+Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `1ebc4c886243d49dcc25d8ef1f5864564194196c9a7e987c9eb26d4f2940bcf3`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -99,3 +99,21 @@ Source: [reports/candidate_loss_budget.json](../reports/candidate_loss_budget.js
 Summary and paired bootstrap reject noninteger, negative, out-of-top-25, nonfinite and malformed rank arrays before scoring. Fixed-seed valid results remain unchanged. Completed experiment source bundles remain frozen.
 
 Source: [src/casmi/validate/rank_inputs.py](../src/casmi/validate/rank_inputs.py). SHA-256 (UTF-8 / LF): `c6faf51be68b80ba2f50bc5324ab802ffd1ebd9134eb71005d8dcb9123f8de62`.
+
+## Pinned MassBank external-source feasibility — measured
+
+Full 2,539,608-row training scan excludes all 491 eligible CC0 molecules by standard identity; zero novel molecules. Authenticated completed source. This does not establish external model accuracy.
+
+Source: [reports/external_audit.json](../reports/external_audit.json). SHA-256 (UTF-8 / LF): `22ea8a8b213684e3868cef6548dc18c894ae0dd480f400b7c9136e27acde499e`.
+
+## Two-library GNPS external-source feasibility — measured
+
+Full training scan leaves 7 novel molecules among 85 eligible identities; below the predeclared minimum of 30. No model performance was inspected. The isotope-safe second execution is the authenticated source.
+
+Source: [reports/gnps_external_audit.json](../reports/gnps_external_audit.json). SHA-256 (UTF-8 / LF): `0bd70bc61f91351fc4f18286ebc28d14b130a33aecc87318d145179bb3c34f8a`.
+
+## Legacy-preserving C3 candidate expansion — implemented
+
+Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured.
+
+Source: [src/casmi/generate/expanded.py](../src/casmi/generate/expanded.py). SHA-256 (UTF-8 / LF): `e40c0abef2875f82b3f4343e7e51f13bafd6801bfe87543dc9f5e9fd6d00d090`.

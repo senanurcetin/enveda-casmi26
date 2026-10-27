@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-26",
+  "reviewed_on": "2026-10-27",
   "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
@@ -153,6 +153,27 @@
       "state": "implemented",
       "detail": "Summary and paired bootstrap reject noninteger, negative, out-of-top-25, nonfinite and malformed rank arrays before scoring. Fixed-seed valid results remain unchanged. Completed experiment source bundles remain frozen.",
       "source": "src/casmi/validate/rank_inputs.py"
+    },
+    {
+      "id": "massbank-external-feasibility",
+      "title": "Pinned MassBank external-source feasibility",
+      "state": "measured",
+      "source": "reports/external_audit.json",
+      "detail": "Full 2,539,608-row training scan excludes all 491 eligible CC0 molecules by standard identity; zero novel molecules. Authenticated completed source. This does not establish external model accuracy."
+    },
+    {
+      "id": "gnps-external-feasibility",
+      "title": "Two-library GNPS external-source feasibility",
+      "state": "measured",
+      "source": "reports/gnps_external_audit.json",
+      "detail": "Full training scan leaves 7 novel molecules among 85 eligible identities; below the predeclared minimum of 30. No model performance was inspected. The isotope-safe second execution is the authenticated source."
+    },
+    {
+      "id": "c3-budget-expansion",
+      "title": "Legacy-preserving C3 candidate expansion",
+      "state": "implemented",
+      "source": "src/casmi/generate/expanded.py",
+      "detail": "Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured."
     }
   ]
 }

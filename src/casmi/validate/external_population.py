@@ -50,8 +50,15 @@ def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protoc
         audit[name] = {"n_molecules": len(values), "identity_sha256": digest([r["key"] for r in values]),
                        "family_sha256": digest([r["group"] for r in values]), "metric_sha256": digest([r["metric"] for r in values]),
                        "libraries": pd.Series([r["library"] for r in values]).value_counts().to_dict()}
-    audit.update(previous_population_reconstructed=True, previous_selected_metric_overlap=0,
-                 previous_selected_family_overlap=0, cross_split_identity_overlaps=0)
+    selected = [v for values in splits.values() for v in values]
+    metric_overlap = len({v["metric"] for v in selected} & old_metrics)
+    family_overlap = len({v[field] for v in selected for field in ("family", "group")} & old_families)
+    cross_split_overlap = sum(len({v["key"] for v in splits[a]} & {v["key"] for v in splits[b]})
+                              for a, b in (("train", "dev"), ("train", "test"), ("dev", "test")))
+    if metric_overlap or family_overlap or cross_split_overlap:
+        raise ValueError("New population overlaps a protected historical or current partition")
+    audit.update(previous_population_reconstructed=True, previous_selected_metric_overlap=metric_overlap,
+                 previous_selected_family_overlap=family_overlap, cross_split_identity_overlaps=cross_split_overlap)
     return splits, groups, labels, audit
 
 
@@ -68,8 +75,11 @@ def select_external(novel, splits, salt, *, maximum=150, minimum=30):
         first = spectra.iloc[0]
         selected.append({"metric": metric, "key": first.standard_ik14, "smiles": first.smiles,
                          "family": first.family, "records": spectra})
+    overlap = len({v["family"] for v in selected} & blocked)
+    if overlap:
+        raise ValueError("External population shares supervised training/development families")
     audit = {"n_molecules": len(selected), "metric_sha256": digest(ordered),
              "family_sha256": digest([v["family"] for v in selected]),
              "accessions_sha256": digest([str(a) for v in selected for a in v["records"].accession]),
-             "supervised_family_overlap": 0, "excluded_supervised_family_molecules": len(excluded_metrics)}
+             "supervised_family_overlap": overlap, "excluded_supervised_family_molecules": len(excluded_metrics)}
     return selected, audit

@@ -22,6 +22,9 @@ The work examines simulation-induced shortcuts, candidate coverage versus decoy 
 | Frozen-model retrospective study | All 250 V-in molecules retained; original weights assessed under corrected exclusions and spectral controls | [Results](reports/revalidation_review.md) |
 | Fresh-training internal benchmark | 600/150/250 train/development/test query families; all 26 learned artifacts sealed before test features | [Design](docs/studies/fresh-training-family-holdout.md), [results](reports/advanced_review.md) |
 | Candidate/ranking loss diagnosis | C3 lacks the true candidate for 224/250 queries; fixed-list oracle MRR ceiling is 0.1040 | [Descriptive decomposition](reports/candidate_loss_review.md) |
+| External-source feasibility | MassBank leaves 0/491 novel molecules; two GNPS2 libraries leave 7/85, below the declared minimum of 30 | [Source gates and follow-on study status](docs/studies/external-source-validation.md) |
+
+C3 budget expansion is available as an opt-in research implementation. Its coverage improvement and external model performance are not yet measured; the source-independence gate must pass before fitting or scoring the follow-on experiment.
 
 Fresh internal test MRR@25:
 

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "parent_protocol": "external-source-v2.json",
+  "registered_on": "2026-10-27",
+  "reason": "Before any model performance or candidate-coverage inspection, broaden the source beyond two small GNPS2-native libraries to the directly contributed GNPS community standard library. Retain all previous source snapshots and strict novelty gates.",
+  "external_source": {
+    "repository": "https://library.gnps2.org/libraries",
+    "retrieved_on": "2026-10-27",
+    "license_policy": "Directly contributed GNPS reference spectra default to CC0; exclude third-party imported and propagated/MassQL/suspect libraries.",
+    "license_reference": "https://ccms-ucsd.github.io/GNPSDocumentation/browselibraries/#license",
+    "allowed_record_licenses": [
+      "CC0"
+    ],
+    "files": {
+      "CEMBIO_OXYLIPINS.json": {
+        "url": "https://library.gnps2.org/api/libraries/CEMBIO_OXYLIPINS/json",
+        "sha256": "5bb461648eb111304b8e47765a177a01b443b9ad0589038ea5f261428814130e",
+        "bytes": 192299
+      },
+      "USER-CONTRIBUTED-GNPS2.json": {
+        "url": "https://library.gnps2.org/api/libraries/USER-CONTRIBUTED-GNPS2/json",
+        "sha256": "3146f450ba71009edac2375041a05de3fb1dae282903119074701a84fbc15e7a",
+        "bytes": 302638
+      },
+      "GNPS-LIBRARY.json": {
+        "url": "https://library.gnps2.org/api/libraries/GNPS-LIBRARY/json",
+        "sha256": "d463bc39362359329a520d8fdd1b352abc4807188fc6ef465501183b1a261264",
+        "bytes": 334137083
+      }
+    },
+    "eligibility": "Source-classified standard spectra; MS2, ESI evidenced in source/instrument annotation; supported adduct and matching mode; connected valid molecular structure, 150-1170 Da, precursor error <=20 ppm, at least five finite positive ordered peaks; reject explicit low-quality or inferred/synthetic acquisition annotations. Preserve raw record hash, original metadata and source URL. GNPS2 snapshot-relative record IDs are derived hashes, not claimed official accessions."
+  },
+  "feasibility_stage": "Audit every eligible source molecule against every CASMI training row using the unchanged standard/metric/exact-content exclusion policy. At least 30 novel molecules are required. Counts alone may determine feasibility; no prediction or candidate-coverage inspection.",
+  "failure_policy": "Preserve the failed MassBank source and this outcome-blind addition separately. Insufficient population cannot be relabeled as external validation. No model study starts on this source unless all original independence requirements pass.",
+  "identity_prefilter": "Heavy-element composition followed by isotope-stripped heavy connectivity as two necessary conditions before official canonicalization. Clear atom isotope labels before explicit-H removal. Retain metric-equivalent isotope/tautomer pairs verified by regression; no change to standard/metric/content rejection or the 30-molecule minimum."
+}

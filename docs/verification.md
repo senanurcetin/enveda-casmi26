@@ -10,6 +10,8 @@ GitHub Actions separates offline evidence/report regeneration, official-metric c
 
 ## Executed research evidence
 
+The [external-source feasibility study](studies/external-source-validation.md) adds authenticated full-training scans of pinned MassBank and two GNPS2 standard libraries. Both notebooks completed with matching embedded source. Their scientific conclusions are negative/insufficient (zero and seven novel molecules respectively), even though publication authentication passes. No external model performance or C3 coverage improvement is established by these audits.
+
 | Artifact | Verified scope | Record |
 |---|---|---|
 | Two historical explanatory notebooks | Public completion and matching source; historical tables remain author logs | [Readback](../reports/kaggle_publications.json) |

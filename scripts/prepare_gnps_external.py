@@ -45,7 +45,7 @@ def parse_record(record, library, source_url):
             "ms2_normalized_intensities": [100 * v / max(intensity) for v in intensity]}
 
 
-def prepare(source_dir, output):
+def prepare(source_dir, output, protocol_path=None):
     import pandas as pd
     import rdkit
     from rdkit import Chem
@@ -56,7 +56,7 @@ def prepare(source_dir, output):
 
     if rdkit.__version__ != "2026.03.3":
         raise ValueError("Official-metric RDKit required")
-    protocol = json.loads((ROOT / "protocols/external-source-v2.json").read_text(encoding="utf-8"))
+    protocol = json.loads((protocol_path or ROOT / "protocols/external-source-v2.json").read_text(encoding="utf-8"))
     rows, counts = [], Counter()
     for name, entry in protocol["external_source"]["files"].items():
         raw = (source_dir / name).read_bytes()
@@ -102,14 +102,17 @@ def prepare(source_dir, output):
                 "scope": "Source preparation only; CASMI overlap and external independence not yet established"}
     (output / "external_input_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     (output / "SOURCE_ATTRIBUTION.md").write_text("# GNPS2 direct-contribution source snapshot\n\n"
-        "Sources: CEMBIO_OXYLIPINS and USER-CONTRIBUTED-GNPS2, retrieved 27 October 2026 from https://library.gnps2.org/libraries. "
+        "Sources: " + ", ".join(name[:-5] for name in protocol["external_source"]["files"]) +
+        ", retrieved 27 October 2026 from https://library.gnps2.org/libraries. "
         "GNPS policy assigns CC0 to directly contributed reference spectra: https://ccms-ucsd.github.io/GNPSDocumentation/browselibraries/#license. "
         "Imported third-party, propagated, MassQL-derived and suspect libraries are excluded. Original metadata, source URL and raw-record hashes "
         "are retained. Derived snapshot IDs do not claim official accession status. Some source records omit author names; missing names are disclosed. "
         "This preparation does not establish CASMI independence. No competition source records or trained weights are included.\n", encoding="utf-8")
-    metadata = {"id": "senanuretin/casmi26-gnps2-cc0-snapshot", "title": "CASMI26 GNPS2 CC0 source snapshot",
+    expanded = "GNPS-LIBRARY.json" in protocol["external_source"]["files"]
+    metadata = {"id": "senanuretin/casmi26-gnps-cc0-expanded" if expanded else "senanuretin/casmi26-gnps2-cc0-snapshot",
+        "title": "CASMI26 GNPS CC0 expanded sources" if expanded else "CASMI26 GNPS2 CC0 source snapshot",
         "licenses": [{"name": "CC0-1.0"}], "subtitle": "Directly contributed standard spectra for source-independence auditing",
-        "description": "Pinned CEMBIO_OXYLIPINS and USER-CONTRIBUTED-GNPS2 standard spectra under the GNPS direct-contribution CC0 policy. "
+        "description": "Pinned directly contributed GNPS standard libraries listed in the source manifest under the GNPS CC0 policy. "
             "Record hashes, original metadata, source URL and available attribution retained. See SOURCE_ATTRIBUTION.md. "
             "This is source preparation, not evidence of external independence. No CASMI competition data or model weights included."}
     (output / "dataset-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
@@ -120,5 +123,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-dir", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--protocol", type=Path)
     args = parser.parse_args()
-    prepare(args.source_dir, args.output)
+    prepare(args.source_dir, args.output, args.protocol)

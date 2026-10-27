@@ -13,6 +13,8 @@ This directory contains public aggregates and provenance records. Licensed sourc
 | `advanced_study.json`, `advanced_publication.json`, `advanced_execution_history.json` | Fresh internal study, source readback and outcome-blind attempt history | Preserve source/weight/protocol bindings; authenticate with `check_advanced_publication.py` |
 | `advanced_review.md` | All fresh-study outcomes, controls and slices | `python scripts/build_advanced_report.py --tables-only` |
 | `candidate_loss_budget.json`, `candidate_loss_review.md` | Post hoc aggregate-only loss accounting | `python scripts/build_coverage_report.py --tables-only` |
+| `external_source_preparation.json`, `external_audit.json`, `external_audit_publication.json` | Pinned MassBank CC0 input preparation and authenticated negative source-independence result | Preserve completed source; `check_external_audit_publication.py` authenticates remote evidence |
+| `gnps_external_source_preparation.json`, `gnps_external_audit.json`, `gnps_external_audit_publication.json` | Two-library GNPS source preparation and authenticated insufficient external population | `check_gnps_audit_publication.py`; this is not model-performance evidence |
 | `research_environment_validation.json` | Dated installed-environment/JUnit attestation | Regenerate only from an actually checked environment and completed test run |
 
 Without `--tables-only`, the advanced/coverage builders export PNG/SVG/PDF figures to `docs/assets/` in the locked plotting environment. CI checks deterministic table regeneration; font/platform rendering is not a bitwise image guarantee.

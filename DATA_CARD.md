@@ -28,4 +28,6 @@ Candidate/reference structures remain task-defined and can occur as negatives fo
 
 ## Reproduction and redistribution
 
+The [external-source study](docs/studies/external-source-validation.md) prepares separately downloaded MassBank CC0 and directly contributed GNPS standard spectra. Original record hashes, source URLs and available attribution are retained. MassBank uses explicit per-record CC0 licenses; GNPS uses its direct-contribution CC0 policy and excludes imported/inferred libraries. These legal/source distinctions are preserved in manifests. The first two audited populations leave zero and seven novel molecules; neither qualifies as the declared external validation population. Unknown collision energies are not converted from NCE/percent to eV.
+
 Keep all raw files and generated molecular artifacts outside Git. Record content hashes with `scripts/manifest_artifacts.py`, verify candidate fingerprint provenance, and publish new stores/pools into separate immutable destinations. Revalidation requires the same queries and exclusions across models, negative controls and untouched evaluation data. Cloud warehouses are optional; the public dashboard reads committed aggregates only.

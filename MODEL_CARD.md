@@ -36,6 +36,8 @@ This is an internal query-family benchmark. Evaluation structures may occur as n
 
 ## Operational and scientific failure modes
 
+The [external/C3 follow-on](docs/studies/external-source-validation.md) adds an opt-in legacy-preserving generator budget and requires a fresh sealed experiment before claiming improvement. Completed MassBank and two-library GNPS source scans leave zero and seven novel molecules respectively; neither meets the declared minimum of 30. No external model accuracy is established. Current isotope-aware connectivity filtering is corrected; completed historical source snapshots retain their original implementation and are not silently rerun.
+
 The [aggregate-only loss decomposition](reports/candidate_loss_review.md) shows 224/250 C3 queries lack the correct candidate. Of the 26 covered molecules, 24 reach top 25 and 6 rank first. The existing-pool oracle MRR ceiling is 0.1040, versus observed 0.0373; this hypothetical ceiling cannot be presented as achieved accuracy. Conditional MRR on the 26 covered molecules is descriptive and does not replace population MRR. No conditional uncertainty or causal generation improvement can be recovered from aggregate-only evidence.
 
 Missing true structures in the candidate pool impose a hard recall ceiling. Isomers share masses and may have similar spectra. Adduct errors, spectral contamination, mode mismatches, limited cross-instrument references, generated-structure identity errors and unknown chemistry can all produce confident-looking but incorrect rankings. Rank scores are not calibrated identification probabilities.

@@ -59,6 +59,10 @@ def skeleton_key(smiles):
     mol = Chem.MolFromSmiles(smiles) if isinstance(smiles, str) else None
     if mol is None:
         return None
+    # The official metric compares only InChIKey's first block, which excludes
+    # isotopic layers. Clear isotopes before removing explicit isotope hydrogens.
+    for atom in mol.GetAtoms():
+        atom.SetIsotope(0)
     rw = Chem.RWMol(Chem.RemoveHs(mol, sanitize=False))
     for atom in rw.GetAtoms():
         atom.SetFormalCharge(0)

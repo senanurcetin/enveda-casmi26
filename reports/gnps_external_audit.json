@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "status": "EXTERNAL_INDEPENDENCE_NOT_ESTABLISHED",
+  "checked_at": "2026-10-27T20:18:52.957133+00:00",
+  "protocol_sha256": "2b693db68054206d7e911c43e1c033a89f03beaab952de6b68abc9b097b34322",
+  "inputs": {
+    "train.parquet": {
+      "sha256": "9423f90ec08b941a9646b535bf0606183e86ff0c5a297978f5a70693d41bcd98",
+      "bytes": 3033286496
+    },
+    "gnps_cc0.parquet": {
+      "sha256": "0f4bb0ae8cb1f3fc1871ec9136870f942336595ea06c29abd8f53292abae9d4d",
+      "bytes": 129839
+    }
+  },
+  "external_source": {
+    "schema_version": 1,
+    "status": "PINNED_CC0_EXTERNAL_INPUT_PREPARED",
+    "source": {
+      "repository": "https://library.gnps2.org/libraries",
+      "retrieved_on": "2026-10-27",
+      "license_policy": "Directly contributed GNPS reference spectra default to CC0; exclude third-party imported and propagated/MassQL/suspect libraries.",
+      "license_reference": "https://ccms-ucsd.github.io/GNPSDocumentation/browselibraries/#license",
+      "allowed_record_licenses": [
+        "CC0"
+      ],
+      "files": {
+        "CEMBIO_OXYLIPINS.json": {
+          "url": "https://library.gnps2.org/api/libraries/CEMBIO_OXYLIPINS/json",
+          "sha256": "5bb461648eb111304b8e47765a177a01b443b9ad0589038ea5f261428814130e",
+          "bytes": 192299
+        },
+        "USER-CONTRIBUTED-GNPS2.json": {
+          "url": "https://library.gnps2.org/api/libraries/USER-CONTRIBUTED-GNPS2/json",
+          "sha256": "3146f450ba71009edac2375041a05de3fb1dae282903119074701a84fbc15e7a",
+          "bytes": 302638
+        }
+      },
+      "eligibility": "Source-classified standard spectra; MS2, ESI evidenced in source/instrument annotation; supported adduct and matching mode; connected valid molecular structure, 150-1170 Da, precursor error <=20 ppm, at least five finite positive ordered peaks; reject explicit low-quality or inferred/synthetic acquisition annotations. Preserve raw record hash, original metadata and source URL. GNPS2 snapshot-relative record IDs are derived hashes, not claimed official accessions."
+    },
+    "counts": {
+      "source_records": 112,
+      "unverified_acquisition_or_quality": 1,
+      "unsupported_adduct": 1,
+      "outside_mass_range": 14,
+      "invalid_peaks": 1,
+      "eligible_spectra": 95,
+      "eligible_metric_molecules": 85
+    },
+    "parquet_sha256": "0f4bb0ae8cb1f3fc1871ec9136870f942336595ea06c29abd8f53292abae9d4d",
+    "parquet_bytes": 129839,
+    "rdkit": "2026.03.3",
+    "scope": "Source preparation only; CASMI overlap and external independence not yet established"
+  },
+  "identity_audit": {
+    "training_rows_scanned": 2539608,
+    "training_standard_identities": 275810,
+    "distinct_training_smiles": 277566,
+    "unparseable_training_labels": 0,
+    "training_smiles_sharing_external_composition": 1201,
+    "external_standard_overlap_molecules": 78,
+    "external_metric_overlap_molecules": 78,
+    "external_exact_content_overlap_molecules": 0,
+    "excluded_external_molecules_union": 78,
+    "novel_external_molecules": 7,
+    "novel_external_spectra": 11,
+    "novel_metric_identities_sha256": "b60cc9d8b7bb3fa2cbe5e66456f16ae84ca4ce49c9faf660b3ace203bb29fd2b",
+    "novel_accessions_sha256": "e6a54c12deca0227ab6f8b04edb0758bb12634cbac0b2d5ac7763aa639dcdbf0"
+  },
+  "stored_content_audit": {
+    "schema_version": 1,
+    "status": "COMPLETE_CONTENT_AUDIT",
+    "matching_method": "exact stored precursor and full ordered m/z/intensity numeric arrays; no rounding or tolerance",
+    "metadata_fields": [
+      "adduct",
+      "ionization_mode"
+    ],
+    "train_rows_scanned": 2539608,
+    "public_spectra": 95,
+    "public_molecules": 85,
+    "exact_precursor_candidate_rows": 1348,
+    "coarse_candidate_pairs_after_precursor_filter": 0,
+    "coarse_false_match_pairs": 0,
+    "exact_matching_pairs": 0,
+    "content_matched_spectra": 0,
+    "metadata_consistent_matched_spectra": 0,
+    "metadata_disagreement_pairs": 0,
+    "fully_content_matched_molecules": 0,
+    "fully_metadata_consistent_molecules": 0,
+    "content_matches_by_library": {},
+    "limitations": [
+      "Source-library match counts overlap and must not be summed as unique public spectra.",
+      "Stored numerical equality does not independently prove common acquisition identity.",
+      "This audit concerns mounted public examples, not the hidden competition evaluation set.",
+      "No model evaluation, training or competition submission was performed."
+    ]
+  },
+  "model_performance_inspected": false,
+  "limitations": [
+    "External source acquisition is independently retrieved public reference data, not a new laboratory replication.",
+    "Identity checks rely on source chemical annotations and the official computational canonicalizer.",
+    "Exact stored-content comparison cannot detect arbitrary preprocessing/normalization variants of a common acquisition.",
+    "This feasibility stage does not establish supervised-family separation, model accuracy or a C3 coverage improvement."
+  ],
+  "source_code_sha256": {
+    "src/casmi/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/analog.py": "8592dcfc274257db6f4a803cb705ec6be4a5dbba2abddec626eddd01d56b4c19",
+    "src/casmi/channels/bondmodel.py": "1ffb5ce34c7b1a1975277eb9eab76a11e7624ea8740f39e5c2cc19a1340680fb",
+    "src/casmi/channels/fpinfer.py": "58315b7f7288a2988980b19a079ef0eb305897ffcd5094b1dcf5d3b370a71a7b",
+    "src/casmi/channels/fpmodel.py": "1e8a63dcd407f7870918c34fe5dac4f8fbfcbd301d64806d077019e382ad70ea",
+    "src/casmi/channels/fragments.py": "20656968ee6084ed948547a90ca79957a5b3cc6a65002ffb8601a411f0278bc0",
+    "src/casmi/channels/library.py": "96dd852858d6e66319d174306091d05480c965037d8e6dc50a87985f2a4398c2",
+    "src/casmi/channels/prefilter.py": "ac442621394b1d4ad1627f7776cf8f4d704b1a8e3d950f0480168e54d3b22a57",
+    "src/casmi/channels/reference_selection.py": "c043a1ab42126d3b33c5de0870ee1a5922396956a69356a777149ebc9947d88b",
+    "src/casmi/chem/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/chem/canon.py": "6cdb71219a717cbcebefeb9678bec8aff30e8b3aeaa39ce67fd1d499e4f93fdb",
+    "src/casmi/chem/keys.py": "2755a82fe24b854df0326c212df3696f0ac6197e46c3acdc5d33f4264e69aed2",
+    "src/casmi/chem/masses.py": "1831039a9dd48ddfd92482b361c3c28353a0fc1fbff98aa72c5273adcb948cf5",
+    "src/casmi/chem/npscore.py": "5fa24e1495bed25dfcd7001bb412e738d32148c5b3cab9dd3f25a28bb99a8945",
+    "src/casmi/config.py": "5f8dc8985d2789bd93ae55b8bec11964f89472e3e710012c86c2c186e547b876",
+    "src/casmi/engine.py": "3ec4a688c2e7b6a5542ecec159d85a2f71a4835174e9fa2e05239ba299f2e984",
+    "src/casmi/generate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/generate/expanded.py": "e40c0abef2875f82b3f4343e7e51f13bafd6801bfe87543dc9f5e9fd6d00d090",
+    "src/casmi/generate/transforms.py": "e43cca55be73612bdbf81631b888be0c0123650f751fd8465808747574f0ef49",
+    "src/casmi/pool/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/pool/build_safety.py": "2421c9f41d26ab6e17ac20956ef1bfd5552ed28ae7255f13ca8b4fd585a79305",
+    "src/casmi/pool/fingerprint_audit.py": "d0197f06cbe89d54494eed5bf8693f8ab0944668ce006012726b758c6b44c358",
+    "src/casmi/pool/fingerprint_provenance.py": "ec64027e7120b8636408f13d2a617a012c5ddb1f97dae7c475d341f44b8e97fe",
+    "src/casmi/pool/pool.py": "178d16b9ffb9b26052dd28adeff387794db9f5b405fb5a4e347faeefd14ae634",
+    "src/casmi/pool/source_reconciliation.py": "268cf27522e22659fdb0560784ef787c7b25f66dc739a135e5d8d5b97e5fe4c2",
+    "src/casmi/pool/structure_identity.py": "39519cf6128de5a8677e5675ac9f691b8943fb5386337320ff1d05bfdb2c146a",
+    "src/casmi/pool/structure_quality.py": "654d3c57b836d857367c404c6eeb6f9d010ef710c36a3874dafbe2382f31d646",
+    "src/casmi/predict.py": "d5416dc486fbab178da9073d48fa3c8adf6e4b224f11bc1af5c07c6e0cb2a2e1",
+    "src/casmi/rank/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/rank/features.py": "578101099d2519aeb073244576e52368ad2915411bbe92a326496ad134b77dcc",
+    "src/casmi/rank/ranker.py": "8b58478f310016485d8a877ff96f3fbac96278497dc0885ec267d294b11c3665",
+    "src/casmi/spectra/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/spectra/build_safety.py": "b70cab5a2af895061c6786811a2277e899475b7f9eaad29033f2b8990e8e04c0",
+    "src/casmi/spectra/clean.py": "af67f80cbd5e5d6b489ed110be5dd943446a6e38d45a8976365a3c13c07a2bb6",
+    "src/casmi/spectra/similarity.py": "4c63e21f048facdf4a1fbf2e07ec840a078c77b4f1b99f553d77db66cec70b4c",
+    "src/casmi/spectra/store.py": "6b7cd04ac0350ce204a066a82bc250b8e60b552bdfbb95221152399bfdffe13c",
+    "src/casmi/spectra/store_integrity.py": "3664d4c6278bea71c3fa403f017deda8af8dde7de9cb0afbf4c9424835d68243",
+    "src/casmi/submit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/analog_index_evidence.py": "2dac213fd7629937ea3198cd7cc4c36ee1daab92439e832bbabcbefec0952e3a",
+    "src/casmi/validate/budget_features.py": "8d2af4b739d4fc058a18b0c8c3f9c7619fd7e742396344f2b87bf893a926d788",
+    "src/casmi/validate/cohort_bootstrap.py": "37ee133721adcc9b786ed35dbc8855082fe387159960ca41a4a96379a3c34bb1",
+    "src/casmi/validate/control_alignment.py": "4996027acd3d4c1b79c2d4e3351e325ad6278323c340af36ad0e63a2bd722cfb",
+    "src/casmi/validate/coverage_budget.py": "f3ae268d7cd4ecc2f5448ffde91b847c2cd08941e7b377a6c775bee47f3e7dd8",
+    "src/casmi/validate/error_slices.py": "ad0a7df1c02d2dc867e1a80e027ed8d665fad64b694a1ddb1ae04d0169e8baf1",
+    "src/casmi/validate/external_population.py": "b47cd36c28e4202ae436a4e556309376963f7172748b4ef3c322e1822efb3d3a",
+    "src/casmi/validate/fingerprint_evidence.py": "1d2d123d68a2f1a8005179c5b95ac5d3437e83a7c9d58df7276e77eb13b5b3da",
+    "src/casmi/validate/knockout.py": "7c9e54a77d9d7d7cef98b0aadcdba5b918427c053af655c7ffe3e6e3ef01d238",
+    "src/casmi/validate/massbank_records.py": "294c7061cd3c325a44e9e58e32cabfc1139dc543f1ad0182545a94ba3aa69a1a",
+    "src/casmi/validate/metric.py": "da51b1ee98461facb6de18a2ad3ff90ca31d5e6d4a991c520ef894d817474ef1",
+    "src/casmi/validate/overlap_audit.py": "23ef2d7108c2a1f7ed93b3a469af0a6dd853c4d8850e270958e134d538f3df05",
+    "src/casmi/validate/paired_bootstrap.py": "42543ed9f11a684794c10aea17b3abe1c5e9cdbc5ec62816486e2be96809246a",
+    "src/casmi/validate/rank_inputs.py": "c6faf51be68b80ba2f50bc5324ab802ffd1ebd9134eb71005d8dcb9123f8de62",
+    "src/casmi/validate/ranked_slots.py": "3dec0248951c1d54ff4a91fafe6173b2e19854739be48041aca4c5ea681b53e0",
+    "src/casmi/validate/run_alignment.py": "bcaed43318285185a8572c7ae2ce2fe53e341814821d9a2bfeaa92ba7f70860e",
+    "src/casmi/validate/scaffold_study.py": "5005a72b5c4c8951dddc24e93f65d3d26683ce3edcf9dd3c3667cf7b95c46afc",
+    "src/casmi/validate/simultaneous_ci.py": "990b45160da2287eb9debfa4c6e2b96bc5bd6e9fe3b27949877bb05c442159da",
+    "src/casmi/validate/source_manifest.py": "d3a37d2b4879c0735e6998c0d40cc011cb4a6a9c5a1e8325be9443c536e262a0",
+    "src/casmi/validate/spectral_controls.py": "12a49aeb2c72899993a178bda6e505ae382d5f0771df4a2af169343466d9828e",
+    "src/casmi/validate/spectrum_overlap.py": "ed06679f55192f44b1f8db3596ec4be8ff279fce2e813544e5464e015b984aec",
+    "scripts/run_external_audit.py": "e6a9540000435e62d1a9bdc04925e6116a8c48314cd6dc49b7adb979dcc358ff"
+  },
+  "execution": {
+    "platform": "Kaggle",
+    "internet_enabled": false,
+    "gpu_enabled": false,
+    "model_training": false,
+    "submitted_predictions": false,
+    "protocol_registered_commit": "83c8037"
+  }
+}

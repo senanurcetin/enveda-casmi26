@@ -9,6 +9,8 @@ Five owned publications have completed authenticated source/status readback. The
 | [Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit) | `audits/public-overlap/` | Full-content scan; [method](../docs/studies/public-example-overlap.md) |
 | [Corrected Models and Negative Controls](https://www.kaggle.com/code/senanuretin/casmi26-corrected-models-and-negative-controls) | `audits/corrected-revalidation/` | Frozen original weights; [results](../reports/revalidation_review.md) |
 | [Fresh Training Family Holdout](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout) | `audits/advanced-internal/` | Fresh weights and sealed internal query-family test; [results](../reports/advanced_review.md) |
+| [MassBank External Independence](https://www.kaggle.com/code/senanuretin/casmi26-massbank-external-independence) | `audits/external-independence/` | Authenticated negative feasibility: zero novel molecules; no model scoring |
+| [GNPS2 External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps2-external-independence) | `audits/gnps-independence/` | Authenticated insufficient population: seven novel molecules; no model scoring |
 
 ## Build and authenticate
 
@@ -23,6 +25,10 @@ python scripts/build_revalidation_notebook.py
 python scripts/check_revalidation_publication.py
 python scripts/build_advanced_notebook.py
 python scripts/check_advanced_publication.py
+python scripts/build_external_audit_notebook.py
+python scripts/check_external_audit_publication.py
+python scripts/build_gnps_audit_notebook.py
+python scripts/check_gnps_audit_publication.py
 ```
 
 Builders prepare or verify tracked source bundles. Readback commands inspect remote state and download bounded aggregate artifacts; they do not start execution or submit predictions. A notebook URL alone does not attest completion. Source, public visibility, declared attachments and relevant artifact hashes must match.

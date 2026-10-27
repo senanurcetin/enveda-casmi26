@@ -20,7 +20,7 @@ def audit(train_path, external_path, manifest_path, protocol_path):
     import pyarrow as pa
     import pyarrow.compute as pc
     import pyarrow.parquet as pq
-    from casmi.chem.canon import heavy_atom_key, canonical_ik14
+    from casmi.chem.canon import heavy_atom_key, skeleton_key, canonical_ik14
     from casmi.validate.overlap_audit import PublicOverlapAudit
     from casmi.validate.source_manifest import sha256_file
 
@@ -38,6 +38,8 @@ def audit(train_path, external_path, manifest_path, protocol_path):
     # retains isotope labels, so it is not a safe necessary-condition filter here.
     # Heavy-element composition is deliberately broader and isotope/H agnostic.
     target_compositions = {heavy_atom_key(smiles) for smiles in external.smiles}
+    isotope_safe_connectivity = bool(protocol.get("identity_prefilter"))
+    target_skeletons = {skeleton_key(smiles) for smiles in external.smiles} if isotope_safe_connectivity else set()
     target_metrics = set(external.metric_key)
     training_standard, overlapping_metrics, seen_smiles = set(), set(), set()
     invalid_structures = matching_compositions = 0
@@ -59,6 +61,8 @@ def audit(train_path, external_path, manifest_path, protocol_path):
                 invalid_structures += 1
             elif composition in target_compositions:
                 matching_compositions += 1
+                if isotope_safe_connectivity and skeleton_key(smiles) not in target_skeletons:
+                    continue
                 metric = canonical_ik14(smiles)
                 if metric is None:
                     raise ValueError("Matching training composition has unverifiable metric identity")

@@ -23,6 +23,7 @@ CASMI26 is a noncommercial molecular-identification research project by Senanur 
 | Frozen-model retrospective controls | [Design and source policy](studies/frozen-model-revalidation.md) | [Results and intervals](../reports/revalidation_review.md) |
 | Fresh training on separated query families | [Predeclared design](studies/fresh-training-family-holdout.md) | [Results, ablations and slices](../reports/advanced_review.md) |
 | Candidate versus ranking loss | Post hoc accounting on the frozen internal study | [Coverage diagnosis](../reports/candidate_loss_review.md) |
+| External-source feasibility and C3 follow-on | [Registered source gates and current experiment status](studies/external-source-validation.md) | [MassBank](../reports/external_audit.json), [GNPS2](../reports/gnps_external_audit.json) |
 
 ## Source and maintenance policy
 
