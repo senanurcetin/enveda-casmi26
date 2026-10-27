@@ -65,7 +65,7 @@ def build():
               "", "## Provenance and limits", "",
               "[Executed aggregate and input/model/code hashes](revalidation_study.json) · "
               "[Authenticated Kaggle readback](revalidation_publication.json) · "
-              "[Protocol](../docs/CORRECTED_MODEL_REVALIDATION.md)", ""]
+              "[Protocol](../docs/studies/frozen-model-revalidation.md)", ""]
     lines += ["- " + value for value in result["limitations"]]
     (ROOT / "reports/revalidation_review.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("Rendered verified retrospective study review")

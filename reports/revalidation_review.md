@@ -50,7 +50,7 @@ The machine-readable report also retains the prespecified fixed-grid mixture ban
 
 ## Provenance and limits
 
-[Executed aggregate and input/model/code hashes](revalidation_study.json) · [Authenticated Kaggle readback](revalidation_publication.json) · [Protocol](../docs/CORRECTED_MODEL_REVALIDATION.md)
+[Executed aggregate and input/model/code hashes](revalidation_study.json) · [Authenticated Kaggle readback](revalidation_publication.json) · [Protocol](../docs/studies/frozen-model-revalidation.md)
 
 - Retrospective designated V-in evaluation, not a new untouched external holdout or competition score.
 - Frozen learned weights were not retrained; their complete training-data lineage is not independently attested.

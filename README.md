@@ -2,131 +2,82 @@
 
 # CASMI26 · Molecular Identification Research
 
-**An evidence-led, noncommercial data science portfolio:** retrieving and ranking molecular structures from tandem mass spectra under incomplete reference coverage.
+An English-first, noncommercial research project by Senanur Cetin: retrieve and rank molecular structures from tandem mass spectra when reference spectra and candidate structures may be incomplete.
 
-[Documentation](docs/README.md) · [Model card](MODEL_CARD.md) · [Kaggle notebooks](kaggle/README.md) · [Interactive research dashboard](site/index.html)
+[Documentation](docs/README.md) · [Architecture](ARCHITECTURE.md) · [Model card](MODEL_CARD.md) · [Data card](DATA_CARD.md) · [Kaggle](kaggle/README.md)
 
 [![Research checks](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml/badge.svg)](https://github.com/senanurcetin/enveda-casmi26/actions/workflows/nexus-research-checks.yml)
 
-**Research review: 26 October 2026.** A predeclared fresh-training study has completed with 600 training, 150 development and 250 sealed test query families. It supplements the completed frozen-model retrospective study. Historical leaderboard scores remain separate; neither study is a competition submission or external laboratory validation.
+## Research approach
 
-## The research question
+The pipeline combines mass-compatible candidates, library matching (D1), spectral analog retrieval (D2), learned molecular fingerprints (D3), fragment explanations (D4), candidate generation and LightGBM LambdaRank. Validation separates reference availability from candidate availability and scores every selected molecule, including retrieval misses.
 
-Can a candidate-ranking system identify unknown natural products when the correct structure may have reference spectra, may exist only in a structure database, or may be absent from every candidate source?
+The work examines simulation-induced shortcuts, candidate coverage versus decoy cost, spectral evidence dependence and internal chemical-family transfer. Runtime checks protect spectrum stores, molecular identities, fingerprint alignment and experiment provenance. [Implementation](ARCHITECTURE.md) · [Evaluation methodology](docs/guides/evaluation.md).
 
-The original pipeline combines mass-constrained retrieval, four evidence channels, generated candidates and learned ranking. The central finding is that **a ranker can learn how its simulated candidate pool was constructed instead of learning chemical evidence**. A second finding is that adding a database can lower accuracy by introducing more mass-compatible decoys.
+## Completed evidence
 
-## Recorded results and attribution
+| Study | Principal finding | Evidence |
+|---|---|---|
+| Exact public-example audit | All 1,213 public spectra / 400 molecules match stored training content; examples are not an independent holdout | [Method and hashes](docs/studies/public-example-overlap.md) |
+| Frozen-model retrospective study | All 250 V-in molecules retained; original weights assessed under corrected exclusions and spectral controls | [Results](reports/revalidation_review.md) |
+| Fresh-training internal benchmark | 600/150/250 train/development/test query families; all 26 learned artifacts sealed before test features | [Design](docs/studies/fresh-training-family-holdout.md), [results](reports/advanced_review.md) |
+| Candidate/ranking loss diagnosis | C3 lacks the true candidate for 224/250 queries; fixed-list oracle MRR ceiling is 0.1040 | [Descriptive decomposition](reports/candidate_loss_review.md) |
 
-| Historical public MRR@25 | Score | What was measured |
-|---|---:|---|
-| Library + analog rule | 0.190 | Own baseline |
-| Ranker without membership priors | 0.258 | Own ranking system |
-| + PubChemLite, retrained | 0.273 | Candidate-source extension |
-| + Fragments and candidate generation | 0.298 | Structural evidence and recall |
-| Extended generation | **0.309** | Best recorded own pipeline |
-| External v4n base | 0.420 | Third-party v4n solution, not original model work |
-| v4n + own rank-list fusion | **0.422** | Separate fusion result |
+Fresh internal test MRR@25:
 
-Sources: [experiment log](EXPERIMENTS.md), [machine-readable evidence registry](reports/research_evidence.json). Snapshot: **8 October 2026**. The +0.002 fusion difference is not established as a transferable or statistically significant improvement. The 0.422 result must not be attributed entirely to the original pipeline.
+| Model | C1 | C2 | C3 |
+|---|---:|---:|---:|
+| Mass only | 0.3863 | 0.3863 | 0.0000 |
+| D1+D2 | 0.4608 | 0.2066 | 0.0000 |
+| Fresh full ranker | 0.8665 | 0.8388 | 0.0373 |
 
-## What this project demonstrates
+The predeclared primary C2 full-minus-D1+D2 contrast is **+0.6322**, paired 95% CI **[+0.5816, +0.6829]**. The mass-only baseline's stronger C2 result matters when interpreting that comparison. All 27 secondary contrasts, adverse findings and descriptive slices are retained. D3 and NP-score incremental benefits remain unresolved under joint uncertainty.
 
-- **Scientific modeling:** MS/MS similarity, molecular fingerprints, fragment explanations, candidate generation and LightGBM LambdaRank.
-- **Experimental judgment:** shortcut-feature audits, candidate coverage versus decoy cost, negative results and mismatches between offline validation and leaderboard ordering.
-- **Data engineering:** immutable peak stores, candidate-source reconciliation, fingerprint provenance and content-hashed input inventories.
-- **Research reliability:** molecule-level pairing, negative controls, fixed-grid simultaneous bootstrap bands and tests for rank-slot, identity and numerical edge cases.
-- **Communication:** an English research narrative, model/data cards, reproducible Kaggle publication bundles and a NEXUS evidence dashboard.
+![NEXUS internal research comparisons](docs/assets/advanced-internal-study.png)
 
-## Architecture
+## Historical competition attribution
 
-```mermaid
-flowchart LR
-    A[Licensed MS/MS spectra] --> B[Clean peaks and immutable store]
-    C[Public structure sources] --> D[Mass-compatible candidate pool]
-    B --> E[D1 library · D2 analog · D3 fingerprint · D4 fragments]
-    D --> E
-    E --> F[Generated candidates and LambdaRank]
-    F --> G[Ranked structures per molecule]
-    G --> H[Knockout validation and paired diagnostics]
-    H --> I[Historical evidence · Kaggle research · NEXUS dashboard]
-```
+The archived 8 October 2026 author logs report **0.309 public MRR@25** for the original pipeline, **0.420** for the external v4n base and **0.422** for their rank-list fusion. The fusion score is not entirely original model work; its +0.002 difference is not established as statistically significant or transferable. These historical observations remain separate from later internal studies. [Original experiment log](EXPERIMENTS.md) · [Source-linked registry](reports/research_evidence.json).
 
-The dashboard reads committed aggregates and evidence JSON; it serves no trained model and makes no live Kaggle or BigQuery calls. [Original solution design](ARCHITECTURE.md) · [Data card and identity boundaries](DATA_CARD.md).
+## Inspect and reproduce
 
-## Inspect locally — no account or cloud spend
+Serve the repository root to view the static NEXUS evidence dashboard:
 
 ```bash
 python -m http.server 8000
 # Open http://localhost:8000/site/
 ```
 
-The responsive dashboard includes model-attribution filters, dataset-library composition, methodology risks, searchable evidence states and a downloadable source-hashed research review. NEXUS uses the approved identity from the owner's Drive Logo folder. [Brand provenance](docs/BRAND_IDENTITY.md).
+For scientific work, create a Python 3.12 environment, install the exact/hash-locked requirements and run the repository checks:
 
 ```bash
-python scripts/research_evidence.py
-python -m pytest tests/test_research_evidence_stdlib.py tests/test_nexus_analytics_stdlib.py -q
+python -m pip install --require-hashes -r requirements.txt
+python -m pytest -q
+python scripts/check_research_lock.py
 ```
 
-[Environment, complete test commands and full-data rebuild requirements](docs/REPRODUCIBILITY.md).
+[Complete setup, report regeneration and evidence boundaries](docs/guides/reproducibility.md). The dashboard reads committed aggregates; it serves no trained model and makes no live Kaggle/BigQuery calls. [NEXUS logo provenance](docs/guides/brand-identity.md).
 
-![NEXUS research evidence explorer](docs/assets/nexus-casmi-evidence-explorer.png)
-
-Local source-rendered desktop capture; [verification scope](docs/VERIFICATION.md). This is a historical research interface.
-
-## Kaggle research
-
-1. [Your Ranker Learns How You Built the Pool](https://www.kaggle.com/code/senanuretin/casmi26-your-ranker-learns-how-you-built-the-pool): simulation-induced shortcut features and placebo knockouts.
-2. [A Bigger Candidate Pool Lowered My Score](https://www.kaggle.com/code/senanuretin/casmi26-a-bigger-candidate-pool-lowered-my-score): coverage gains versus decoy-window density.
-
-**Both updated notebooks completed on Kaggle**, with matching source hashes in [publication readback](reports/kaggle_publications.json). The publication bundles retain existing input attachments, CPU execution and internet-disabled computation. Historical tables are labeled explicitly. [Build, publish and verify source/status](kaggle/README.md).
-
-3. [Exact Public-Example Overlap Audit](https://www.kaggle.com/code/senanuretin/casmi26-exact-public-example-overlap-audit): a completed full-training scan separating exact numeric content from coarse-key collisions. [Executed results and hashes](docs/PUBLIC_EXAMPLE_OVERLAP.md).
-
-4. [Corrected Models and Negative Controls](https://www.kaggle.com/code/senanuretin/casmi26-corrected-models-and-negative-controls): **COMPLETE**, with authenticated source/artifact readback. All 250 molecules retained; 1,710 mass-conflicting identities and 13 unparseable candidates quarantined; 1,071,863 candidate structures fingerprint-verified. [Full results, uncertainty and provenance](reports/revalidation_review.md).
-
-| Retrospective MRR@25 | C1 | C2 | C3 |
-|---|---:|---:|---:|
-| D1 | 0.9033 | 0.1402 | 0.0000 |
-| D1+D2 | 0.9040 | 0.2272 | 0.0000 |
-| Frozen v16 learned ranker | 0.8324 | 0.6241 | 0.2374 |
-
-The learned model trades lower C1 performance for higher C2/C3 performance in this selected population. Blank fragments reduce its C2 MRR by 0.4972 and C3 by 0.2374. Conversely, blank spectra **improve the simple models' C2 results**: mass-error tie-breaking can outperform their misleading residual similarities after truth-reference exclusion. The controls do not validate every scoring channel. [Paired confidence intervals and limits](reports/revalidation_review.md).
-
-## Fresh training and sealed internal families — completed 26 October
-
-5. [Fresh Training Family Holdout](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout): **COMPLETE**, authenticated against the exact executed source, raw inputs and aggregate artifact. Two fingerprint networks and eight three-seed rankers were fitted from scratch; all 26 learned artifacts were sealed before final-test feature generation. Selected query families and metric identities do not cross supervised partitions.
-
-| New internal test MRR@25 | C1 | C2 | C3 |
-|---|---:|---:|---:|
-| D1+D2 | 0.4608 | 0.2066 | 0.0000 |
-| Fresh full ranker | 0.8665 | 0.8388 | 0.0373 |
-
-The single predeclared primary C2 difference is **+0.6322, paired 95% CI [+0.5816, +0.6829]**. Joint intervals over 27 secondary contrasts support C2 contributions from D1, D2, D4 and generator features; the D3 and NP-score intervals include zero. C3 truth coverage after generation is only **26/250**, limiting discovery. Blank fragments reduce full-model C2 by 0.5119; intensity shuffling reduces it by 0.0936. [Complete results, slices and figures](reports/advanced_review.md) · [Protocol and limits](docs/ADVANCED_INTERNAL_STUDY.md).
-
-![NEXUS fresh-training research results](docs/assets/advanced-internal-study.png)
-
-[C3 loss accounting](reports/candidate_loss_review.md): 224/250 truths are absent from candidates; 24/26 covered truths reach the top 25 and 6 rank first. Even perfect ordering of the same lists could reach only 0.1040 MRR. This post hoc decomposition preserves the full denominator and does not select a new model.
-
-## Limitations that affect interpretation
-
-V-in and V-real do not establish hidden-test representativeness. The fresh study establishes supervised query-family separation on internal sources; candidate structures may occur as training negatives and the task-defined retrieval corpus remains available. The fixed RDKit NP-score is an external chemical prior. Newly acquired external spectra and independent laboratory replication remain unmeasured. Its population, architecture and training differ from historical v16, so comparing their raw scores does not isolate improvement. The frozen retrospective study retains its executed legacy generated-cache behavior; the new representation-specific cache fix does not retroactively change its results. The [exact-content audit](docs/PUBLIC_EXAMPLE_OVERLAP.md) confirmed all 1,213 public-example spectra in training; they cannot serve as an independent holdout. This does not establish hidden-test contamination.
-
-[Research assessment](docs/CASMI26_RESEARCH_ASSESSMENT.md) · [Evidence and pending work](reports/research_review.md) · [Archived maintenance notes](docs/MAINTENANCE_HISTORY.md).
-
-## Repository map
+## Repository structure
 
 ```text
-src/casmi/             chemistry, spectra, candidates, channels, ranking, validation
-scripts/               data builds, audits, experiment comparisons, evidence export
-notebooks/             tracked research notebook builders and local notebooks
-kaggle/publications/   reproducible owned notebook bundles and input metadata
-reports/               historical profile, evidence ledger and publication readback
-site/                  static NEXUS research dashboard and approved assets
-tests/                 synthetic scientific, provenance and integrity regressions
-docs/                  reviewer guide, methodology, reproducibility and audit history
+src/casmi/        scientific implementation: chemistry, spectra, retrieval, ranking, validation
+scripts/          data builds, experiment runners, audits and report tools; indexed in README
+notebooks/        notebook builders and historical exploratory notebooks
+kaggle/           reproducible publication bundles and input metadata
+protocols/        predeclared experiment designs and outcome-blind amendments
+locks/            exact-version, SHA-256 dependency lock
+reports/          aggregate evidence, publication readbacks and generated reviews
+docs/guides/      reproducibility, data integrity, evaluation and NEXUS identity
+docs/studies/     executed-study designs and interpretation boundaries
+docs/assets/      standalone research figures
+site/             static evidence dashboard and approved logo assets
+sql/              optional read-only warehouse analysis templates
+tests/            scientific, numerical and provenance regression checks
 ```
 
-**Research-only scope:** no billing, customer onboarding, paid inference or recurring infrastructure. Competition data is not redistributed; source datasets and third-party notebooks retain their own terms and attribution. NEXUS is a personal brand and implies no organizer endorsement. [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md).
+## Scientific limits and use
 
-[Citation metadata](CITATION.cff). Cite the commit used and attribute input datasets and external methods separately.
+The fresh benchmark separates selected supervised query families on existing internal sources. Shared task-defined candidate/reference knowledge, source concentration and the fixed external NP-score prior limit unseen-chemistry claims. No newly acquired external spectra, independent laboratory replication or final private competition score is established. Population/training differences prevent a causal before/after comparison with historical v16.
+
+This repository is research software, without production deployment, billing or hosted inference. Licensed spectra, private per-query records, credentials and model weights are not redistributed. Source datasets and external methods retain their own terms and attribution. [Research assessment](docs/research-assessment.md) · [Verification](docs/verification.md) · [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md) · [Citation metadata](CITATION.cff).

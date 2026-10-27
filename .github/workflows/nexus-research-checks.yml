@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - "**/*.md"
+      - "scripts/check_documentation_links.py"
       - "site/**"
       - "notebooks/**"
       - "kaggle/publications/**"
@@ -93,6 +95,8 @@ on:
       - ".github/workflows/nexus-research-checks.yml"
   pull_request:
     paths:
+      - "**/*.md"
+      - "scripts/check_documentation_links.py"
       - "site/**"
       - "notebooks/**"
       - "kaggle/publications/**"
@@ -205,6 +209,7 @@ jobs:
           python scripts/build_revalidation_report.py
           python scripts/build_advanced_report.py --tables-only
           python scripts/build_coverage_report.py --tables-only
+          python scripts/check_documentation_links.py
           python -m pip install nbformat==5.10.4
           python scripts/build_research_publications.py
           python scripts/build_overlap_notebook.py

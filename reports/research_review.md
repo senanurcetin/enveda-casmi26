@@ -32,7 +32,7 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/CASMI26_RESEARCH_ASSESSMENT.md](../docs/CASMI26_RESEARCH_ASSESSMENT.md). SHA-256 (UTF-8 / LF): `2fdd5f8703baf2a24011fc4e6ee0b1ca6be4d8b35d2d9f2f09f46bf9d8e6e589`.
+Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `bf1d331b425ad46a03ecd671b084c27d330f32499df68a529e7c9e374440742b`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -56,7 +56,7 @@ Source: [reports/public_overlap_audit.json](../reports/public_overlap_audit.json
 
 Blank and intensity-shuffle treatments completed for all three models and novelty classes. Blank fragments reduce v16 C2 MRR by 0.4972, but improve simple-model C2 ranking. Controls expose dependence and failure modes; they do not certify generalization.
 
-Source: [reports/revalidation_review.md](../reports/revalidation_review.md). SHA-256 (UTF-8 / LF): `ff669ac2152f2df7c6cc4fb1b84ab9560cf2cc6fda1ffe70e6d07e5b0fac92db`.
+Source: [reports/revalidation_review.md](../reports/revalidation_review.md). SHA-256 (UTF-8 / LF): `492b09c3dceeeff55b52c06cf15dc6cbb78ef51d648fe26a743dd03dd22104b9`.
 
 ## Executed candidate-source quarantine — measured
 
@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `3597fc8088bea7fe6a1b7b3545effa2c0d002fbce8c97633b74bed2ec589aaed`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `0ba68105ad3782a5725decb3d818c4f48219c6eea029a93d28b0cfef29fe71fb`.
 
 ## Fresh training and sealed internal query families — measured
 
