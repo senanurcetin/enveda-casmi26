@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.build_external_audit_notebook import build_configured
 
-KERNEL = "senanuretin/casmi26-gnps-expanded-independence"
+KERNEL = "senanuretin/casmi26-gnps-community-external-independence"
 DATASETS = ["senanuretin/casmi26-gnps-cc0-expanded", "metric/rdkit-2026-3-3-wheel"]
 OUTPUT = ROOT / "kaggle/audits/gnps-expanded-independence"
 REGISTERED_COMMIT = "6be58a5"

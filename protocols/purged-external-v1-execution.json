@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "parent_protocol": "purged-external-v1.json",
+  "registered_before_any_model_performance": true,
+  "purpose": "Fixed execution details for the separate purged-training study, registered before any model performance",
+  "max_spectra": 5,
+  "max_training_spectra_per_structure": 128,
+  "fp_model": {
+    "d_model": 128,
+    "n_layers": 2,
+    "d_ff": 512,
+    "epochs": 6,
+    "batch_size": 256,
+    "lr": 0.0003
+  },
+  "ranker": {
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "rounds": 400,
+    "early_stopping": 40
+  },
+  "external_spectrum_selection": "First five accession-sorted eligible spectra per selected metric identity; no performance or candidate-coverage filtering",
+  "external_missing_energy": "Collision energy is not harmonized from percent/NCE to eV. Encode unavailable numeric eV as zero using the existing model input convention and disclose this distribution-shift limitation.",
+  "primary_bootstrap": "Percentile paired bootstrap of per-molecule expanded-minus-legacy binary C3 coverage on new internal test, 4000 draws",
+  "secondary_family": [
+    "internal_mrr_expanded_minus_legacy:C1",
+    "internal_mrr_expanded_minus_legacy:C2",
+    "internal_mrr_expanded_minus_legacy:C3",
+    "external_mrr_expanded_minus_legacy:C2",
+    "external_mrr_expanded_minus_legacy:C3",
+    "external_coverage_expanded_minus_legacy:C2",
+    "external_coverage_expanded_minus_legacy:C3",
+    "external_legacy_blank_minus_none:C2",
+    "external_legacy_blank_minus_none:C3",
+    "external_expanded_blank_minus_none:C2",
+    "external_expanded_blank_minus_none:C3"
+  ],
+  "secondary_resampling": "Joint max-deviation bootstrap over the fixed 11-contrast family. Resample molecules independently within internal/external cohorts, keeping every policy/class/control paired within its cohort. 4000 draws, uniform joint radius.",
+  "baseline_diagnostics": "Report mass-only, D1 and D1+D2 rules on original pool candidates in each cohort/condition; no post-test baseline selection",
+  "generation_feature_reuse": "Score candidate-intrinsic channels once on the legacy-preserving union; recompute n_cand, log_n_cand and all D1/D2/D3/D4 rank/gap/z features for each candidate subset. Audit membership never enters fitted features.",
+  "runtime": "Free CPU execution permitted; GPU optional. Two Torch/BLAS/LightGBM threads, deterministic seeds. No deployment or submission."
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "casmi-purged-external-v1",
+  "registered_on": "2026-10-28",
+  "scope": "New experiment after failed original-snapshot novelty feasibility: freshly fitted models with external chemical families purged from the entire training/reference corpus; no claim that these molecules were absent from the original CASMI snapshot.",
+  "external_source": {
+    "repository": "https://library.gnps2.org/libraries",
+    "retrieved_on": "2026-10-27",
+    "license_policy": "Directly contributed GNPS reference spectra default to CC0; exclude third-party imported and propagated/MassQL/suspect libraries.",
+    "license_reference": "https://ccms-ucsd.github.io/GNPSDocumentation/browselibraries/#license",
+    "allowed_record_licenses": [
+      "CC0"
+    ],
+    "files": {
+      "CEMBIO_OXYLIPINS.json": {
+        "url": "https://library.gnps2.org/api/libraries/CEMBIO_OXYLIPINS/json",
+        "sha256": "5bb461648eb111304b8e47765a177a01b443b9ad0589038ea5f261428814130e",
+        "bytes": 192299
+      },
+      "USER-CONTRIBUTED-GNPS2.json": {
+        "url": "https://library.gnps2.org/api/libraries/USER-CONTRIBUTED-GNPS2/json",
+        "sha256": "3146f450ba71009edac2375041a05de3fb1dae282903119074701a84fbc15e7a",
+        "bytes": 302638
+      },
+      "GNPS-LIBRARY.json": {
+        "url": "https://library.gnps2.org/api/libraries/GNPS-LIBRARY/json",
+        "sha256": "d463bc39362359329a520d8fdd1b352abc4807188fc6ef465501183b1a261264",
+        "bytes": 334137083
+      }
+    },
+    "eligibility": "Source-classified standard spectra; MS2, ESI evidenced in source/instrument annotation; supported adduct and matching mode; connected valid molecular structure, 150-1170 Da, precursor error <=20 ppm, at least five finite positive ordered peaks; reject explicit low-quality or inferred/synthetic acquisition annotations. Preserve raw record hash, original metadata and source URL. GNPS2 snapshot-relative record IDs are derived hashes, not claimed official accessions."
+  },
+  "feasibility_stage": "Audit the selected external inputs against every row of the newly purged training snapshot; require zero standard/metric/exact-content overlap, zero retained selected generic families, at least 30 external molecules, and at least 100000 retained training rows. These requirements do not retroactively establish novelty against the original snapshot.",
+  "external_selection": "Before any fitting, hash-order eligible generic families with salt NEXUS-CASMI-PURGED-EXTERNAL-20261028-v1|external-family|family; choose at most 150 molecules, at least 30, one representative metric per family component. Choose lexical metric representatives, retain at most five accession-sorted spectra. Do not use predictions, candidate presence, or the previously observed seven-novel-molecule subset.",
+  "internal_counts": {
+    "train": 300,
+    "dev": 100,
+    "test": 150
+  },
+  "internal_selection": "Reconstruct and verify the original 600/150/250 population on the original unpurged metadata before filtering. Preserve its selected family/metric exclusion sets privately. Select fresh 300/100/150 internal partitions from the purged corpus, excluding those original selected families/metrics and every historical V-in family. Source filtering cannot authorize reusing a previously opened test family.",
+  "split_salt": "NEXUS-CASMI-PURGED-EXTERNAL-20261028-v1",
+  "seed": 20261028,
+  "generator_policies": {
+    "legacy": {
+      "analog_seeds": 15,
+      "candidate_cap": 300,
+      "transform_pair_order": "historical single order"
+    },
+    "expanded": {
+      "analog_seeds": 30,
+      "candidate_cap": 900,
+      "transform_pair_order": "both orders",
+      "preserve_legacy_candidates_and_features": true
+    }
+  },
+  "generator_choice": "Only two fixed policies; expanded is retained for test only if development coverage does not decrease and at least one new development truth is recovered. Freeze the choice before test inference. Always report both policies and development gains/losses.",
+  "fresh_supervised_fitting": "Two cross-fitted fingerprint networks, dimension128/layers2/ff512, six fixed epochs, batch256, AdamW lr0.0003; two three-seed LambdaRank models, <=400 rounds with development-only early stopping40; no archived weight attachment",
+  "feature_policy": "D1/D2/D3/D4 and generator features; exclude all prior_* and audit_* columns from scientific models; shared candidate-intrinsic computation may be reused only if each candidate subset's list-context features are recomputed",
+  "test_controls": "Unperturbed internal C1/C2/C3 and external C2/C3; blank-fragment external C2/C3 diagnostic; same selected molecules retained including empty candidate lists",
+  "primary": "Paired expanded-minus-legacy C3 candidate truth-coverage difference on the new internal test",
+  "external_validation": "Report every external C2/C3 outcome with both budgets and blank controls, using the same predeclared estimators as the earlier design. All selected external molecules stay in denominators. Generalization is relative to the purged training/reference snapshot; source chemical annotations and original shared-archive acquisition lineage are not independently authenticated.",
+  "uncertainty": "4000 molecule-paired bootstrap draws; primary single contrast; secondary fixed-family joint max-deviation intervals; no inference from small descriptive slices",
+  "seal": "Seal all supervised weights, features, protocol, population hashes and development choice before internal or external test feature generation",
+  "budget": "Existing free Kaggle CPU/GPU only; no paid compute, external LLM calls, deployment or competition submissions",
+  "failure_policy": "Fail closed if any purge, family, metric, content, population or seal gate fails. Preserve every execution and adverse result. Do not call this a passing original-snapshot novelty study or laboratory replication. Do not change the selected external molecules after prediction/candidate inspection.",
+  "parent_feasibility_outcome": "MassBank 0/491 novel; two GNPS2 libraries 7/85; expanded GNPS 7/936. Preserve all failed gates. This is a separately defined purged-training experiment, not a passing result for external-c3-v1.",
+  "external_training_purge": "Remove all original training rows belonging to any selected external generic family, standard identity, or official tautomer metric identity, including every row sharing a blocked declared training identity. Compute full-label family/identity checks before filtering. Rebuild structures, spectrum store, candidate pool, fingerprints and D2 index from the filtered snapshot. Keep independent COCONUT/PubChemLite candidate knowledge under ordinary C2 semantics; exclude all membership priors from fitted features."
+}
