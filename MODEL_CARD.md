@@ -1,6 +1,6 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 26 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 28 October 2026.
 
 ## Intended use
 
@@ -32,7 +32,7 @@ The [completed fresh-training study](reports/advanced_review.md) uses 600/150/25
 
 Fresh full C1/C2/C3 MRR@25 is **0.8665/0.8388/0.0373**. The predeclared C2 full-minus-D1+D2 contrast is **+0.6322 [+0.5816, +0.6829]**. Among 27 jointly assessed secondary contrasts, C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 effects are -0.5119/-0.0936. C3 candidate coverage is only 26/250. No automatic promotion follows from testing several variants.
 
-This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. Independent external spectra/laboratory replication remain absent.
+This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. External model performance and independent laboratory replication remain unmeasured; the separately registered family-purged external experiment is running.
 
 ## Operational and scientific failure modes
 

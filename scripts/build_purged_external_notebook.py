@@ -15,7 +15,7 @@ DATASETS = ["senanuretin/casmi-coconut-b", "senanuretin/casmi-pubchemlite-b", "m
 REGISTERED_COMMIT = "1b7a6cc"
 
 
-def build():
+def build(*, new_attempt=False):
     publication_path = ROOT / "reports/purged_external_publication.json"
     if publication_path.exists():
         from scripts.research_snapshot import snapshot_hashes
@@ -27,6 +27,15 @@ def build():
             raise ValueError("Completed purged external study source was altered")
         print("Verified frozen completed family-purged external study")
         return
+    history_path = ROOT / "reports/purged_external_execution_history.json"
+    if history_path.exists() and not new_attempt:
+        from scripts.check_kaggle_publications import source_hash
+        history = json.loads(history_path.read_text(encoding="utf-8"))
+        notebook = json.loads((OUTPUT / "notebook.ipynb").read_text(encoding="utf-8"))
+        if source_hash(notebook) != history["attempts"][-1]["source_sha256"]:
+            raise ValueError("Registered live/previous attempt source was altered")
+        print("Verified registered purged-study attempt; source preserved while results are pending")
+        return
     original = json.loads((ROOT / "reports/gnps_expanded_external_audit.json").read_text(encoding="utf-8"))
     publication = json.loads((ROOT / "reports/gnps_expanded_external_audit_publication.json").read_text(encoding="utf-8"))
     if original["status"] != "EXTERNAL_INDEPENDENCE_NOT_ESTABLISHED" or publication["status"] != "pass":
@@ -37,7 +46,7 @@ def build():
         "run_advanced_study.py", "external_study_training.py", "run_external_c3_study.py", "prepare_purged_external.py"]
     paths = sorted((ROOT / "src").rglob("*.py")) + [ROOT / "scripts" / name for name in script_names]
     paths += [ROOT / "protocols" / name for name in ("purged-external-v1.json", "purged-external-v1-execution.json",
-        "external-source-v3.json", "advanced-internal-v1.json")]
+        "external-source-v3.json", "advanced-internal-v1.json", "purged-external-v1-source-amendment.json")]
     paths += [ROOT / "reports/advanced_study.json", ROOT / "reports/gnps_expanded_external_audit.json"]
     sources = {p.relative_to(ROOT).as_posix(): p.read_text(encoding="utf-8") for p in paths}
     setup = '''import hashlib,importlib.metadata,json,os,re,subprocess,sys,time
@@ -108,12 +117,14 @@ report['raw_inputs']={'original_train.parquet':file_record(train),'purged_train.
 report['source_code_sha256']={n:hashlib.sha256(t.encode()).hexdigest() for n,t in sources.items()}
 report['execution']={'platform':'Kaggle','competition_source':'enveda-CASMI26-molecule-id-mass-spectra',
     'dataset_sources':DATASET_LITERAL,'pretrained_models_attached':False,'gpu_enabled':False,'internet_enabled':False,
-    'submitted_predictions':False,'protocol_registered_commit':REGISTERED_COMMIT,'new_model_test_results_before_registration':False}
+    'submitted_predictions':False,'protocol_registered_commit':REGISTERED_COMMIT,'new_model_test_results_before_registration':False,
+    'source_amendment_sha256':AMENDMENT_HASH}
 report['installed_packages']=dict(sorted((d.metadata['Name'],d.version) for d in importlib.metadata.distributions()
     if d.metadata['Name'] and re.fullmatch(r'[A-Za-z0-9_.+-]+',d.version)))
 output.write_text(json.dumps(report,indent=2,allow_nan=False)+'\\n')
 print('Completed separately registered purged-training external-family study; original novelty failures remain explicit.',flush=True)
-'''.replace("DATASET_LITERAL", repr(DATASETS)).replace("REGISTERED_COMMIT", repr(REGISTERED_COMMIT))
+'''.replace("DATASET_LITERAL", repr(DATASETS)).replace("REGISTERED_COMMIT", repr(REGISTERED_COMMIT)).replace("AMENDMENT_HASH", repr(hashlib.sha256(
+        (ROOT / "protocols/purged-external-v1-source-amendment.json").read_text(encoding="utf-8").encode()).hexdigest()))
     nb = new_notebook(cells=[M('''<img src="https://raw.githubusercontent.com/senanurcetin/enveda-casmi26/main/site/assets/nexus-midnight.svg" width="360" alt="NEXUS">
 
 # CASMI26: Purged Family External Validation
@@ -130,4 +141,8 @@ The original-snapshot novelty study did not find the required independent popula
     print("Built distinct CPU-only family-purged external study")
 
 
-if __name__ == "__main__": build()
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--new-attempt", action="store_true", help="Intentionally prepare a repaired attempt; preserve earlier attempt history first")
+    build(new_attempt=parser.parse_args().new_attempt)

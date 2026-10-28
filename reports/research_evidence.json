@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-27",
+  "reviewed_on": "2026-10-28",
   "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
@@ -174,6 +174,20 @@
       "state": "implemented",
       "source": "src/casmi/generate/expanded.py",
       "detail": "Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured."
+    },
+    {
+      "id": "gnps-expanded-feasibility",
+      "title": "Expanded GNPS original-snapshot novelty feasibility",
+      "state": "measured",
+      "source": "reports/gnps_expanded_external_audit.json",
+      "detail": "Authenticated full-training scan leaves the same seven novel molecules among 936 eligible identities, below the declared minimum of 30. Expanded GNPS includes the earlier two-library source, so these stages are not independent replications."
+    },
+    {
+      "id": "purged-family-external-study",
+      "title": "Separately registered family-purged external evaluation",
+      "state": "pending",
+      "source": "protocols/purged-external-v1.json",
+      "detail": "A new free-CPU experiment removes selected external chemical families and identities from the entire training/reference corpus, rebuilds artifacts, fits fresh weights and seals all models before test. Original-snapshot novelty feasibility remains unsuccessful. Model performance and C3 coverage improvement are not yet established."
     }
   ]
 }

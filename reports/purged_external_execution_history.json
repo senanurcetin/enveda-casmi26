@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "experiment": "casmi-purged-external-v1",
+  "original_snapshot_novelty_gate": "NOT_ESTABLISHED_PRESERVED",
+  "attempts": [
+    {
+      "version": 1,
+      "checked_at": "2026-10-28T20:24:03.055450+00:00",
+      "status": "ERROR",
+      "source_sha256": "85005eb60828906c245cfde4e23b7f97d168441ba356ee9802881d4cba5921cc",
+      "source_matches": true,
+      "public": true,
+      "protocol_registered_commit": "1b7a6cc",
+      "implementation_commit": "f0401fe",
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "dataset_sources": [
+        "senanuretin/casmi-coconut-b",
+        "senanuretin/casmi-pubchemlite-b",
+        "metric/rdkit-2026-3-3-wheel",
+        "senanuretin/casmi26-gnps-cc0-expanded"
+      ],
+      "result_artifacts_inspected": false,
+      "sanitized_failure": {
+        "status": "FAILED_CLOSED",
+        "stage": "prepare_purged_external.py",
+        "exception_type": "ValueError",
+        "last_project_location": [
+          "src/casmi/validate/external_purge.py",
+          "50"
+        ]
+      },
+      "failure_artifact_sha256": "10a94105b31c6085a2d9ceb0ca865f932f03df3a2f29fb992fce77d39f5c9b77",
+      "model_fitting_started": false,
+      "model_results_inspected": false
+    },
+    {
+      "version": 2,
+      "checked_at": "2026-10-28T20:27:30.919959+00:00",
+      "status": "PREPARED",
+      "source_sha256": "9d7aeb3f4deb26cb724e2467ae577d02d4d7784c7e51d3659fd16064985e4643",
+      "source_matches": false,
+      "public": false,
+      "protocol_registered_commit": "1b7a6cc",
+      "source_amendment": "protocols/purged-external-v1-source-amendment.json",
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "dataset_sources": [
+        "senanuretin/casmi-coconut-b",
+        "senanuretin/casmi-pubchemlite-b",
+        "metric/rdkit-2026-3-3-wheel",
+        "senanuretin/casmi26-gnps-cc0-expanded"
+      ],
+      "result_artifacts_inspected": false,
+      "model_results_inspected": false
+    }
+  ],
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation",
+  "scope": "Execution tracking only; running source authentication is not completed model-performance evidence"
+}

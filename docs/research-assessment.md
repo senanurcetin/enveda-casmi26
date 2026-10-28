@@ -1,6 +1,6 @@
 # Research assessment
 
-Reviewed 27 October 2026. CASMI26 is an advanced, noncommercial research software and data science portfolio for molecular identification from MS/MS spectra. The assessment concerns reproducibility, experimental discipline and evidence boundaries; it does not claim state-of-the-art accuracy or deployment readiness.
+Reviewed 28 October 2026. CASMI26 is an advanced, noncommercial research software and data science portfolio for molecular identification from MS/MS spectra. The assessment concerns reproducibility, experimental discipline and evidence boundaries; it does not claim state-of-the-art accuracy or deployment readiness.
 
 | Area | Current evidence | Remaining limit |
 |---|---|---|
@@ -22,7 +22,7 @@ The [public-example audit](studies/public-example-overlap.md) confirms exact tra
 
 ## Follow-on research
 
-The [external-source feasibility study](studies/external-source-validation.md) has now tested two independent downloads against every training row: MassBank leaves zero novel molecules among 491 eligible identities, and two GNPS2 standard libraries leave seven among 85. Neither meets the predeclared minimum of 30. This is measured negative feasibility evidence; external model accuracy remains unmeasured. C3 expansion preserves historical candidates in implementation tests, but no real coverage-improvement claim is established yet.
+The [external-source feasibility study](studies/external-source-validation.md) scans every original training row. MassBank leaves zero novel molecules among 491 eligible identities; the expanded GNPS source leaves the same seven among 936. Neither reaches the declared minimum of 30. These are measured negative feasibility findings. A separately preregistered experiment now removes selected external families/identities from the full training/reference corpus and fits fresh weights. Its model outcomes and C3 coverage change remain pending; original-snapshot novelty is not reclassified as successful.
 
 External acquired spectra or independent laboratory replication would address evidence not supplied by internal splitting. C3 generation recall and broader cross-instrument samples are justified research priorities. Any follow-on experiment must declare its population and selection policy before results, use a separate evaluation set and preserve all favorable/adverse outcomes. The completed test must not become a tuning set.
 

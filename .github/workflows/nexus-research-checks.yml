@@ -228,6 +228,7 @@ jobs:
           python scripts/build_external_audit_notebook.py
           python scripts/build_gnps_audit_notebook.py
           python scripts/build_gnps_expanded_audit_notebook.py
+          python scripts/build_purged_external_notebook.py
           git diff --exit-code -- reports/research_review.md reports/revalidation_review.md reports/advanced_review.md reports/candidate_loss_review.md reports/candidate_loss_budget.json kaggle/publications kaggle/audits
       - name: Install synthetic integration dependencies
         run: python -m pip install numpy==2.3.5 pandas==2.3.3 pytest==9.0.2 pyarrow==24.0.0

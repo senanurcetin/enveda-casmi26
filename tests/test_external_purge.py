@@ -35,3 +35,12 @@ def test_entire_generic_external_family_is_removed_without_metric_equality():
     assert canonical_ik14("CCN") != canonical_ik14("CCO")
     blocked = blocked_training_identities([("same-family", "CCN"), ("other-family", "c1ccccc1")], source, [family_key("CCO")])
     assert "same-family" in blocked and "other-family" not in blocked
+
+
+def test_undefined_family_quarantines_all_rows_of_its_declared_identity():
+    source = pd.DataFrame([{"metric_key": canonical_ik14("CCO"), "standard_ik14": "fixture-source-key", "smiles": "CCO"}])
+    rows = [("unassigned-key", "[H+]"), ("unassigned-key", "c1ccccc1"), ("clean-key", "CCN")]
+    assert family_key("[H+]") is None
+    blocked, audit = blocked_training_identities(rows, source, [], return_audit=True)
+    assert "unassigned-key" in blocked and "clean-key" not in blocked
+    assert audit == {"unassignable_family_labels_removed": 1, "unassignable_family_training_identities_removed": 1}

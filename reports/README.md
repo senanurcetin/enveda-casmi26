@@ -15,6 +15,8 @@ This directory contains public aggregates and provenance records. Licensed sourc
 | `candidate_loss_budget.json`, `candidate_loss_review.md` | Post hoc aggregate-only loss accounting | `python scripts/build_coverage_report.py --tables-only` |
 | `external_source_preparation.json`, `external_audit.json`, `external_audit_publication.json` | Pinned MassBank CC0 input preparation and authenticated negative source-independence result | Preserve completed source; `check_external_audit_publication.py` authenticates remote evidence |
 | `gnps_external_source_preparation.json`, `gnps_external_audit.json`, `gnps_external_audit_publication.json` | Two-library GNPS source preparation and authenticated insufficient external population | `check_gnps_audit_publication.py`; this is not model-performance evidence |
+| `gnps_expanded_source_preparation.json`, `gnps_expanded_external_audit.json`, `gnps_expanded_external_audit_publication.json` | Expanded GNPS original-snapshot feasibility; 7/936 novel molecules | Preserve negative conclusion and completed source; `check_gnps_expanded_audit_publication.py` |
+| `purged_external_execution_history.json` | Separately registered family-purged model-study attempts | Source/status tracking only; not completed accuracy evidence. Preserve every attempt before preparing a repair |
 | `research_environment_validation.json` | Dated installed-environment/JUnit attestation | Regenerate only from an actually checked environment and completed test run |
 
 Without `--tables-only`, the advanced/coverage builders export PNG/SVG/PDF figures to `docs/assets/` in the locked plotting environment. CI checks deterministic table regeneration; font/platform rendering is not a bitwise image guarantee.

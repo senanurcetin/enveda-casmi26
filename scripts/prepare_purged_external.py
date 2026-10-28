@@ -52,7 +52,7 @@ def prepare():
     selected, families = select_external_families(source, protocol["split_salt"])
     print(f"Prepared {selected.metric_key.nunique()} external molecules before fitting or candidate inspection", flush=True)
     unique_labels = pd.read_parquet(original, columns=["inchikey14", "normalized_smiles"]).drop_duplicates()
-    blocked = blocked_training_identities(unique_labels.itertuples(index=False, name=None), selected, families)
+    blocked, grouping_audit = blocked_training_identities(unique_labels.itertuples(index=False, name=None), selected, families, return_audit=True)
     actual_blocked = set(unique_labels.inchikey14) & blocked
     output = Path(os.environ["CASMI_PURGED_DATA"])
     output.mkdir(parents=True, exist_ok=False)
@@ -94,10 +94,13 @@ def prepare():
     if retained_family_overlap:
         raise ValueError("Selected external family remains in filtered training")
     report = {"schema_version": 1, "status": "EXTERNAL_FAMILIES_PURGED_AND_INDEPENDENCE_VERIFIED",
-        "protocol_sha256": sha256_file(protocol_path), "original_training": expected_train,
+        "protocol_sha256": sha256_file(protocol_path),
+        "source_amendment_sha256": sha256_file(ROOT / "protocols/purged-external-v1-source-amendment.json"),
+        "original_training": expected_train,
         "original_source_preparation": source_manifest, "selected_source_preparation": derived_manifest,
         "original_training_rows": train.metadata.num_rows, "retained_training_rows": retained, "removed_training_rows": removed,
-        "removed_training_identities": len(actual_blocked), "selected_external_molecules": int(selected.metric_key.nunique()),
+        "removed_training_identities": len(actual_blocked), "family_grouping_quarantine": grouping_audit,
+        "selected_external_molecules": int(selected.metric_key.nunique()),
         "selected_external_families": len(families), "selected_external_spectra_available": len(selected),
         "selected_metric_sha256": digest(sorted(set(selected.metric_key))), "selected_family_sha256": digest(families),
         "selected_accessions_sha256": digest(sorted(selected.accession)), "retained_external_family_overlap": retained_family_overlap,

@@ -1,6 +1,6 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-27. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-28. Score snapshot: 2026-10-08.
 
 Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation.
 
@@ -32,7 +32,7 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `1ebc4c886243d49dcc25d8ef1f5864564194196c9a7e987c9eb26d4f2940bcf3`.
+Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `b88036a8c2afbd6de49c2fd5f4f6388609c4132170e808c45696af5448f3839f`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `64cdc8de2b53fa1b6c34d791ddf5e96b4a92e6c3d19fed06e05c8881f2005868`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `ad2f607cff0bf0528e463b92ed0833a114584958cdff540d7329a04081cabfd6`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -86,7 +86,7 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `0076f634726b977841731814ab882adb2deb86c8ef89be76d3a5e41c09887053`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `3e8d30a867681a72450e64b77943c7b9515c6989f93ec913c034d22ae510fe76`.
 
 ## Candidate coverage and ranking loss accounting — measured
 
@@ -117,3 +117,15 @@ Source: [reports/gnps_external_audit.json](../reports/gnps_external_audit.json).
 Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured.
 
 Source: [src/casmi/generate/expanded.py](../src/casmi/generate/expanded.py). SHA-256 (UTF-8 / LF): `e40c0abef2875f82b3f4343e7e51f13bafd6801bfe87543dc9f5e9fd6d00d090`.
+
+## Expanded GNPS original-snapshot novelty feasibility — measured
+
+Authenticated full-training scan leaves the same seven novel molecules among 936 eligible identities, below the declared minimum of 30. Expanded GNPS includes the earlier two-library source, so these stages are not independent replications.
+
+Source: [reports/gnps_expanded_external_audit.json](../reports/gnps_expanded_external_audit.json). SHA-256 (UTF-8 / LF): `2e5664b597a0662a0f55204b7d4b0a5558e32efdfd9637d2edcd7a62c79d124f`.
+
+## Separately registered family-purged external evaluation — pending
+
+A new free-CPU experiment removes selected external chemical families and identities from the entire training/reference corpus, rebuilds artifacts, fits fresh weights and seals all models before test. Original-snapshot novelty feasibility remains unsuccessful. Model performance and C3 coverage improvement are not yet established.
+
+Source: [protocols/purged-external-v1.json](../protocols/purged-external-v1.json). SHA-256 (UTF-8 / LF): `0797eab3dc5a375f8e09ab0bc31af64746135a0f2959266792a219d9b33eeab8`.

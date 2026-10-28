@@ -1,6 +1,6 @@
 # Kaggle research publications
 
-Five owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
+Eight owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
 
 | Publication | Bundle | Evidence |
 |---|---|---|
@@ -11,6 +11,13 @@ Five owned publications have completed authenticated source/status readback. The
 | [Fresh Training Family Holdout](https://www.kaggle.com/code/senanuretin/casmi26-fresh-training-family-holdout) | `audits/advanced-internal/` | Fresh weights and sealed internal query-family test; [results](../reports/advanced_review.md) |
 | [MassBank External Independence](https://www.kaggle.com/code/senanuretin/casmi26-massbank-external-independence) | `audits/external-independence/` | Authenticated negative feasibility: zero novel molecules; no model scoring |
 | [GNPS2 External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps2-external-independence) | `audits/gnps-independence/` | Authenticated insufficient population: seven novel molecules; no model scoring |
+| [GNPS Community External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps-community-external-independence) | `audits/gnps-expanded-independence/` | Authenticated original-snapshot insufficiency: 7/936 novel molecules; no model scoring |
+
+## Running separately registered study
+
+[Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) is running on free CPU with disabled internet and no archived-model attachment. Its [registered design](../protocols/purged-external-v1.json) purges selected external families from all training/reference rows before fresh fitting. [Execution history](../reports/purged_external_execution_history.json) authenticates the live source, not completed model performance. The original novelty gates remain unsuccessful.
+
+`build_purged_external_notebook.py` preserves an existing registered attempt by default. An intentional repaired attempt requires `--new-attempt` and preserved earlier attempt history; a completed publication stays frozen. After completion, `check_purged_external_publication.py` authenticates the bounded result and `build_purged_external_report.py` renders verified outcomes.
 
 ## Build and authenticate
 
@@ -29,6 +36,8 @@ python scripts/build_external_audit_notebook.py
 python scripts/check_external_audit_publication.py
 python scripts/build_gnps_audit_notebook.py
 python scripts/check_gnps_audit_publication.py
+python scripts/build_gnps_expanded_audit_notebook.py
+python scripts/check_gnps_expanded_audit_publication.py
 ```
 
 Builders prepare or verify tracked source bundles. Readback commands inspect remote state and download bounded aggregate artifacts; they do not start execution or submit predictions. A notebook URL alone does not attest completion. Source, public visibility, declared attachments and relevant artifact hashes must match.

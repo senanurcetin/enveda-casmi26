@@ -31,7 +31,7 @@ def select_external_families(source, salt, *, maximum=150, minimum=30):
     return source[source.metric_key.isin(chosen)].sort_values("accession").reset_index(drop=True), sorted(blocked_families)
 
 
-def blocked_training_identities(rows, selected_source, selected_families):
+def blocked_training_identities(rows, selected_source, selected_families, *, return_audit=False):
     """Inspect full labels; a blocked label blocks every row of its declared key."""
     from casmi.chem.canon import canonical_ik14, skeleton_key
     from casmi.validate.scaffold_study import family_key
@@ -41,24 +41,33 @@ def blocked_training_identities(rows, selected_source, selected_families):
     external_skeletons = {skeleton_key(s) for s in selected_source.smiles}
     selected_families = set(selected_families)
     blocked, cache = set(external_standard), {}
+    unassigned_labels, unassigned_keys = set(), set()
     for key, smiles in rows:
         if not isinstance(key, str) or not key:
             raise ValueError("Missing original training identity")
         if smiles not in cache:
             family = family_key(smiles)
             if family is None:
-                raise ValueError("Unparseable original training family")
-            by_family = family in selected_families
-            skeleton = skeleton_key(smiles)
-            if skeleton is None:
-                raise ValueError("Unparseable original training connectivity")
-            by_metric = False
-            if skeleton in external_skeletons:
-                metric = canonical_ik14(smiles)
-                if metric is None:
-                    raise ValueError("Unverifiable matching original metric")
-                by_metric = metric in external_metrics
-            cache[smiles] = by_family or by_metric
+                # Undefined grouping cannot establish family separation. Remove
+                # every row of this declared identity rather than retain it.
+                unassigned_labels.add(smiles)
+                cache[smiles] = True
+            else:
+                by_family = family in selected_families
+                skeleton = skeleton_key(smiles)
+                if skeleton is None:
+                    raise ValueError("Unparseable original training connectivity")
+                by_metric = False
+                if skeleton in external_skeletons:
+                    metric = canonical_ik14(smiles)
+                    if metric is None:
+                        raise ValueError("Unverifiable matching original metric")
+                    by_metric = metric in external_metrics
+                cache[smiles] = by_family or by_metric
+        if smiles in unassigned_labels:
+            unassigned_keys.add(key)
         if key in external_standard or cache[smiles]:
             blocked.add(key)
-    return blocked
+    audit = {"unassignable_family_labels_removed": len(unassigned_labels),
+             "unassignable_family_training_identities_removed": len(unassigned_keys)}
+    return (blocked, audit) if return_audit else blocked
