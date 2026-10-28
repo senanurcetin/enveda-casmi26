@@ -9,7 +9,7 @@ from .scaffold_study import family_key, partition, digest
 from casmi.chem.canon import canonical_ik14
 
 
-def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol):
+def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol, *, protected=None, return_protected=False):
     keys = meta.train_ik14.astype(str).to_numpy()
     labels = dict(zip(truth_pool.key, truth_pool.smiles))
     masses = dict(zip(truth_pool.key, truth_pool.mass))
@@ -23,6 +23,10 @@ def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protoc
     best = counts.sort_values(["count", "key", "library"], ascending=[False, True, True]).drop_duplicates("key")
     groups = {key: group.row.to_numpy() for key, group in choices.merge(best[["key", "library"]], on=["key", "library"]).groupby("key")}
     historical_vin = {family_key(labels[key]) for key in pd.unique(keys[(meta.ingest_lib == "enveda-np-examples").to_numpy()]) if key in labels}
+    if protected is not None:
+        if protected["previous_partitions"] != {name: previous_audit[name] for name in ("train", "dev", "test")}:
+            raise ValueError("Pre-purge historical partition evidence differs")
+        historical_vin.update(protected["historical_vin"])
     representatives = {}
     for row in best.itertuples():
         family = family_key(labels[row.key])
@@ -33,16 +37,22 @@ def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protoc
         metric = canonical_ik14(labels[value["key"]])
         if metric:
             records.append({**value, "metric": metric})
-    previous = partition(records, previous_protocol["split_counts"], previous_protocol["split_salt"])
-    for name, values in previous.items():
-        for field, private_values in (("identity_sha256", [v["key"] for v in values]),
-                                      ("family_sha256", [v["group"] for v in values]),
-                                      ("metric_sha256", [v["metric"] for v in values])):
-            if digest(private_values) != previous_audit[name][field]:
-                raise ValueError("Historical partitions could not be reconstructed exactly")
-    old_values = [v for values in previous.values() for v in values]
-    old_metrics = {v["metric"] for v in old_values}
-    old_families = {v[field] for v in old_values for field in ("family", "group")}
+    if protected is None:
+        previous = partition(records, previous_protocol["split_counts"], previous_protocol["split_salt"])
+        for name, values in previous.items():
+            for field, private_values in (("identity_sha256", [v["key"] for v in values]),
+                                          ("family_sha256", [v["group"] for v in values]),
+                                          ("metric_sha256", [v["metric"] for v in values])):
+                if digest(private_values) != previous_audit[name][field]:
+                    raise ValueError("Historical partitions could not be reconstructed exactly")
+        old_values = [v for values in previous.values() for v in values]
+        old_metrics = {v["metric"] for v in old_values}
+        old_families = {v[field] for v in old_values for field in ("family", "group")}
+        protected = {"old_metrics": sorted(old_metrics), "old_families": sorted(old_families),
+                     "historical_vin": sorted(v for v in historical_vin if v),
+                     "previous_partitions": {name: previous_audit[name] for name in ("train", "dev", "test")}}
+    else:
+        old_metrics, old_families = set(protected["old_metrics"]), set(protected["old_families"])
     fresh_records = [v for v in records if v["metric"] not in old_metrics and v["family"] not in old_families]
     splits = partition(fresh_records, protocol["internal_counts"], protocol["split_salt"])
     audit = {}
@@ -59,7 +69,8 @@ def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protoc
         raise ValueError("New population overlaps a protected historical or current partition")
     audit.update(previous_population_reconstructed=True, previous_selected_metric_overlap=metric_overlap,
                  previous_selected_family_overlap=family_overlap, cross_split_identity_overlaps=cross_split_overlap)
-    return splits, groups, labels, audit
+    result = (splits, groups, labels, audit)
+    return (*result, protected) if return_protected else result
 
 
 def select_external(novel, splits, salt, *, maximum=150, minimum=30):

@@ -7,6 +7,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _find_competition_data() -> Path:
+    # Explicit research snapshots must take precedence over mounted competition
+    # discovery, especially after creating a family-purged training corpus.
+    if os.environ.get("CASMI_DATA"):
+        return Path(os.environ["CASMI_DATA"])
     if ON_KAGGLE:
         hits = sorted(Path("/kaggle/input").rglob("test.parquet"))
         if hits:

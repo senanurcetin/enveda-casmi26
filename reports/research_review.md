@@ -86,7 +86,7 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `b4a92636c80a1bb5f2549bfacaf3502fdbcfb3a8075b91abf5c04c1eef3448f5`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `0076f634726b977841731814ab882adb2deb86c8ef89be76d3a5e41c09887053`.
 
 ## Candidate coverage and ranking loss accounting — measured
 

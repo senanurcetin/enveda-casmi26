@@ -41,5 +41,6 @@
   "secondary_resampling": "Joint max-deviation bootstrap over the fixed 11-contrast family. Resample molecules independently within internal/external cohorts, keeping every policy/class/control paired within its cohort. 4000 draws, uniform joint radius.",
   "baseline_diagnostics": "Report mass-only, D1 and D1+D2 rules on original pool candidates in each cohort/condition; no post-test baseline selection",
   "generation_feature_reuse": "Score candidate-intrinsic channels once on the legacy-preserving union; recompute n_cand, log_n_cand and all D1/D2/D3/D4 rank/gap/z features for each candidate subset. Audit membership never enters fitted features.",
-  "runtime": "Free CPU execution permitted; GPU optional. Two Torch/BLAS/LightGBM threads, deterministic seeds. No deployment or submission."
+  "runtime": "Free CPU execution permitted; GPU optional. Two Torch/BLAS/LightGBM threads, deterministic seeds. No deployment or submission.",
+  "development_choice_interpretation": "The gate selects the recommended policy only. Both fixed budgets are evaluated on the declared test populations for the primary and all secondary comparisons, even if development selects legacy. No policy or test outcome is suppressed."
 }

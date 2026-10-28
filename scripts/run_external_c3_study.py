@@ -81,8 +81,8 @@ def main():
     from scripts.external_study_training import fit_fingerprints
 
     started = time.time()
-    protocol_path = ROOT / "protocols/external-c3-v1.json"
-    execution_path = ROOT / "protocols/external-c3-v1-execution.json"
+    protocol_path = ROOT / os.environ.get("CASMI_STUDY_PROTOCOL", "protocols/external-c3-v1.json")
+    execution_path = ROOT / os.environ.get("CASMI_EXECUTION_PROTOCOL", "protocols/external-c3-v1-execution.json")
     source_protocol_path = ROOT / os.environ.get("CASMI_EXTERNAL_PROTOCOL", "protocols/external-source-v2.json")
     protocol = json.loads(protocol_path.read_text())
     execution = json.loads(execution_path.read_text())
@@ -98,12 +98,31 @@ def main():
     store = SpectrumStore(ARTIFACT_DIR / "store")
     meta = store.meta
     row_keys = meta.train_ik14.astype(str).to_numpy()
+    if len(meta) != independence["identity_audit"]["training_rows_scanned"]:
+        raise ValueError("Spectrum store row count differs from independently audited training snapshot")
+    if set(novel.standard_ik14) & set(row_keys):
+        raise ValueError("External source identity remains in the actual spectrum store")
     pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / POOL_FILE))
     truth_pool = CandidatePool(pd.read_parquet(ARTIFACT_DIR / "structures.parquet"))
     previous_protocol = json.loads((ROOT / "protocols/advanced-internal-v1.json").read_text())
     previous_audit = json.loads((ROOT / "reports/advanced_study.json").read_text())["partitions"]
-    splits, groups, labels, split_audit = prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol)
+    protected, purge_report = None, None
+    if os.environ.get("CASMI_PURGE_REPORT"):
+        purge_report = json.loads(Path(os.environ["CASMI_PURGE_REPORT"]).read_text())
+        protected_path = Path(os.environ["CASMI_PROTECTED_POPULATION"])
+        if (purge_report["status"] != "EXTERNAL_FAMILIES_PURGED_AND_INDEPENDENCE_VERIFIED"
+                or purge_report["model_performance_inspected"] is not False
+                or purge_report["protocol_sha256"] != sha256_file(protocol_path)
+                or purge_report["protected_population_sha256"] != sha256_file(protected_path)
+                or purge_report["post_purge_independence"]["inputs"] != independence["inputs"]
+                or purge_report["retained_external_family_overlap"] != 0):
+            raise ValueError("Purged training and protected historical population provenance differs")
+        protected = json.loads(protected_path.read_text())
+    splits, groups, labels, split_audit = prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol, protected=protected)
     external_items, external_population = select_external(novel, splits, protocol["split_salt"])
+    if purge_report is not None and (len(external_items) != purge_report["selected_external_molecules"]
+            or digest(sorted(item["metric"] for item in external_items)) != purge_report["selected_metric_sha256"]):
+        raise ValueError("Declared external population changed after source-family selection")
     static_names = list(required_validation_inputs(pool_tag=POOL_TAG, analog=True)) + ["structures.parquet", f"pool_source_quality{POOL_TAG}.json"]
     manifest = create_manifest(ARTIFACT_DIR, static_names)
     fps = np.load(ARTIFACT_DIR / POOL_FP_FILE, mmap_mode="r", allow_pickle=False)
@@ -201,6 +220,9 @@ def main():
             "development_choice": choice, "partitions": split_audit, "external_population": external_population,
             "protocol_sha256": sha256_file(protocol_path), "execution_protocol_sha256": sha256_file(execution_path),
             "source_protocol_sha256": sha256_file(source_protocol_path)}
+    if purge_report is not None:
+        seal["purged_source_sha256"] = {name: sha256_file(Path(os.environ[variable])) for name, variable in
+            (("purge_report", "CASMI_PURGE_REPORT"), ("protected_population", "CASMI_PROTECTED_POPULATION"))}
     seal_hash = digest(seal)
     seal_path = ARTIFACT_DIR / "external_training_seal.json"
     seal_path.write_text(json.dumps(seal, indent=2, allow_nan=False))
@@ -248,6 +270,9 @@ def main():
     if digest(json.loads(seal_path.read_text())) != seal_hash or model_hashes != {p.name: sha256_file(p) for p in sorted((ARTIFACT_DIR / "models").iterdir())}:
         raise ValueError("Learned artifacts or seal changed during test")
     verify_manifest(ARTIFACT_DIR, manifest)
+    if purge_report is not None and seal["purged_source_sha256"] != {name: sha256_file(Path(os.environ[variable])) for name, variable in
+            (("purge_report", "CASMI_PURGE_REPORT"), ("protected_population", "CASMI_PROTECTED_POPULATION"))}:
+        raise ValueError("Purged-source or historical-protection evidence changed during test")
     rr = lambda v: np.where(np.asarray(v) > 0, 1 / np.maximum(np.asarray(v), 1), 0.)
     effects = {"internal": {}, "external": {}}
     for cohort in effects:
@@ -264,9 +289,9 @@ def main():
     primary = primary_coverage_interval(coverage["internal"]["legacy"]["C3"], coverage["internal"]["expanded"]["C3"], seed=seed)
     if primary["lost"]:
         raise ValueError("Legacy-preserving expansion lost internal test truths")
-    result = {"schema_version": 1, "status": "COMPLETE_C3_BUDGET_AND_EXTERNAL_VALIDATION", "checked_at": datetime.now(UTC).isoformat(),
+    result = {"schema_version": 1, "status": "COMPLETE_C3_AND_PURGED_REFERENCE_EXTERNAL_HOLDOUT" if purge_report else "COMPLETE_C3_BUDGET_AND_EXTERNAL_VALIDATION", "checked_at": datetime.now(UTC).isoformat(),
         "elapsed_seconds": round(time.time() - started, 1), "protocol": protocol, "execution_protocol": execution,
-        "independence_audit": independence, "partitions": split_audit, "external_population": external_population,
+        "independence_audit": independence, "purged_training": purge_report, "partitions": split_audit, "external_population": external_population,
         "training_seal": seal, "training_seal_sha256": seal_hash, "model_bytes_unchanged_after_test": True,
         "source_manifest": manifest, "fingerprint_provenance": fp_status, "analog_index_provenance": analog_status,
         "engine_config": asdict(cfg), "models": summaries, "primary": primary,
@@ -277,7 +302,8 @@ def main():
         "private_details_sha256": digest({"ranks": ranks, "coverage": coverage, "ids": private_ids, "development": development}),
         "environment": {"python": sys.version.split()[0], "device": device,
             **{name: importlib.metadata.version(name) for name in ("rdkit", "numpy", "pandas", "pyarrow", "torch", "lightgbm")}},
-        "limitations": ["External standard/metric novelty is computationally audited against the pinned training snapshot; source annotations are not independently authenticated laboratory identity.",
+        "limitations": ["External standard/metric novelty is computationally audited against the executed training snapshot; source annotations are not independently authenticated laboratory identity.",
+            "When a family-purged snapshot is used, original-snapshot source novelty feasibility remains unsuccessful; external-family generalization is relative to the rebuilt filtered corpus.",
             "External collision energy is not harmonized to eV; unavailable numeric eV is encoded zero. This is a distribution-shift limitation.",
             "External libraries have a restricted chemical/instrument distribution and are not a representative clinical or environmental population.",
             "Generic-family supervised separation does not remove task-defined shared candidate knowledge or fixed NP-score priors.",

@@ -16,8 +16,9 @@ External spectra must pass full-training standard identity, official tautomer-me
 |---|---:|---:|---:|---|
 | MassBank 2026.03, explicit CC0 records | 491 / 4,567 | 491 | 0 | Independent population not established |
 | Two GNPS2 direct-contribution standard libraries | 85 / 95 | 78 | 7 | Below the declared minimum of 30 |
+| Expanded GNPS community plus the two libraries | 936 / 3,051 | 929 | 7 | Below the declared minimum of 30 |
 
-Both audits scan all **2,539,608 training rows** and report zero unparseable training labels. Neither found exact stored spectral-content matches. Lack of byte-equivalent spectra does not override molecular identity overlap. The MassBank source has 491 standard-identity overlaps; the two-library GNPS source has 78 standard and metric overlaps. These are negative feasibility findings, not failed model predictions.
+All three source audits scan all **2,539,608 training rows** and report zero unparseable training labels. None found exact stored spectral-content matches. The expanded GNPS source includes the earlier two libraries; these are overlapping source stages, not three independent external replications. Lack of byte-equivalent spectra does not override molecular identity overlap. The MassBank source has 491 standard-identity overlaps; the two-library GNPS source has 78 standard and metric overlaps. These are negative feasibility findings, not failed model predictions.
 
 Evidence: [MassBank aggregate](../../reports/external_audit.json), [authenticated publication](../../reports/external_audit_publication.json), [GNPS aggregate](../../reports/gnps_external_audit.json), [authenticated publication](../../reports/gnps_external_audit_publication.json). Source manifests retain pinned archive/record hashes and license attribution. Only directly contributed GNPS standard spectra use the GNPS CC0 policy; imported, propagated, MassQL-derived and suspect libraries are excluded.
 
@@ -25,7 +26,15 @@ Evidence: [MassBank aggregate](../../reports/external_audit.json), [authenticate
 
 The [GNPS source addition](../../protocols/external-source-v2.json) was declared before model-performance inspection. Its first execution used the older connectivity prefilter and is superseded for independence decisions. The authenticated second execution uses the [declared isotope correction](../../protocols/external-source-v2-audit-correction.json): isotopic tautomer equivalents must survive prefiltering because metric InChIKey14 omits isotope layers. A synthetic regression verifies the issue. The current connectivity helper clears isotope labels before removing explicit hydrogen atoms. Frozen historical experiment sources remain preserved.
 
-The [broader GNPS community source](../../protocols/external-source-v3.json) is an outcome-blind extension under the same novelty and minimum-population requirements. Its source preparation and independence decision are pending. Source expansion does not imply that independent validation has succeeded.
+The [broader GNPS community source](../../protocols/external-source-v3.json) is an outcome-blind extension under the same novelty and minimum-population requirements. Its authenticated audit also leaves only the same seven novel molecules. The original-snapshot novelty design has not established a sufficient external population. [Expanded aggregate](../../reports/gnps_expanded_external_audit.json) and [readback](../../reports/gnps_expanded_external_audit_publication.json).
+
+## Separate family-purged experiment
+
+The [28 October protocol](../../protocols/purged-external-v1.json), registered at `1b7a6cc` before model outcomes, defines a new experiment. Choose at most 150 external molecules before predictions, one per generic-family component, and remove every matching family, standard identity and official metric identity from the full training/reference corpus. Block all rows sharing a removed declared training identity. Rebuild structures, stores, candidate fingerprints and the D2 index; independently verify zero remaining source identity/content overlap and zero retained selected families before fitting.
+
+Historical internal query partitions are reconstructed on the original data first. Their exclusion labels remain protected during selection of fresh 300/100/150 internal partitions on the purged corpus. Two fresh fingerprint networks and two three-seed rankers retain the fixed budgets, development-only recommendation and 11 secondary contrasts. Both budgets and adverse outcomes remain reportable. [Execution details](../../protocols/purged-external-v1-execution.json).
+
+This is external-family generalization relative to a newly purged training snapshot. It does not convert the failed original-snapshot novelty result into a success or independently authenticate source acquisition/annotations. Shared independent candidate knowledge and fixed NP-score priors remain explicit limitations. Execution and model outcomes are pending.
 
 ## Interpretation boundary
 
