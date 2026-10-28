@@ -1,7 +1,7 @@
 {
   "status": "INSTALLED_HASHED_PROFILE_VERIFIED",
   "profile": "portable Python 3.12 research environment",
-  "checked_at": "2026-10-26T17:47:17.381820+00:00",
+  "checked_at": "2026-10-27T20:27:03.771406+00:00",
   "conditional_locked_entries": 69,
   "lock_sha256": "46c719a5f3e97c463693e6559fcbd881713806225cb988c06cbe886ce4f70c51",
   "installed_packages": {
@@ -60,12 +60,12 @@
   "system": "Windows",
   "machine": "AMD64",
   "junit": {
-    "tests": "469",
+    "tests": "509",
     "failures": "0",
     "errors": "0",
     "skipped": "2",
-    "time": "36.904"
+    "time": "114.092"
   },
-  "junit_sha256": "0210e9b97c5b429af4e1189d17eb5ada7652b29485fa9b2c4f649424bbc4ebe5",
+  "junit_sha256": "4cbd0fbbd38f3e73971e3ac74ccb0dd0e25890ebbb9f5e46f2829eac7a068324",
   "junit_scope": "Pytest JUnit cases may include subtests; not a line/branch coverage metric"
 }

@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `0ba68105ad3782a5725decb3d818c4f48219c6eea029a93d28b0cfef29fe71fb`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `64cdc8de2b53fa1b6c34d791ddf5e96b4a92e6c3d19fed06e05c8881f2005868`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -86,7 +86,7 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `20509644093fff8169fbd5659f6db3f31ff3b289f147e8c0989fdcfbb9565b57`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `b4a92636c80a1bb5f2549bfacaf3502fdbcfb3a8075b91abf5c04c1eef3448f5`.
 
 ## Candidate coverage and ranking loss accounting — measured
 
