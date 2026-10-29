@@ -2,38 +2,36 @@
 
 ## Sources and access
 
-The historical competition training profile records **2,539,608 spectra**, **275,810 standard structure keys** and **11 source libraries**. The public example test contains 1,213 spectra for 400 molecules. These counts come from [the committed profile](reports/data_profile.json), not a new full-source read.
+| Source | Recorded scope | Access and evidence |
+|---|---|---|
+| Competition training | 2,539,608 spectra, 275,810 standard structure keys, 11 libraries | Accept applicable Kaggle terms; raw spectra are not redistributed. [Historical profile](reports/data_profile.json) |
+| Public examples | 1,213 spectra / 400 molecules | All have exact stored training-content matches. [Executed full-content audit](reports/public_overlap_audit.json) |
+| COCONUT / PubChemLite | Task-defined candidate knowledge; study-specific byte hashes | Retain release identifiers, source licensing and attribution. [Fresh internal input manifest](reports/advanced_study.json) |
+| MassBank 2026.03 CC0 subset | 491 eligible molecules; zero novel against original training | Explicit per-record CC0 only. [Source preparation](reports/external_source_preparation.json) |
+| Direct-contribution GNPS subsets | 85 molecules initially; 936 in the expanded source; seven novel in each against original training | Direct-contribution CC0 policy; imported/inferred libraries excluded. [Source methods and pins](docs/studies/external-source-validation.md) |
 
-Competition spectra must be acquired through Kaggle after accepting the applicable terms. They are not redistributed in this repository. COCONUT, PubChemLite and optional structure sources must retain their own release identifiers, citations and licensing; the historical notebooks describe the source releases they used. Source code licensing does not grant rights to competition inputs, third-party models or the NEXUS identity.
+The GNPS source stages overlap; these are not independent replications. Competition access does not grant redistribution rights to all source records, candidate databases, third-party weights or branding. Public-source inputs are prepared separately and bound to hashes; no new laboratory acquisition is claimed.
 
-## Unit of analysis and leakage
+## Unit of analysis and information boundaries
 
-The prediction unit is a **molecule**, not a spectrum. Multiple spectra per structure, repeated acquisitions, different libraries and tautomer-equivalent representations require grouping and reference exclusion before scoring. Summing distinct structures across libraries double-counts shared identities.
+The prediction/evaluation unit is a molecule. Multiple spectra, libraries and tautomer-equivalent representations require grouping before splitting and reference exclusion. Summing per-library distinct counts double-counts shared identities. Standard keys and metric InChIKey14 are different identity definitions; neither alone establishes unseen chemical-family generalization or stereochemical identification.
 
-The [executed Kaggle content audit](docs/studies/public-example-overlap.md) scanned all 2,539,608 training rows and confirmed exact precursor, full ordered m/z and normalized intensity matches for all 1,213 public spectra (400 molecules), also consistent in adduct and ionization mode. Two coarse-bucket candidate pairs were false matches. This supersedes the archived profile's approximate overlap evidence for the hashed input snapshot. Public examples are suitable for interface checks; they cannot establish hidden-test generalization. Stored numerical identity does not independently authenticate acquisition provenance.
+The public-example audit confirms precursor, ordered m/z and normalized intensity identity for every example, consistent with adduct and ionization mode. Numerical content matching does not authenticate original acquisition provenance. Public examples support interface checks, not an independent accuracy claim.
 
-A tautomer-canonical InChIKey14 groups metric-equivalent structures. It does not enforce Bemis–Murcko scaffold separation, stereochemical identification or unseen chemical-family generalization.
+| Executed population | Separation and retention policy | Evidence |
+|---|---|---|
+| Frozen retrospective V-in | All 250 queries retained; 1,710 mass-conflicting identities and 13 unparseable candidates quarantined; 1,071,863 candidate structures fingerprint-verified | [Rebuild and result report](reports/revalidation_review.md) |
+| Fresh internal benchmark | 600/150/250 train/development/test molecules, one per generic family; historical V-in families excluded; selected metric/family identities do not cross supervised splits | [Population and limitations](docs/studies/fresh-training-family-holdout.md) |
+| Separate purged-reference experiment | 150 selected external molecules; matching families/standard/metric identities blocked in the full training/reference corpus; 261,826 rows removed, 2,277,782 retained; new internal 300/100/150 partitions | [Purge, source amendment and complete report](reports/purged_external_review.md) |
 
-## Distribution and quality risks
+In the purged experiment, one undefined-family training label blocks its entire declared identity under the registered outcome-blind amendment. Historical internal partition exclusions are reconstructed before filtering. Zero selected-family, standard/metric identity and exact-content overlap is checked before fresh fitting. The explicit `CASMI_DATA` snapshot takes precedence over automatic Kaggle discovery.
 
-The [completed source rebuild and model study](reports/revalidation_review.md) identified 1,710 shared identities with conflicting neutral masses (3,891 provider rows). Its explicit whole-identity quarantine also excluded 13 unparseable selected candidates, leaving **1,071,863** fingerprint-verified candidate structures. All **250** evaluation molecules remained in scoring; one standard truth key was absent from the retained pool. Labels and reference exclusions were derived independently of candidate retention. These checks establish computational consistency, not independent authentication of provider annotations.
+## Distribution and remaining risks
 
-Library instrument, ionization mode, adduct, peak count and precursor-error distributions differ. V-in is a small, deliberately common natural-product set; it can conceal decoy costs and fail to represent unknown hidden-test novelty. Pool source composition itself can leak the simulation class into ranker features.
+V-in is a deliberately common natural-product set; library, instrument, ionization mode, adduct, peak count and precursor-error distributions differ. In the fresh internal test, 141/250 queries are pluskal_ms2 and 56/250 GNPS; chemical-family balance is not source or prevalence balance. Descriptive cells below 20 are suppressed in that study.
 
-## Fresh-study population and information boundaries
-
-The [executed internal benchmark](reports/advanced_review.md) selects one representative per generic Murcko/acyclic connectivity family: 600 training, 150 development and 250 test molecules, excluding historical V-in families. Selected metric identities and families do not cross supervised splits. This reuses existing source libraries; it is not newly acquired external data. The 250 test queries include 141 pluskal_ms2 and 56 GNPS molecules, so family balancing does not imply source balancing. Cells below 20 are suppressed in descriptive slices.
-
-Candidate/reference structures remain task-defined and can occur as negatives for other training queries. All query outcomes stay in denominators: C1/C2 pool truth coverage is 246/250; C3 truth coverage after generation is only 26/250. The fixed NP-score prior has unverified upstream training overlap. These boundaries prevent interpreting the result as universal unseen-chemistry performance. Only aggregates, hashes and version inventories are committed; private row details and weights remain scratch artifacts.
+Every selected query remains in the result denominator, including uncovered truths and empty candidate lists. Shared independent candidate knowledge remains permitted under C2 semantics, and structures can occur as training negatives for other queries. The fixed NP-score prior has unverified upstream overlap. Unknown numeric collision energy is encoded zero without NCE/percent-to-eV conversion. Source annotations are not independently authenticated laboratory labels.
 
 ## Reproduction and redistribution
 
-The [external-source study](docs/studies/external-source-validation.md) prepares separately downloaded MassBank CC0 and directly contributed GNPS standard spectra. Original record hashes, source URLs and available attribution are retained. MassBank uses explicit per-record CC0 licenses; GNPS uses its direct-contribution CC0 policy and excludes imported/inferred libraries. These legal/source distinctions are preserved in manifests. The first two audited populations leave zero and seven novel molecules; neither qualifies as the declared external validation population. Unknown collision energies are not converted from NCE/percent to eV.
-
-Keep all raw files and generated molecular artifacts outside Git. Record content hashes with `scripts/manifest_artifacts.py`, verify candidate fingerprint provenance, and publish new stores/pools into separate immutable destinations. Revalidation requires the same queries and exclusions across models, negative controls and untouched evaluation data. Cloud warehouses are optional; the public dashboard reads committed aggregates only.
-
-## Completed family-purged study
-
-The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Methods, all outcomes and limitations](reports/purged_external_review.md).
-
-The explicit CASMI_DATA snapshot takes precedence over automatic Kaggle discovery. All reference artifacts are rebuilt from filtered rows before fitting. Undefined generic-family labels quarantine the entire affected declared identity under the outcome-blind amendment; the failed first attempt remains preserved.
+Raw inputs, molecular artifacts, per-query records and weights stay outside Git. Use new immutable artifact destinations, content hashes, verified fingerprints and fresh D2 indexes. Only aggregates, source/protocol inventories and runtime versions are committed. [Data integrity](docs/guides/data-integrity.md) · [Reproduction](docs/guides/reproducibility.md) · [Model limitations](MODEL_CARD.md).

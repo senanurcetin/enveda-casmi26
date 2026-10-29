@@ -1,7 +1,7 @@
-# Notebook sources
+# Notebook builders
 
-This directory contains the original notebook builders and exploratory notebook sources. `build_shortcut_notebook.py` and `build_pool_notebook.py` support the two historical explanatory publications; shared NEXUS styling is defined in `research_style.py`. Other builders retain historical fusion/probe recipes and are not evidence that those recipes were executed under the current protocol.
+The canonical explanatory notebooks are `kaggle/publications/shortcut/notebook.ipynb` and `kaggle/publications/pool/notebook.ipynb`. Their builders, `build_shortcut_notebook.py` and `build_pool_notebook.py`, write there by default; `research_style.py` supplies shared NEXUS styling. Duplicate output copies were removed from this directory.
 
-The reproducible publication bundles and attachments are in [kaggle/](../kaggle/README.md). Full-data audit/frozen-model/fresh-training bundles live separately under `kaggle/audits/`; their completed source snapshots must remain unchanged. Use the documented publication builders rather than editing executed notebook JSON directly.
+`build_fusion_notebook.py` and `build_knob_notebook.py` retain historical fusion/probe recipes. Their existence does not establish execution under any current research protocol. Completed full-data studies live in `kaggle/audits/` and embed the exact source actually executed.
 
-Clear private source records, arrays, credentials and output-derived molecular details before committing a notebook. [Data handling](../SECURITY.md) · [Reproduction](../docs/guides/reproducibility.md).
+[Publication index and source policy](../kaggle/README.md) · [Reproduction](../docs/guides/reproducibility.md). Keep private source records, arrays, credentials and per-query outputs outside Git.

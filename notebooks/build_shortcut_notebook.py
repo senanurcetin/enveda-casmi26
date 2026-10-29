@@ -1,4 +1,4 @@
-"""Generates notebooks/casmi26-ranker-shortcut.ipynb (public Kaggle notebook #1)."""
+"""Build the canonical explanatory notebook under kaggle/publications/shortcut/."""
 import sys
 from pathlib import Path
 
@@ -6,7 +6,7 @@ import nbformat
 from research_style import finalize
 from nbformat.v4 import new_code_cell as C, new_markdown_cell as M, new_notebook
 
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).with_name("casmi26-ranker-shortcut.ipynb")
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1] / "kaggle/publications/shortcut/notebook.ipynb"
 cells = []
 A = cells.append
 

@@ -28,11 +28,11 @@ Archived profile: 2,539,608 spectra and 275,810 structure keys. The new content 
 
 Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-8 / LF): `3c6f3ee71855a1b3045b1e821e3182114df30dfbbd1d29916eaf705fd51a5ffc`.
 
-## Same-library C1 exclusion — implemented
+## Same-library C1 exclusion — measured
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `f0e8ca389772beccdc869846124c68e8a6031b9a9ecefe74468393558ccba152`.
+Source: [reports/revalidation_study.json](../reports/revalidation_study.json). SHA-256 (UTF-8 / LF): `32a2211c52f1f0c5f85d7556e84e12df0a917a140a50597be1ef055d8fe7055e`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `abf976faf19d11e5674f10f88e8bfc2d14e51d0a87095b8009d1d22530b1d245`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `9ff6828750064db6085fc3f2b9f8000c9bbe24e4e5609351b25452d2b2329cbd`.
 
 ## Fresh training and sealed internal query families — measured
 

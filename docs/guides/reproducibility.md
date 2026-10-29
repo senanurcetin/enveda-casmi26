@@ -1,65 +1,64 @@
 # Reproduce and review
 
-## View without scientific dependencies
+Run commands from the repository root. The project has no hosted model service or paid infrastructure requirement. Data-dependent rebuilds require authorized competition files and the declared public source releases; a source bundle alone does not grant data access or free compute capacity.
 
-From the repository root, run `python -m http.server 8000`, then open `http://localhost:8000/site/`. Serve the repository root so the dashboard can load `reports/`. There are no external fonts, tracking scripts, credentials or paid APIs.
-
-## Offline checks
+## Inspect without scientific dependencies
 
 ```bash
-python -m pytest tests/*_stdlib.py -q
+python -m http.server 8000
+# Open http://localhost:8000/site/
+```
+
+Serve the repository root so the static NEXUS dashboard can read committed reports. It loads no model weights and calls no Kaggle, BigQuery or private data API.
+
+For the dependency-free checks, put both the repository root and `src` on `PYTHONPATH` (use `;` as the separator on Windows and `:` on POSIX), then run:
+
+```bash
+python -m unittest discover -s tests -p '*_stdlib.py' -v
 python scripts/research_evidence.py
 python scripts/check_documentation_links.py
 ```
 
-Pytest loads `src` through `pytest.ini`; on shells without wildcard expansion use `python -m pytest -q` for the full suite. For a dependency-free run set `PYTHONPATH=src` in your shell, then run `python -m unittest discover -s tests -p '*_stdlib.py' -v`. Windows skips the symlink-containment case only when the OS denies link creation; Linux CI executes it.
+The ledger command validates evidence references and regenerates source-file integrity hashes. The link checker validates repository-local destinations; it does not check remote availability or fragment anchors. Neither tool authenticates historical leaderboard scores.
 
-The evidence command verifies local source links, allowed evidence states, score ranges, unique IDs and source hashes; it writes `reports/research_review.md`. It cannot authenticate historical leaderboard claims.
+## Locked scientific environment
 
-## Scientific environment
-
-Use **Python 3.12** and [the hash-locked portable profile](../../locks/research-py312.txt). `requirements.txt` enables hash verification and includes exact versions for direct and transitive dependencies, including Matplotlib for standalone scientific figures; the source pins are in `requirements-research.in`. The universal lock has 69 conditional entries, of which 50 apply to the verified Windows environment. [Installed-environment and JUnit attestation](../../reports/research_environment_validation.json). CI independently exercises Linux chemistry and fresh CPU neural/ranker training contracts.
-
-This portable profile is distinct from Kaggle's execution image. Each executed notebook records its actual versions; the new fresh-training study additionally records installed package versions. A matching dependency profile is not a promise of bitwise-identical CUDA results across hardware. Synthetic-test success remains separate from dataset-backed experimental evidence.
+Create and activate an isolated Python 3.12 environment, then run:
 
 ```bash
 python -m pip install --require-hashes -r requirements.txt
 python scripts/check_research_lock.py
-python -m pytest -q
+python -m pytest tests -q
 ```
 
-Create and activate an isolated Python 3.12 virtual environment before these commands. To regenerate the lock deliberately: `uv pip compile requirements-research.in --python-version 3.12 --universal --generate-hashes --output-file locks/research-py312.txt`. Revalidate the resulting environment before replacing the attestation. Do not install the portable profile over an active Kaggle image merely to reproduce a historical notebook.
+The [universal lock](../../locks/research-py312.txt) contains 69 conditional exact/hash-pinned requirements; 50 apply to the recorded Windows environment. [Dated installed-environment and JUnit attestation](../../reports/research_environment_validation.json). Kaggle uses a separate image: each experiment records its actual packages, hardware mode and attachments. Local test success is not dataset-backed model evidence or a promise of bitwise reproduction across platforms.
 
-## Numerical rank and coverage contracts
+To change the lock deliberately, use `uv pip compile requirements-research.in --python-version 3.12 --universal --generate-hashes --output-file locks/research-py312.txt`, then validate the installed environment and complete tests before replacing its attestation. Do not overwrite a running Kaggle environment with the local profile.
 
-Current numerical summaries and paired comparisons require nonempty integer rank arrays in 0–25 (`0` is a miss); out-of-range, floating, nonfinite and malformed inputs fail closed. This hardening does not rewrite completed experiment snapshots. `python scripts/build_coverage_report.py --tables-only` deterministically reconstructs aggregate-only candidate/ranking loss accounting after checking source/artifact hashes. Omit the flag in the locked environment to regenerate its PNG/SVG/PDF figures. Conditional coverage metrics preserve their explicit subset denominator and carry no reconstructed uncertainty claim.
+## Regenerate committed reports
 
-## Historical source snapshots
+```bash
+python scripts/research_evidence.py
+python scripts/build_revalidation_report.py
+python scripts/build_advanced_report.py --tables-only
+python scripts/build_coverage_report.py --tables-only
+python scripts/build_purged_external_report.py --tables-only
+```
 
-Completed experiment bundles retain the source actually executed, embedded in their notebooks. `research_snapshot.py` parses that source inventory as literal data, without executing notebook code. Evidence validation binds results to the embedded snapshot and authenticated notebook hash rather than incorrectly requiring today's main branch to equal historical code. New experiments use distinct bundles and publication records; the completed v16 study is not rebuilt or relabeled when current code advances.
+These commands validate stored aggregates and regenerate reviews; they do not fit models or supply new scientific evidence. Omit `--tables-only` in the locked plotting environment to export advanced, coverage and purged-study PNG/SVG/PDF figures. Inspect exported figures as files. Font/platform differences are not covered by deterministic table checks.
 
-## Fresh training and family holdout
+## Executed notebooks and authenticated readback
 
-The [predeclared advanced protocol](../studies/fresh-training-family-holdout.md) separates supervised query families before fitting any fresh weights. Build its distinct notebook with `python scripts/build_advanced_notebook.py` and authenticate a completed run with `python scripts/check_advanced_publication.py`. No archived models are attached. Execution status is established by the publication readback, not by the existence of these commands or the protocol.
+[The Kaggle index](../../kaggle/README.md) maps each publication to its source bundle, builder and readback command. Builders for completed studies verify frozen source instead of incorporating current code. `research_snapshot.py` reads embedded Python/JSON inventories as literal data without executing them. Do not modify or repush completed evidence to match today's code.
 
-## Kaggle publications
+Authenticated `check_*publication*.py` commands inspect public completion, source/attachments and bounded aggregate artifacts. They update readback records and can refresh the stored aggregate from the authenticated publication; they do not start a notebook or submit predictions. Use existing local credentials and inspect changes before committing refreshed records.
 
-Run `python scripts/build_research_publications.py` to generate the two owned notebook publication bundles from the tracked notebook builders. [Publication operations](../../kaggle/README.md) covers source hashes, remote status and readback. The source builders contain the editorial corrections and NEXUS chart defaults; generated notebook outputs are cleared before publication.
+The retrospective and fresh internal model studies used free Kaggle GPU execution. The separate purged-reference experiment used CPU; source/content audits and explanatory publications also use CPU. Runtime versions and inputs belong to their specific executions, not a single shared model environment.
 
-## Full model rebuild
+## Full-data execution and historical recipes
 
-Use licensed competition files and the matching public structure releases, then follow the [architecture](../../ARCHITECTURE.md), [data integrity guide](data-integrity.md) and [evaluation contracts](evaluation.md). Stage artifacts under new names. Check the input schema with `scripts/kaggle_submission_readiness.py`; any separately chosen competition submission requires its own explicit scope and ranked-output audit.
+Use the [architecture](../../ARCHITECTURE.md), [data contracts](data-integrity.md), [evaluation guide](evaluation.md) and the relevant [study design](../README.md#completed-studies). Record byte hashes, create new immutable artifact destinations, verify candidate fingerprints, and rebuild D2 references. The purged study additionally reconstructs historical exclusions before filtering the full reference corpus; its exact code and inputs are embedded in its completed bundle.
 
-No competition submission is part of this update. Both **frozen-model retrospective evaluation and fresh supervised internal-family training have completed**. The explanatory publications and overlap audit use CPU; the model studies used free Kaggle GPU allocation with internet disabled. The static dashboard has zero infrastructure spend. Live BigQuery scans remain optional and unexecuted. Rebuild verified tables with `python scripts/build_advanced_report.py --tables-only`; omit the flag in the locked scientific environment to export standalone PNG/SVG/PDF figures. Plot files are checked visually as generated artifacts; no PC-screen interaction is required.
+Completed tests must not become tuning sets. A new execution requires its own declared population/design, input permissions and available free compute. Original-snapshot novelty failure cannot be repaired by relabeling the completed purged-reference result.
 
-## Reproduce the completed model/control study
-
-See [the protocol](../studies/frozen-model-revalidation.md) and [verified results](../../reports/revalidation_review.md). Generate the scratch-only bundle with `python scripts/build_revalidation_notebook.py`; authenticate its completed public execution with `python scripts/check_revalidation_publication.py`; render the report with `python scripts/build_revalidation_report.py`. The study rebuilds inputs, quarantines conflicting/unusable candidates explicitly, retains all eligible query molecules and records data/model/code hashes and runtime versions. Its approximately 41-minute ranking/control phase is a recorded duration for that run, not a runtime guarantee. Source rebuild time is additional.
-
-## Reproduce the executed public-example content audit
-
-Install PyArrow (tested with Kaggle 23.0.1 and local/CI 24.0.0), then run `scripts/audit_public_overlap.py` on already-authorized train/public inputs. It streams Arrow batches, exports only aggregates and hashes, and refuses to overwrite reports. Alternatively build the internet-disabled CPU bundle with `scripts/build_overlap_notebook.py`; its completed Kaggle readback is checked by `scripts/check_overlap_publication.py`. [Executed counts and methodology](../studies/public-example-overlap.md).
-
-## Completed purged-reference evaluation
-
-Run python scripts/check_purged_external_publication.py to authenticate the completed public source and bounded aggregate. Run python scripts/build_purged_external_report.py to regenerate figures and tables. The registered notebook embeds both Python and JSON protocol/source records; its complete inventory is hashed without execution. CPU RDKit reports equivalent version spellings 2026.3.3 and 2026.03.3. The local hash-locked test runtime and Kaggle execution environment are recorded separately. [Authenticated full report](../../reports/purged_external_review.md).
+`scripts/legacy/` contains archived machine-specific shell chains, including old publishing/submission automation. Root-level training and diagnostic helpers retain stable paths used by other code. These are not the default reproduction workflow. `runs/` is ignored local scratch space; archived CSV summaries are in `reports/historical/`. No shell chain, competition submission or live warehouse scan runs during setup or documentation checks.

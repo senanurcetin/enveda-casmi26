@@ -1,6 +1,6 @@
 # Documentation
 
-CASMI26 is a noncommercial molecular-identification research project by Senanur Cetin under the NEXUS identity. Documentation describes the current implementation and distinguishes historical competition results, completed internal experiments and unresolved external-validation questions.
+CASMI26 is a noncommercial molecular-identification research project by Senanur Cetin under the NEXUS identity. Documentation describes the current implementation and distinguishes historical competition results, completed internal and purged-reference external experiments, and unresolved laboratory-replication questions.
 
 | Purpose | Document |
 |---|---|
@@ -12,7 +12,6 @@ CASMI26 is a noncommercial molecular-identification research project by Senanur 
 | Approved logo, palette and attribution | [NEXUS identity](guides/brand-identity.md) |
 | Model attribution and intended use | [Model card](../MODEL_CARD.md) |
 | Dataset access, information boundaries and licensing | [Data card](../DATA_CARD.md) |
-| Present scientific strengths and remaining limitations | [Research assessment](research-assessment.md) |
 | Executed checks and their scope | [Verification](verification.md) |
 
 ## Completed studies
@@ -23,12 +22,11 @@ CASMI26 is a noncommercial molecular-identification research project by Senanur 
 | Frozen-model retrospective controls | [Design and source policy](studies/frozen-model-revalidation.md) | [Results and intervals](../reports/revalidation_review.md) |
 | Fresh training on separated query families | [Predeclared design](studies/fresh-training-family-holdout.md) | [Results, ablations and slices](../reports/advanced_review.md) |
 | Candidate versus ranking loss | Post hoc accounting on the frozen internal study | [Coverage diagnosis](../reports/candidate_loss_review.md) |
-| External-source feasibility and C3 follow-on | [Registered source gates and current experiment status](studies/external-source-validation.md) | [MassBank](../reports/external_audit.json), [GNPS2](../reports/gnps_external_audit.json) |
+| Original-snapshot external-source feasibility | [Registered source gates](studies/external-source-validation.md) | [MassBank](../reports/external_audit.json), [GNPS2](../reports/gnps_external_audit.json), [expanded GNPS](../reports/gnps_expanded_external_audit.json) |
+| Separate purged-reference external evaluation | [Full-reference purge and fresh fitting](studies/external-source-validation.md#separate-family-purged-experiment) | [All outcomes, intervals and figures](../reports/purged_external_review.md) |
 
 ## Source and maintenance policy
 
 [EXPERIMENTS.md](../EXPERIMENTS.md) is the original dated experiment log. Historical entries are evidence records, not current execution instructions. The [evidence registry](../reports/research_evidence.json) links claims to source files; its [generated review](../reports/research_review.md) records their integrity hashes. [Kaggle publication operations](../kaggle/README.md), [script entry points](../scripts/README.md) and [report ownership](../reports/README.md) describe the executable artifacts.
 
-Earlier overlapping audit notes and maintenance diaries were consolidated into these guides. Their original text remains recoverable in Git history. Completed notebook source snapshots, protocol files and experimental JSON remain intact.
-
-The [completed family-purged study](../reports/purged_external_review.md) supplies actual external outcomes, all registered contrasts and NEXUS figures; original-snapshot novelty feasibility remains unsuccessful.
+Use the model card for scientific limitations, study guides for design, and generated reports for full outcomes. Historical logs, executed notebook sources, protocols and result JSON are preserved. Superseded notes and duplicate notebook copies remain recoverable in Git history.

@@ -10,7 +10,7 @@ GitHub Actions separates offline evidence/report regeneration, official-metric c
 
 ## Executed research evidence
 
-The [external-source feasibility study](studies/external-source-validation.md) adds authenticated full-training scans of pinned MassBank and two GNPS2 standard libraries. Both notebooks completed with matching embedded source. Their scientific conclusions are negative/insufficient (zero and seven novel molecules respectively), even though publication authentication passes. No external model performance or C3 coverage improvement is established by these audits.
+The [external-source feasibility study](studies/external-source-validation.md) records three original-training scans: MassBank 0/491, two-library GNPS 7/85 and expanded GNPS 7/936 novel molecules. None reaches the declared minimum of 30. These are negative/insufficient scientific findings even though publication authentication passes. Model-performance evidence comes from the separate purged-reference experiment, not from these audits.
 
 | Artifact | Verified scope | Record |
 |---|---|---|
@@ -25,7 +25,9 @@ These records establish the scope stated in their study designs. They do not aut
 
 ## Documentation and visual artifacts
 
-Active documentation is organized into [guides and studies](README.md): 28 overlapping documents were consolidated into focused guides and studies; the current index includes the new external-source study, with additional entry-point indexes for scripts, notebooks and reports. Earlier maintenance diaries and single-fix notes remain recoverable in Git history. Unused historical screenshots and the obsolete architecture drawing were removed; approved logos and current quantitative figures remain. Model/data cards, source links and report-builder references follow the current paths. The browser-free `check_documentation_links.py` checks repository-local Markdown/dashboard destinations in CI; remote URLs and fragment anchors are outside its scope. Experimental JSON, predeclared protocols, frozen notebook sources and the original experiment log remain unchanged by documentation cleanup.
+The [documentation index](README.md) separates entry-point cards, method guides, study designs and generated result reports. Scientific limitations are maintained in the model card. Superseded assessments, duplicate notebook outputs and local completion markers are not current evidence; their history remains recoverable in Git. Historical shell recipes and CSV diagnostics are explicitly separated from maintained study entry points.
+
+The browser-free link checker validates repository-local Markdown/dashboard destinations in CI. Remote URLs and fragment anchors remain outside its scope. Historical protocols, experimental JSON, executed notebook source and the original experiment log are preserved.
 
 The approved NEXUS logo is recorded in the [brand guide](guides/brand-identity.md). Scientific plots are exported as standalone PNG/SVG/PDF and inspected as generated artifacts. Dashboard maintenance is checked through source, links and JavaScript syntax; no current screen-rendering claim is inferred. CLI, file operations and authenticated APIs are used without PC-screen interaction or Playwright.
 

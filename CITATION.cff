@@ -7,7 +7,7 @@ authors:
     given-names: Senanur
 repository-code: "https://github.com/senanurcetin/enveda-casmi26"
 url: "https://github.com/senanurcetin/enveda-casmi26"
-abstract: "Noncommercial NEXUS research software for mass-constrained molecular candidate retrieval, evidence-based ranking, chemical-family validation, paired spectral controls, and data provenance audits. Historical competition results, frozen-model diagnostics and fresh supervised internal studies have distinct evidence boundaries."
+abstract: "Noncommercial NEXUS research software for mass-constrained molecular candidate retrieval, evidence-based ranking, chemical-family validation, paired spectral controls, and data provenance audits. Historical competition results, frozen-model diagnostics, fresh supervised internal studies and a separately registered purged-reference external evaluation have distinct evidence boundaries."
 keywords:
   - tandem mass spectrometry
   - molecular identification

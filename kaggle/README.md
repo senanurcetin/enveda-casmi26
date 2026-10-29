@@ -12,7 +12,6 @@ Nine owned publications have completed authenticated source/status readback. The
 | [MassBank External Independence](https://www.kaggle.com/code/senanuretin/casmi26-massbank-external-independence) | `audits/external-independence/` | Authenticated negative feasibility: zero novel molecules; no model scoring |
 | [GNPS2 External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps2-external-independence) | `audits/gnps-independence/` | Authenticated insufficient population: seven novel molecules; no model scoring |
 | [GNPS Community External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps-community-external-independence) | `audits/gnps-expanded-independence/` | Authenticated original-snapshot insufficiency: 7/936 novel molecules; no model scoring |
-
 | [Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) | `audits/purged-external/` | Eight fresh artifacts after full-reference family purge; [all outcomes](../reports/purged_external_review.md) |
 
 ## Completed separately registered study
@@ -40,16 +39,16 @@ python scripts/build_gnps_audit_notebook.py
 python scripts/check_gnps_audit_publication.py
 python scripts/build_gnps_expanded_audit_notebook.py
 python scripts/check_gnps_expanded_audit_publication.py
+python scripts/build_purged_external_notebook.py
+python scripts/check_purged_external_publication.py
 ```
 
 Builders prepare or verify tracked source bundles. Readback commands inspect remote state and download bounded aggregate artifacts; they do not start execution or submit predictions. A notebook URL alone does not attest completion. Source, public visibility, declared attachments and relevant artifact hashes must match.
 
-The two explanatory publications and overlap scan use CPU. The model studies used free Kaggle GPU execution. The fresh study attaches structure sources and the official RDKit wheel, with no pretrained-model dataset. Exact runtime versions and execution-specific inputs are recorded in each artifact; the local portable environment is separate.
+The two explanatory publications and source/content audits use CPU. The retrospective and fresh internal model studies used free Kaggle GPU execution; the separate purged-reference model study used CPU. Fresh-fitting studies attach no pretrained-model dataset. Exact runtime versions and execution-specific inputs are recorded in each artifact; the local portable environment is separate.
 
 ## Completed-source policy
 
 Frozen model-study builders verify their completed embedded source instead of regenerating it from changing main-branch code. Version 1 of the fresh study was superseded before score inspection after a synthetic generated-cache counterexample; version 2 supplies the authenticated results. [Protocol, amendment and limits](../docs/studies/fresh-training-family-holdout.md).
 
 New execution requires an intentionally prepared, separately declared experiment and available free compute/input permissions. Do not push a modified bundle over a completed evidence record or tune against the finished test. Credentials, licensed inputs, private row outputs and weights stay outside Git. Historical auto-submit helpers are not publication-maintenance commands. [Report ownership](../reports/README.md) · [Reproducibility](../docs/guides/reproducibility.md).
-
-The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Complete report](../reports/purged_external_review.md).
