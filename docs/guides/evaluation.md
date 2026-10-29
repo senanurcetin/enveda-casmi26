@@ -51,6 +51,6 @@ Candidate truth coverage bounds attainable MRR; ranking cannot recover a missing
 
 Source, adduct, ionization mode, mass, spectrum-count and instrument slices are descriptive. The fresh study suppresses cells below 20 molecules. Its joint secondary intervals do not provide multiplicity protection for exploratory subgroup selection.
 
-## Completed purged-reference evaluation
+## Separate purged-reference estimand
 
-The separately registered purged-reference experiment reports 150 internal and 150 external test molecules, all retained in denominators. The primary internal C3 coverage difference is +0.0267 [0.0067, 0.0533]. All 11 secondary comparisons use joint intervals; external budget ranking gains remain unresolved. Blank-spectrum C2 drops are supported. Original-snapshot novelty failure and C3 coverage limits remain visible. [Authenticated full report](../../reports/purged_external_review.md).
+The [purged-reference experiment](../../reports/purged_external_review.md) uses disjoint internal and public-source external test cohorts. Both fixed generator budgets are measured even when development recommends one. Its primary contrast is paired internal C3 truth coverage, not MRR; all 11 secondary comparisons share joint max-deviation intervals. Molecules are paired within each cohort and resampled independently across cohorts. A positive primary coverage result does not establish a ranking gain. Original-snapshot novelty feasibility and laboratory authentication are separate questions.

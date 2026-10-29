@@ -16,11 +16,8 @@ submission*.csv
 
 # Large build artifacts
 artifacts/
-runs/*.json
+runs/*
 !runs/.gitkeep
-runs/*.log
-runs/*.sql
-runs/*.done
 
 # Never commit Kaggle authentication or local secret files
 .env

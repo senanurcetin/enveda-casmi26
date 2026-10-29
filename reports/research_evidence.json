@@ -73,9 +73,9 @@
     {
       "id": "c1-fix",
       "title": "Same-library C1 exclusion",
-      "state": "implemented",
+      "state": "measured",
       "detail": "Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.",
-      "source": "docs/research-assessment.md"
+      "source": "reports/revalidation_study.json"
     },
     {
       "id": "uncertainty",

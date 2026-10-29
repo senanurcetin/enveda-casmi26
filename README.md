@@ -23,8 +23,9 @@ The work examines simulation-induced shortcuts, candidate coverage versus decoy 
 | Fresh-training internal benchmark | 600/150/250 train/development/test query families; all 26 learned artifacts sealed before test features | [Design](docs/studies/fresh-training-family-holdout.md), [results](reports/advanced_review.md) |
 | Candidate/ranking loss diagnosis | C3 lacks the true candidate for 224/250 queries; fixed-list oracle MRR ceiling is 0.1040 | [Descriptive decomposition](reports/candidate_loss_review.md) |
 | External-source feasibility | MassBank leaves 0/491 novel molecules; expanded GNPS leaves 7/936, below the declared minimum of 30 | [Source gates and separate completed study](docs/studies/external-source-validation.md) |
+| Separate purged-reference experiment | 150 external test molecules after a full-reference family purge; expanded external C2/C3 MRR 0.4454/0.0466 | [All outcomes and 11 joint contrasts](reports/purged_external_review.md) |
 
-The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Full results](reports/purged_external_review.md).
+In the separate purged-reference study, internal C3 truth coverage increased from 13/150 to 17/150: paired change +0.0267, 95% CI [+0.0067, +0.0533]. Expanded-minus-legacy ranking gains remain unresolved. External C3 coverage is only 23/150. These findings concern a rebuilt purged corpus; original-snapshot novelty feasibility remains unsuccessful.
 
 Fresh internal test MRR@25:
 
@@ -55,7 +56,7 @@ For scientific work, create a Python 3.12 environment, install the exact/hash-lo
 
 ```bash
 python -m pip install --require-hashes -r requirements.txt
-python -m pytest -q
+python -m pytest tests -q
 python scripts/check_research_lock.py
 ```
 
@@ -65,12 +66,15 @@ python scripts/check_research_lock.py
 
 ```text
 src/casmi/        scientific implementation: chemistry, spectra, retrieval, ranking, validation
-scripts/          data builds, experiment runners, audits and report tools; indexed in README
-notebooks/        notebook builders and historical exploratory notebooks
+scripts/          maintained builds, study runners, audits and report tools
+scripts/legacy/   historical machine-specific shell chains; not the reproduction workflow
+notebooks/        explanatory notebook builders; canonical outputs live in kaggle/
 kaggle/           reproducible publication bundles and input metadata
 protocols/        predeclared experiment designs and outcome-blind amendments
 locks/            exact-version, SHA-256 dependency lock
 reports/          aggregate evidence, publication readbacks and generated reviews
+reports/historical/ archived tuning/validation CSVs; not new study results
+runs/             ignored local outputs; only .gitkeep is tracked
 docs/guides/      reproducibility, data integrity, evaluation and NEXUS identity
 docs/studies/     executed-study designs and interpretation boundaries
 docs/assets/      standalone research figures
@@ -81,6 +85,6 @@ tests/            scientific, numerical and provenance regression checks
 
 ## Scientific limits and use
 
-The fresh benchmark separates selected supervised query families on existing internal sources. Shared task-defined candidate/reference knowledge, source concentration and the fixed external NP-score prior limit unseen-chemistry claims. No newly acquired external spectra, independent laboratory replication or final private competition score is established. Population/training differences prevent a causal before/after comparison with historical v16.
+The fresh benchmark separates selected supervised query families on existing internal sources. Shared task-defined candidate/reference knowledge, source concentration and the fixed external NP-score prior limit unseen-chemistry claims. The separate external experiment uses existing public spectra after full-reference purging. It does not establish new laboratory acquisition, independent laboratory replication or a final private competition score. Population/training differences prevent a causal before/after comparison with historical v16.
 
-This repository is research software, without production deployment, billing or hosted inference. Licensed spectra, private per-query records, credentials and model weights are not redistributed. Source datasets and external methods retain their own terms and attribution. [Research assessment](docs/research-assessment.md) · [Verification](docs/verification.md) · [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md) · [Citation metadata](CITATION.cff).
+This repository is research software, without production deployment, billing or hosted inference. Licensed spectra, private per-query records, credentials and model weights are not redistributed. Source datasets and external methods retain their own terms and attribution. [Model limitations](MODEL_CARD.md#evidence-boundaries-and-failure-modes) · [Verification](docs/verification.md) · [Contribution guidance](CONTRIBUTING.md) · [Security](SECURITY.md) · [Citation metadata](CITATION.cff).

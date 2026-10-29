@@ -17,16 +17,10 @@ This directory contains public aggregates and provenance records. Licensed sourc
 | `gnps_external_source_preparation.json`, `gnps_external_audit.json`, `gnps_external_audit_publication.json` | Two-library GNPS source preparation and authenticated insufficient external population | `check_gnps_audit_publication.py`; this is not model-performance evidence |
 | `gnps_expanded_source_preparation.json`, `gnps_expanded_external_audit.json`, `gnps_expanded_external_audit_publication.json` | Expanded GNPS original-snapshot feasibility; 7/936 novel molecules | Preserve negative conclusion and completed source; `check_gnps_expanded_audit_publication.py` |
 | `purged_external_execution_history.json` | Separately registered family-purged model-study attempts | Preserved pre-fit failure and authenticated completed execution; performance remains in the separately authenticated aggregate |
+| `purged_external_study.json`, `purged_external_publication.json`, `purged_external_review.md` | Completed full-reference-purge model study, readback and all registered outcomes | Authenticate with `check_purged_external_publication.py`; render with `build_purged_external_report.py` |
+| `historical/tune_ranker.csv`, `historical/vreal_summary.csv` | Archived tuning and validation summaries moved from `runs/` without changing bytes | Historical diagnostics; not freshly authenticated performance or replacements for registered studies |
 | `research_environment_validation.json` | Dated installed-environment/JUnit attestation | Regenerate only from an actually checked environment and completed test run |
 
-Without `--tables-only`, the advanced/coverage builders export PNG/SVG/PDF figures to `docs/assets/` in the locked plotting environment. CI checks deterministic table regeneration; font/platform rendering is not a bitwise image guarantee.
+Without `--tables-only`, the advanced/coverage/purged builders export PNG/SVG/PDF figures to `docs/assets/` in the locked plotting environment. CI checks deterministic table regeneration; font/platform rendering is not a bitwise image guarantee.
 
-Completed experimental artifacts bind the actual executed notebook source, not the current main branch. Do not edit result JSON to fit new code or update dates to imply rerunning an experiment. Future experiments need distinct declared protocols and evidence records. [Study methods](../docs/README.md#completed-studies) · [Scientific assessment](../docs/research-assessment.md).
-
-## Completed purged-reference experiment
-
-- [Authenticated aggregate](purged_external_study.json) and [publication readback](purged_external_publication.json).
-- [Complete result tables, all 11 contrasts and NEXUS figures](purged_external_review.md).
-- [Both execution attempts](purged_external_execution_history.json), including the preserved pre-fit failure.
-
-The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication.
+Completed experimental artifacts bind the actual executed notebook source, not the current main branch. Do not edit result JSON to fit new code or update dates to imply rerunning an experiment. Future experiments need distinct declared protocols and evidence records. [Study methods](../docs/README.md#completed-studies) · [Model limitations](../MODEL_CARD.md#evidence-boundaries-and-failure-modes).

@@ -1,47 +1,43 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 28 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 29 October 2026.
 
-## Intended use
+## Intended use and components
 
-Rank up to 25 candidate molecular structures per unknown molecule from MS/MS spectra. Evaluation uses reciprocal rank of the first tautomer-canonical InChIKey14 match, truncated at 25. Invalid or duplicate candidates consume their original rank slots; evaluation never compresses them to improve the score.
+Rank up to 25 candidate structures per molecule from MS/MS spectra. The pipeline combines mass-compatible retrieval, D1 reference matching, D2 spectral analogs, D3 learned fingerprints, D4 fragment explanations, candidate generation and LightGBM LambdaRank. Rank scores are not calibrated identification probabilities. [Implementation](ARCHITECTURE.md) · [Evaluation semantics](docs/guides/evaluation.md).
 
-## Model boundaries
+MRR@25 uses the first tautomer-canonical InChIKey14 match within the original 25 slots. Missing predictions score zero; invalid, duplicate and blank slots are not compressed. This metric does not establish stereochemical identification or laboratory identity.
 
-| System | Components | Recorded public MRR@25 |
-|---|---|---:|
-| Own pipeline `ranker-v16-gen2` | ±10 ppm candidate retrieval, D1 library, D2 analog, D3 fingerprint, D4 fragments, generated candidates, LambdaRank | 0.309 |
-| External v4n base | Third-party fusion solution attributed in the dated experiment log | 0.420 |
-| `casmi26-fusion-ours-d` | External base plus own list as a gated reciprocal-rank channel | 0.422 |
+## Historical competition attribution
 
-These are historical author-reported public results recorded by 8 October 2026. The registry links them to [source logs](reports/research_evidence.json). No final private score, present rank, independent server attestation or statistical significance for +0.002 is asserted. No trained model is served by the dashboard.
+| System | Author-reported public MRR@25 | Attribution |
+|---|---:|---|
+| Own `ranker-v16-gen2` pipeline | 0.309 | Original retrieval/ranking work |
+| External v4n base | 0.420 | Third-party solution |
+| `casmi26-fusion-ours-d` | 0.422 | External base plus own rank-list fusion |
 
-## Evaluation and limitations
+These are [8 October 2026 author logs](EXPERIMENTS.md), not a current leaderboard readback or final private score. The +0.002 fusion difference has no established statistical significance or transfer guarantee. The dashboard serves no trained model.
 
-V-in contains 250 instrument-matched natural-product structures; V-real contains 600 harder held-out library structures. They underrepresent unknown novelty mixtures and instrument/library shift. Historical fusion-weight ordering did not transfer consistently to the public leaderboard.
+## Completed model evaluations
 
-Later audits corrected sampled-query C1 leakage, D2 eligibility ordering, identity/provenance and numerical edge cases. Historical leaderboard scores were **not** replaced. A separate [completed retrospective study](reports/revalidation_review.md) now evaluates all 250 eligible V-in molecules through the shared ranking path using rebuilt full-source artifacts and frozen original weights. D1 / D1+D2 / v16 MRR@25 is respectively **0.9033 / 0.9040 / 0.8324 (C1)**, **0.1402 / 0.2272 / 0.6241 (C2)** and **0 / 0 / 0.2374 (C3)**. These are selected-population diagnostics, not new independent generalization estimates. Standard/tautomer keys do not establish scaffold independence.
+| Experiment | Fitting and evaluation boundary | Principal result | Full evidence |
+|---|---|---|---|
+| Frozen-model retrospective study | Rebuilt sources; original v16 weights; all 250 eligible V-in queries | v16 C1/C2/C3 MRR 0.8324/0.6241/0.2374 | [Report and controls](reports/revalidation_review.md) |
+| Fresh internal family benchmark | 600/150/250 train/development/test molecules; two fresh D3 networks and eight three-seed rankers; 26 learned files sealed before test features | Full C1/C2/C3 MRR 0.8665/0.8388/0.0373 | [Report, all 27 secondary contrasts and slices](reports/advanced_review.md) |
+| Separate purged-reference experiment | Selected external families/identities removed from the full training/reference corpus; 300/100/150 internal partitions and 150 external test molecules; eight fresh learned files sealed before test | Expanded external C2/C3 MRR 0.4454/0.0466; internal C3 coverage 13/150 to 17/150 | [Report and all 11 secondary contrasts](reports/purged_external_review.md) |
 
-Blank fragments lower v16 C2 MRR by 0.4972 and C3 by 0.2374, but improve simple-model C2 ranking. That counter-result shows that a negative control is not a universal pass/fail certification: residual similarity can rank decoys above mass-error ordering. Full paired intervals, intensity-shuffle controls and model contrasts are retained in the report. That retrospective study fitted no new weights; complete original training lineage is not independently attested.
+The fresh internal study's primary C2 full-minus-D1+D2 difference is +0.6322, paired 95% CI [+0.5816, +0.6829]. Mass-only C2 exceeds D1+D2, which limits interpretation of that baseline comparison. C2 D1/D2/D4/generator-feature contributions are supported within the fixed secondary family; incremental D3 and NP-score effects remain unresolved.
 
-Current paired comparisons require matching query identities, spectra signatures and source manifests; D2 decision-grade comparisons also require verified fingerprint and fresh-index evidence. Simultaneous bands cover only the fixed class-mixture grid, not adaptive experiment selection. [Research assessment](docs/research-assessment.md).
+The separate purged-reference study's primary internal C3 coverage change is +0.0267, paired 95% CI [+0.0067, +0.0533], with four gains and zero losses. Expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage is only 23/150. Coverage is not achieved ranking accuracy. Different populations, source corpora and fitting prevent a causal before/after comparison between studies.
 
-## Fresh supervised weights and sealed internal families
+## Evidence boundaries and failure modes
 
-The [completed fresh-training study](reports/advanced_review.md) uses 600/150/250 train/development/test molecules, one per conservative generic chemical family, with no selected query/metric/family crossing supervised partitions. Two new D3 networks supply cross-fitted training features; eight prespecified three-seed rankers and all feature lists are sealed before test features. The exact executed source, 26 learned-file hashes and public completion are [authenticated](reports/advanced_publication.json).
+- Original-snapshot novelty feasibility failed: MassBank 0/491, two-library GNPS 7/85 and expanded GNPS 7/936 novel molecules. The two GNPS stages overlap and are not independent replications. The separate family-purged result measures generalization relative to a rebuilt corpus; it does not reverse these findings. [Source methods](docs/studies/external-source-validation.md).
+- Selected supervised query families/metric identities are separated, but task-defined candidate knowledge remains shared. Evaluation structures may occur as negatives in other training queries. The fixed NP-score prior is not freshly fitted and its upstream overlap is unverified.
+- All 1,213 public-example spectra match training content. They cannot establish independent generalization. [Content audit](docs/studies/public-example-overlap.md).
+- Public-source identity and acquisition annotations lack independent laboratory authentication. Restricted chemistry/instruments and unavailable numeric eV encoded as zero limit external transfer; NCE/percent values are not converted to eV.
+- The original internal study lacks the C3 truth for 224/250 molecules. Its fixed-list oracle MRR ceiling is 0.1040, versus achieved MRR 0.0373. Conditional performance on covered queries cannot replace the full population denominator. [Loss accounting](reports/candidate_loss_review.md).
+- Frozen-model controls diagnose the original weights; their full training lineage is not independently attested. Current source corrections do not silently rewrite historical executed snapshots.
+- Isomers, incorrect adducts, contamination, missing references and generated-structure errors can produce confident-looking incorrect rankings. Negative controls are diagnostics; some simple baselines improve under blank spectra.
 
-Fresh full C1/C2/C3 MRR@25 is **0.8665/0.8388/0.0373**. The predeclared C2 full-minus-D1+D2 contrast is **+0.6322 [+0.5816, +0.6829]**. Among 27 jointly assessed secondary contrasts, C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 effects are -0.5119/-0.0936. C3 candidate coverage is only 26/250. No automatic promotion follows from testing several variants.
-
-This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. A separate completed family-purged external study now supplies measured performance; independent laboratory replication remains unavailable.
-
-The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Full results](reports/purged_external_review.md).
-
-## Operational and scientific failure modes
-
-The [external/C3 follow-on](docs/studies/external-source-validation.md) adds an opt-in legacy-preserving generator budget and requires a fresh sealed experiment before claiming improvement. Completed MassBank and two-library GNPS source scans leave zero and seven novel molecules respectively; neither meets the declared minimum of 30. No external model accuracy is established. Current isotope-aware connectivity filtering is corrected; completed historical source snapshots retain their original implementation and are not silently rerun.
-
-The [aggregate-only loss decomposition](reports/candidate_loss_review.md) shows 224/250 C3 queries lack the correct candidate. Of the 26 covered molecules, 24 reach top 25 and 6 rank first. The existing-pool oracle MRR ceiling is 0.1040, versus observed 0.0373; this hypothetical ceiling cannot be presented as achieved accuracy. Conditional MRR on the 26 covered molecules is descriptive and does not replace population MRR. No conditional uncertainty or causal generation improvement can be recovered from aggregate-only evidence.
-
-Missing true structures in the candidate pool impose a hard recall ceiling. Isomers share masses and may have similar spectra. Adduct errors, spectral contamination, mode mismatches, limited cross-instrument references, generated-structure identity errors and unknown chemistry can all produce confident-looking but incorrect rankings. Rank scores are not calibrated identification probabilities.
-
-No clinical, toxicological, regulatory, synthesis or other consequential chemical decision should rely on this project. Source code and source datasets have separate licensing; third-party solutions retain their original attribution and terms. [Data card](DATA_CARD.md).
+These results do not establish state-of-the-art performance, independent laboratory replication, production readiness or suitability for consequential chemical decisions. Source code, datasets, third-party models and the NEXUS identity have separate rights and attribution. [Data card](DATA_CARD.md) · [Dated verification](docs/verification.md).
