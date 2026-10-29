@@ -1,6 +1,6 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 26 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 28 October 2026.
 
 ## Intended use
 
@@ -32,9 +32,13 @@ The [completed fresh-training study](reports/advanced_review.md) uses 600/150/25
 
 Fresh full C1/C2/C3 MRR@25 is **0.8665/0.8388/0.0373**. The predeclared C2 full-minus-D1+D2 contrast is **+0.6322 [+0.5816, +0.6829]**. Among 27 jointly assessed secondary contrasts, C2 D1/D2/D4/generator-feature removals reduce performance; D3 and NP-score effects remain unresolved. Blank/shuffle C2 effects are -0.5119/-0.0936. C3 candidate coverage is only 26/250. No automatic promotion follows from testing several variants.
 
-This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. Independent external spectra/laboratory replication remain absent.
+This is an internal query-family benchmark. Evaluation structures may occur as negatives in training candidate lists and task-defined retrieval references remain shared. The fixed NP-score prior is not freshly fitted. New population/training/architecture prevent a causal before/after comparison with historical v16. The retrospective source snapshot also retains its old connectivity-only generated cache; the representation-sensitive correction and outcome-blind amendment apply to the fresh study. A separate completed family-purged external study now supplies measured performance; independent laboratory replication remains unavailable.
+
+The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Full results](reports/purged_external_review.md).
 
 ## Operational and scientific failure modes
+
+The [external/C3 follow-on](docs/studies/external-source-validation.md) adds an opt-in legacy-preserving generator budget and requires a fresh sealed experiment before claiming improvement. Completed MassBank and two-library GNPS source scans leave zero and seven novel molecules respectively; neither meets the declared minimum of 30. No external model accuracy is established. Current isotope-aware connectivity filtering is corrected; completed historical source snapshots retain their original implementation and are not silently rerun.
 
 The [aggregate-only loss decomposition](reports/candidate_loss_review.md) shows 224/250 C3 queries lack the correct candidate. Of the 26 covered molecules, 24 reach top 25 and 6 rank first. The existing-pool oracle MRR ceiling is 0.1040, versus observed 0.0373; this hypothetical ceiling cannot be presented as achieved accuracy. Conditional MRR on the 26 covered molecules is descriptive and does not replace population MRR. No conditional uncertainty or causal generation improvement can be recovered from aggregate-only evidence.
 

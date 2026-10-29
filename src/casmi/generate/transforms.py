@@ -87,11 +87,15 @@ _RXN = {t.name: [AllChem.ReactionFromSmarts(s) for s in t.smarts] for t in TRANS
 DELTAS = np.array([t.delta for t in TRANSFORMS])
 
 
-def matching(delta, tol_da):
+def matching(delta, tol_da, *, ordered_pairs=False):
     """Single transforms and ordered pairs whose total mass change equals `delta`."""
     single = [(t,) for t in TRANSFORMS if abs(t.delta - delta) <= tol_da]
     pairs = [(a, b) for i, a in enumerate(TRANSFORMS) for b in TRANSFORMS[i:]
              if abs(a.delta + b.delta - delta) <= tol_da]
+    if ordered_pairs:
+        # Reaction order can change which sites exist in the intermediate.
+        # Append reverse routes after historical routes to preserve their priority.
+        return single + pairs + [(b, a) for a, b in pairs if a.name != b.name]
     return single + pairs
 
 
@@ -151,14 +155,14 @@ def propose(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300):
 T_INDEX = {t.name: i for i, t in enumerate(TRANSFORMS)}
 
 
-def propose_agg(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300):
+def propose_agg(analogs, query_mass, tol_ppm=10.0, max_analogs=15, cap=300, *, ordered_pairs=False):
     """Like `propose`, but every product carries its consensus: how many distinct analog seeds and
     (seed, path) routes produce it. analogs: [(smiles, similarity, analog_mass)], best first.
     Returns {smiles: dict(sim_max, sim_sum, n_seeds, n_paths, depth, t1, t2)}."""
     tol_da = query_mass * tol_ppm * 1e-6
     out = {}
     for si, (smi, sim, amass) in enumerate(analogs[:max_analogs]):
-        paths = matching(query_mass - amass, tol_da * 2)
+        paths = matching(query_mass - amass, tol_da * 2, ordered_pairs=ordered_pairs)
         if not paths:
             continue
         mol = Chem.MolFromSmiles(smi)

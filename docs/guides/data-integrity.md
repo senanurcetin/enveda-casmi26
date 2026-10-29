@@ -45,3 +45,7 @@ Use the actual tagged pool names and include every input required by the chosen 
 ## Data access and retained evidence
 
 Licensed spectra, structures, trained weights and private per-query outputs stay outside Git. Credentials remain in the operator's existing local authentication mechanism. The [report directory](../../reports/README.md) contains aggregates, hashes, software versions and bounded publication readbacks. The executed [overlap audit](../studies/public-example-overlap.md) confirms numeric public-example overlap for one hashed snapshot; hidden evaluation data and live BigQuery provenance remain outside that finding.
+
+## Completed purged-reference evaluation
+
+The purged-reference experiment removes 261,826 original training rows, leaving 2,277,782. Every selected external family and standard/metric identity is removed from the full training/reference corpus, including all rows sharing blocked declared keys. Undefined family labels quarantine the entire affected declared identity. Post-purge identity/content scans precede fresh fitting; explicit CASMI_DATA selects the filtered snapshot ahead of automatic discovery. [Authenticated full report](../../reports/purged_external_review.md).

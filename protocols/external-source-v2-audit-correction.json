@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "registered_on": "2026-10-27",
+  "scope": "Outcome-blind correction before any external model prediction or candidate-coverage result",
+  "finding": "The legacy heavy-connectivity helper retains isotope labels, while official metric InChIKey14 removes isotopic layers. Isotopic tautomer equivalents can therefore have different helper signatures. Standard-key exclusion alone does not cover every combination of isotope and tautomer differences.",
+  "correction": "Use heavy-element composition, ignoring hydrogen count and isotope labels, as the broad necessary-condition prefilter; canonicalize every matching training label. Standard/metric/exact-content rejection and the 30-molecule minimum are unchanged.",
+  "regression": "CC(=O)C and [13CH3]C(O)=C share official metric identity and heavy-element composition but have different legacy skeleton signatures.",
+  "execution_policy": "GNPS audit version 1 uses the earlier prefilter and is superseded for independence decisions. Run version 2 with the corrected implementation and authenticate its source. MassBank's negative result remains valid because all 491 molecules were excluded by standard identity independently of the metric prefilter. No completed model-study results are recomputed or overwritten."
+}

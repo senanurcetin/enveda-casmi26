@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "PINNED_CC0_EXTERNAL_INPUT_PREPARED",
+  "source": {
+    "repository": "https://github.com/MassBank/MassBank-data",
+    "release": "2026.03",
+    "commit": "705afb7bccc3b2c42410a744eef73674716a60ef",
+    "archive_sha256": "dbcf3d4f905b11bc2a0332010f442353a73a2bb1c4b00432bcd8717bd6e9de8e",
+    "allowed_record_licenses": [
+      "CC0"
+    ],
+    "eligibility": "Connected valid molecular structure, supported adduct, MS2 ESI, 150-1170 Da, precursor error <=20 ppm, at least five finite positive fragment peaks; preserve accession, authors, license and record hash"
+  },
+  "counts": {
+    "source_records": 139240,
+    "non_cc0_records": 132209,
+    "invalid_precursor_or_peak_count": 2194,
+    "outside_mass_range": 161,
+    "invalid_peak": 4,
+    "precursor_mass_conflict": 66,
+    "invalid_or_disconnected_structure": 6,
+    "unsupported_acquisition": 12,
+    "unsupported_adduct": 21,
+    "eligible_spectra": 4567,
+    "eligible_metric_molecules": 491
+  },
+  "parquet_sha256": "ee2b6274f264471d5184793754a3731555b7e55e3bb61955fa42e44cf1bae205",
+  "parquet_bytes": 1769724,
+  "rdkit": "2026.03.3",
+  "scope": "Source preparation only; CASMI overlap and external independence not yet established"
+}

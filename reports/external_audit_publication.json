@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-29T17:27:11.030703+00:00",
+  "id": "senanuretin/casmi26-massbank-external-independence",
+  "public": true,
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-massbank-external-independence",
+  "latest_run_status": "COMPLETE",
+  "source_matches": true,
+  "source_sha256": "221a9f332495ef264cfb2c4e128693544ee9a62e44db0326b62f727c382b090d",
+  "aggregate_artifact_sha256": "22ea8a8b213684e3868cef6548dc18c894ae0dd480f400b7c9136e27acde499e",
+  "status": "pass",
+  "scientific_status": "EXTERNAL_INDEPENDENCE_NOT_ESTABLISHED",
+  "scope": "External source independence feasibility only; no model outcome evidence"
+}

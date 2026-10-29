@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-29T17:21:52.117358+00:00",
+  "id": "senanuretin/casmi26-purged-family-external-validation",
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation",
+  "latest_run_status": "COMPLETE",
+  "public": true,
+  "source_matches": true,
+  "source_sha256": "9d7aeb3f4deb26cb724e2467ae577d02d4d7784c7e51d3659fd16064985e4643",
+  "aggregate_artifact_sha256": "4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c",
+  "status": "pass",
+  "scope": "Fresh models with selected external families purged from all training/reference data; original-snapshot novelty feasibility remains unsuccessful; no independent laboratory replication"
+}

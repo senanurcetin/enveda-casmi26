@@ -54,3 +54,9 @@ For the [fresh internal benchmark](docs/studies/fresh-training-family-holdout.md
 Completed notebooks retain the source actually executed. Publication readback binds completion, public visibility, source, attachments and bounded aggregate artifacts. Updating current source or documentation does not rewrite an executed study. New scientific conclusions require a separate declared experiment; report regeneration alone supplies no new validation.
 
 The static dashboard consumes committed profiles and the evidence registry. It neither loads model weights nor calls private data APIs. [Report ownership](reports/README.md) · [Reproduction](docs/guides/reproducibility.md) · [Scientific limits](docs/research-assessment.md).
+
+## Completed family-purged study
+
+The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Methods, all outcomes and limitations](reports/purged_external_review.md).
+
+The explicit CASMI_DATA snapshot takes precedence over automatic Kaggle discovery. All reference artifacts are rebuilt from filtered rows before fitting. Undefined generic-family labels quarantine the entire affected declared identity under the outcome-blind amendment; the failed first attempt remains preserved.

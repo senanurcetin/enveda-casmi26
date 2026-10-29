@@ -1,0 +1,21 @@
+{
+  "id": "senanuretin/casmi26-purged-family-external-validation",
+  "title": "CASMI26: Purged Family External Validation",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "competition_sources": [
+    "enveda-CASMI26-molecule-id-mass-spectra"
+  ],
+  "dataset_sources": [
+    "senanuretin/casmi-coconut-b",
+    "senanuretin/casmi-pubchemlite-b",
+    "metric/rdkit-2026-3-3-wheel",
+    "senanuretin/casmi26-gnps-cc0-expanded"
+  ],
+  "kernel_sources": []
+}

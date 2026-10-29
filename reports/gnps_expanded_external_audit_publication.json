@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-29T17:27:11.452818+00:00",
+  "id": "senanuretin/casmi26-gnps-community-external-independence",
+  "public": true,
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-gnps-community-external-independence",
+  "latest_run_status": "COMPLETE",
+  "source_matches": true,
+  "source_sha256": "7e691d34735029fedb6568129e628924a0237bc0d7da96e6f640ee13bd3786dd",
+  "aggregate_artifact_sha256": "2e5664b597a0662a0f55204b7d4b0a5558e32efdfd9637d2edcd7a62c79d124f",
+  "status": "pass",
+  "scientific_status": "EXTERNAL_INDEPENDENCE_NOT_ESTABLISHED",
+  "scope": "External source independence feasibility only; no model outcome evidence"
+}

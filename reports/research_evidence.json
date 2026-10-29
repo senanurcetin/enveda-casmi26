@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-26",
-  "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation",
+  "reviewed_on": "2026-10-29",
+  "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls, fresh internal-family benchmarks and a separately registered purged-reference external evaluation; no competition submission or independent laboratory replication",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
   "experiments": [
@@ -114,9 +114,9 @@
     },
     {
       "id": "external-holdout",
-      "title": "Untouched external holdout",
+      "title": "Independent laboratory replication remains unavailable",
       "state": "pending",
-      "detail": "Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.",
+      "detail": "Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.",
       "source": "MODEL_CARD.md"
     },
     {
@@ -153,6 +153,41 @@
       "state": "implemented",
       "detail": "Summary and paired bootstrap reject noninteger, negative, out-of-top-25, nonfinite and malformed rank arrays before scoring. Fixed-seed valid results remain unchanged. Completed experiment source bundles remain frozen.",
       "source": "src/casmi/validate/rank_inputs.py"
+    },
+    {
+      "id": "massbank-external-feasibility",
+      "title": "Pinned MassBank external-source feasibility",
+      "state": "measured",
+      "source": "reports/external_audit.json",
+      "detail": "Full 2,539,608-row training scan excludes all 491 eligible CC0 molecules by standard identity; zero novel molecules. Authenticated completed source. This does not establish external model accuracy."
+    },
+    {
+      "id": "gnps-external-feasibility",
+      "title": "Two-library GNPS external-source feasibility",
+      "state": "measured",
+      "source": "reports/gnps_external_audit.json",
+      "detail": "Full training scan leaves 7 novel molecules among 85 eligible identities; below the predeclared minimum of 30. No model performance was inspected. The isotope-safe second execution is the authenticated source."
+    },
+    {
+      "id": "c3-budget-expansion",
+      "title": "Legacy-preserving C3 candidate expansion",
+      "state": "measured",
+      "source": "reports/purged_external_study.json",
+      "detail": "Preserved legacy candidates and zero observed losses. Internal C3 coverage 13/150 to 17/150; paired change +0.0267 [0.0067, 0.0533]. Joint external ranking improvements remain unresolved; external C3 coverage only 23/150."
+    },
+    {
+      "id": "gnps-expanded-feasibility",
+      "title": "Expanded GNPS original-snapshot novelty feasibility",
+      "state": "measured",
+      "source": "reports/gnps_expanded_external_audit.json",
+      "detail": "Authenticated full-training scan leaves the same seven novel molecules among 936 eligible identities, below the declared minimum of 30. Expanded GNPS includes the earlier two-library source, so these stages are not independent replications."
+    },
+    {
+      "id": "purged-family-external-study",
+      "title": "Separately registered family-purged external evaluation",
+      "state": "measured",
+      "source": "reports/purged_external_study.json",
+      "detail": "The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication."
     }
   ]
 }

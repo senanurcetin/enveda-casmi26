@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "casmi-external-c3-v1",
+  "registered_on": "2026-10-27",
+  "scope": "Expand C3 proposal coverage and evaluate newly fitted models on independently sourced public spectra; no laboratory replication or guaranteed positive result",
+  "external_source": {
+    "repository": "https://github.com/MassBank/MassBank-data",
+    "release": "2026.03",
+    "commit": "705afb7bccc3b2c42410a744eef73674716a60ef",
+    "archive_sha256": "dbcf3d4f905b11bc2a0332010f442353a73a2bb1c4b00432bcd8717bd6e9de8e",
+    "allowed_record_licenses": ["CC0"],
+    "eligibility": "Connected valid molecular structure, supported adduct, MS2 ESI, 150-1170 Da, precursor error <=20 ppm, at least five finite positive fragment peaks; preserve accession, authors, license and record hash"
+  },
+  "feasibility_stage": "Audit all eligible external metric identities and exact stored spectral content against the full approved CASMI training snapshot. Inspect metadata/overlap counts only, no model performance. Fail closed if fewer than 30 novel external molecules remain.",
+  "external_selection": "Exclude all CASMI training standard/tautomer metric matches and selected supervised training/development families; select up to 150 molecules by SHA256(external-c3-v1|metric-key), without consulting predictions; at most five spectra each",
+  "internal_counts": {"train": 300, "dev": 100, "test": 150},
+  "internal_selection": "Generic-family and metric-disjoint fixed partitions from the previously eligible internal population, excluding all families selected in the completed 600/150/250 study and historical V-in families",
+  "split_salt": "NEXUS-CASMI-EXTERNAL-C3-20261027-v1",
+  "seed": 20261027,
+  "generator_policies": {
+    "legacy": {"analog_seeds": 15, "candidate_cap": 300, "transform_pair_order": "historical single order"},
+    "expanded": {"analog_seeds": 30, "candidate_cap": 900, "transform_pair_order": "both orders", "preserve_legacy_candidates_and_features": true}
+  },
+  "generator_choice": "Only two fixed policies; expanded is retained for test only if development coverage does not decrease and at least one new development truth is recovered. Freeze the choice before test inference. Always report both policies and development gains/losses.",
+  "fresh_supervised_fitting": "Two cross-fitted fingerprint networks, dimension128/layers2/ff512, six fixed epochs, batch256, AdamW lr0.0003; two three-seed LambdaRank models, <=400 rounds with development-only early stopping40; no archived weight attachment",
+  "feature_policy": "D1/D2/D3/D4 and generator features; exclude all prior_* and audit_* columns from scientific models; shared candidate-intrinsic computation may be reused only if each candidate subset's list-context features are recomputed",
+  "test_controls": "Unperturbed internal C1/C2/C3 and external C2/C3; blank-fragment external C2/C3 diagnostic; same selected molecules retained including empty candidate lists",
+  "primary": "Paired expanded-minus-legacy C3 candidate truth-coverage difference on the new internal test",
+  "external_validation": "Report every external C2/C3 model MRR@25, top1/top10/hit25, coverage ceilings and molecule-paired differences, even when poor; standard/metric identity novelty does not independently authenticate acquisition lineage",
+  "uncertainty": "4000 molecule-paired bootstrap draws; primary single contrast; secondary fixed-family joint max-deviation intervals; no inference from small descriptive slices",
+  "seal": "Seal all supervised weights, features, protocol, population hashes and development choice before internal or external test feature generation",
+  "budget": "Existing free Kaggle CPU/GPU only; no paid compute, external LLM calls, deployment or competition submissions",
+  "failure_policy": "Keep unsuccessful executions and insufficient external population explicit. Do not relax independence filters, replace unfavorable test outcomes or relabel synthetic evidence as external validation. No automatic promotion."
+}

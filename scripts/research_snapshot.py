@@ -27,7 +27,7 @@ def embedded_sources(notebook_path):
     for name, source in found[0].items():
         path = PurePosixPath(name)
         if (not isinstance(source, str) or path.is_absolute() or ".." in path.parts
-                or "\\" in name or path.as_posix() != name or not name.endswith(".py")):
+                or "\\" in name or path.as_posix() != name or path.suffix not in {".py", ".json"}):
             raise ValueError("Invalid embedded source path or content")
     return found[0]
 

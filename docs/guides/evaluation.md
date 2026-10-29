@@ -50,3 +50,7 @@ The fresh study separates selected supervised query families and metric identiti
 Candidate truth coverage bounds attainable MRR; ranking cannot recover a missing candidate. The [loss report](../../reports/candidate_loss_review.md) decomposes ideal MRR into observed score, within-coverage ranking loss and absent-candidate loss. Conditional metrics retain the covered-subset denominator and do not replace the full-population score. Aggregate-only evidence cannot recover conditional bootstrap intervals or causal effects of changing generation.
 
 Source, adduct, ionization mode, mass, spectrum-count and instrument slices are descriptive. The fresh study suppresses cells below 20 molecules. Its joint secondary intervals do not provide multiplicity protection for exploratory subgroup selection.
+
+## Completed purged-reference evaluation
+
+The separately registered purged-reference experiment reports 150 internal and 150 external test molecules, all retained in denominators. The primary internal C3 coverage difference is +0.0267 [0.0067, 0.0533]. All 11 secondary comparisons use joint intervals; external budget ranking gains remain unresolved. Blank-spectrum C2 drops are supported. Original-snapshot novelty failure and C3 coverage limits remain visible. [Authenticated full report](../../reports/purged_external_review.md).

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "registered_on": "2026-10-28",
+  "parent_protocol": "purged-external-v1.json",
+  "reason": "Attempt 1 failed closed in prepare_purged_external.py before any supervised fitting or candidate/model-performance inspection because a training label had undefined generic-family grouping.",
+  "correction": "Quarantine every declared training identity with any label for which generic-family grouping is undefined, removing all rows sharing that identity. Report aggregate counts of undefined labels and affected identities. Continue to require zero retained selected external families and zero standard/metric/content overlap before fitting.",
+  "unchanged_design": "Keep source snapshot, external family/metric selection, salts, 300/100/150 internal counts, at-most-150/at-least-30 external population, both generator budgets, all fitting settings, development recommendation gate, model seal, controls and 11 secondary contrasts unchanged. Do not select replacement external molecules using candidate or prediction outcomes.",
+  "evidence_policy": "Preserve attempt 1 and its exact source hash, sanitized failure and absence of fitting/outcome inspection. Bind this amendment to the new executed source, purge report and publication record. The original-snapshot novelty failure remains preserved."
+}
