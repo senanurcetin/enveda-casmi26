@@ -36,8 +36,8 @@
     },
     {
       "version": 2,
-      "checked_at": "2026-10-28T20:29:11.680946+00:00",
-      "status": "RUNNING",
+      "checked_at": "2026-10-29T17:22:57.380499+00:00",
+      "status": "COMPLETE",
       "source_sha256": "9d7aeb3f4deb26cb724e2467ae577d02d4d7784c7e51d3659fd16064985e4643",
       "source_matches": true,
       "public": true,
@@ -51,11 +51,14 @@
         "metric/rdkit-2026-3-3-wheel",
         "senanuretin/casmi26-gnps-cc0-expanded"
       ],
-      "result_artifacts_inspected": false,
-      "model_results_inspected": false,
-      "implementation_commit": "70c7bd0"
+      "result_artifacts_inspected": true,
+      "model_results_inspected": true,
+      "implementation_commit": "70c7bd0",
+      "model_fitting_started": true,
+      "publication": "reports/purged_external_publication.json",
+      "aggregate_artifact_sha256": "4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c"
     }
   ],
   "url": "https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation",
-  "scope": "Execution tracking only; running source authentication is not completed model-performance evidence"
+  "scope": "Preserves the failed pre-fit attempt and authenticated completed attempt; full outcomes and limitations in purged_external_review.md"
 }

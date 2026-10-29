@@ -1,6 +1,6 @@
 # Kaggle research publications
 
-Eight owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
+Nine owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
 
 | Publication | Bundle | Evidence |
 |---|---|---|
@@ -13,11 +13,13 @@ Eight owned publications have completed authenticated source/status readback. Th
 | [GNPS2 External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps2-external-independence) | `audits/gnps-independence/` | Authenticated insufficient population: seven novel molecules; no model scoring |
 | [GNPS Community External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps-community-external-independence) | `audits/gnps-expanded-independence/` | Authenticated original-snapshot insufficiency: 7/936 novel molecules; no model scoring |
 
-## Running separately registered study
+| [Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) | `audits/purged-external/` | Eight fresh artifacts after full-reference family purge; [all outcomes](../reports/purged_external_review.md) |
 
-[Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) is running on free CPU with disabled internet and no archived-model attachment. Its [registered design](../protocols/purged-external-v1.json) purges selected external families from all training/reference rows before fresh fitting. [Execution history](../reports/purged_external_execution_history.json) authenticates the live source, not completed model performance. The original novelty gates remain unsuccessful.
+## Completed separately registered study
 
-`build_purged_external_notebook.py` preserves an existing registered attempt by default. An intentional repaired attempt requires `--new-attempt` and preserved earlier attempt history; a completed publication stays frozen. After completion, `check_purged_external_publication.py` authenticates the bounded result and `build_purged_external_report.py` renders verified outcomes.
+[Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) completed on free CPU with disabled internet and no archived-model attachment. Its [registered design](../protocols/purged-external-v1.json) purges selected external families from all training/reference rows before fresh fitting. [Execution history](../reports/purged_external_execution_history.json) preserves both attempts; the [publication authentication](../reports/purged_external_publication.json) verifies completed model evidence. The original novelty gates remain unsuccessful.
+
+`build_purged_external_notebook.py` preserves an existing registered attempt by default. An intentional repaired attempt requires `--new-attempt` and preserved earlier attempt history; a completed publication stays frozen. `check_purged_external_publication.py` authenticates the bounded result and `build_purged_external_report.py` renders verified outcomes.
 
 ## Build and authenticate
 
@@ -49,3 +51,5 @@ The two explanatory publications and overlap scan use CPU. The model studies use
 Frozen model-study builders verify their completed embedded source instead of regenerating it from changing main-branch code. Version 1 of the fresh study was superseded before score inspection after a synthetic generated-cache counterexample; version 2 supplies the authenticated results. [Protocol, amendment and limits](../docs/studies/fresh-training-family-holdout.md).
 
 New execution requires an intentionally prepared, separately declared experiment and available free compute/input permissions. Do not push a modified bundle over a completed evidence record or tune against the finished test. Credentials, licensed inputs, private row outputs and weights stay outside Git. Historical auto-submit helpers are not publication-maintenance commands. [Report ownership](../reports/README.md) · [Reproducibility](../docs/guides/reproducibility.md).
+
+The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication. [Complete report](../reports/purged_external_review.md).

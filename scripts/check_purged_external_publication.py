@@ -195,7 +195,7 @@ def validate_result(result):
         "dataset_sources": DATASETS, "pretrained_models_attached": False, "gpu_enabled": False, "internet_enabled": False,
         "submitted_predictions": False, "protocol_registered_commit": REGISTERED_COMMIT, "new_model_test_results_before_registration": False,
         "source_amendment_sha256": text_hash("protocols/purged-external-v1-source-amendment.json")}, "Execution policy differs")
-    require(result["environment"]["device"] == "cpu" and result["environment"]["rdkit"] == "2026.03.3", "Unexpected scientific runtime")
+    require(result["environment"]["device"] == "cpu" and result["environment"]["rdkit"] in {"2026.03.3", "2026.3.3"}, "Unexpected scientific runtime")
     engine = result["engine_config"]
     require(all(engine[k] is True for k in ("generate", "gen_consensus", "gen_expand", "np_score"))
         and engine["gen_max_analogs"] == 30 and engine["gen_cap"] == 900, "Candidate-budget implementation differs")

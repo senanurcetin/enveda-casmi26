@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "reviewed_on": "2026-10-28",
-  "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation",
+  "reviewed_on": "2026-10-29",
+  "scope": "Noncommercial research: historical scores, executed audits, frozen retrospective controls, fresh internal-family benchmarks and a separately registered purged-reference external evaluation; no competition submission or independent laboratory replication",
   "score_snapshot": "2026-10-08",
   "metric": "public MRR@25",
   "experiments": [
@@ -114,9 +114,9 @@
     },
     {
       "id": "external-holdout",
-      "title": "Untouched external holdout",
+      "title": "Independent laboratory replication remains unavailable",
       "state": "pending",
-      "detail": "Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.",
+      "detail": "Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.",
       "source": "MODEL_CARD.md"
     },
     {
@@ -171,9 +171,9 @@
     {
       "id": "c3-budget-expansion",
       "title": "Legacy-preserving C3 candidate expansion",
-      "state": "implemented",
-      "source": "src/casmi/generate/expanded.py",
-      "detail": "Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured."
+      "state": "measured",
+      "source": "reports/purged_external_study.json",
+      "detail": "Preserved legacy candidates and zero observed losses. Internal C3 coverage 13/150 to 17/150; paired change +0.0267 [0.0067, 0.0533]. Joint external ranking improvements remain unresolved; external C3 coverage only 23/150."
     },
     {
       "id": "gnps-expanded-feasibility",
@@ -185,9 +185,9 @@
     {
       "id": "purged-family-external-study",
       "title": "Separately registered family-purged external evaluation",
-      "state": "pending",
-      "source": "protocols/purged-external-v1.json",
-      "detail": "A new free-CPU experiment removes selected external chemical families and identities from the entire training/reference corpus, rebuilds artifacts, fits fresh weights and seals all models before test. Original-snapshot novelty feasibility remains unsuccessful. Model performance and C3 coverage improvement are not yet established."
+      "state": "measured",
+      "source": "reports/purged_external_study.json",
+      "detail": "The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication."
     }
   ]
 }

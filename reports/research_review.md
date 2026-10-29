@@ -1,8 +1,8 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-28. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-29. Score snapshot: 2026-10-08.
 
-Noncommercial research: historical scores, executed audits, frozen retrospective controls and fresh supervised internal-family benchmark; no competition submission or external laboratory validation.
+Noncommercial research: historical scores, executed audits, frozen retrospective controls, fresh internal-family benchmarks and a separately registered purged-reference external evaluation; no competition submission or independent laboratory replication.
 
 These are source-file integrity hashes, not external verification of the claims.
 
@@ -32,7 +32,7 @@ Source: [reports/data_profile.json](../reports/data_profile.json). SHA-256 (UTF-
 
 Complete same-library reference groups, including unsampled equivalent spectra, are excluded. The corrected path has now run on all 250 V-in molecules; historical leaderboard scores are unchanged and the isolated causal effect of this fix was not estimated.
 
-Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `b88036a8c2afbd6de49c2fd5f4f6388609c4132170e808c45696af5448f3839f`.
+Source: [docs/research-assessment.md](../docs/research-assessment.md). SHA-256 (UTF-8 / LF): `f0e8ca389772beccdc869846124c68e8a6031b9a9ecefe74468393558ccba152`.
 
 ## Fixed-grid simultaneous uncertainty — implemented
 
@@ -64,11 +64,11 @@ Source: [reports/revalidation_review.md](../reports/revalidation_review.md). SHA
 
 Source: [reports/revalidation_study.json](../reports/revalidation_study.json). SHA-256 (UTF-8 / LF): `32a2211c52f1f0c5f85d7556e84e12df0a917a140a50597be1ef055d8fe7055e`.
 
-## Untouched external holdout — pending
+## Independent laboratory replication remains unavailable — pending
 
-Fresh supervised fitting and sealed internal query-family validation are complete. Newly acquired external spectra and independent laboratory replication remain unmeasured; shared candidate/reference knowledge limits claims of wholly unseen chemistry.
+Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `ad2f607cff0bf0528e463b92ed0833a114584958cdff540d7329a04081cabfd6`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `abf976faf19d11e5674f10f88e8bfc2d14e51d0a87095b8009d1d22530b1d245`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -86,7 +86,7 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `3e8d30a867681a72450e64b77943c7b9515c6989f93ec913c034d22ae510fe76`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `6e5eaafa445e70b1ba647de8dcdbb7a3007f0fbf51863f23304a7475ccd06ccf`.
 
 ## Candidate coverage and ranking loss accounting — measured
 
@@ -112,11 +112,11 @@ Full training scan leaves 7 novel molecules among 85 eligible identities; below 
 
 Source: [reports/gnps_external_audit.json](../reports/gnps_external_audit.json). SHA-256 (UTF-8 / LF): `0bd70bc61f91351fc4f18286ebc28d14b130a33aecc87318d145179bb3c34f8a`.
 
-## Legacy-preserving C3 candidate expansion — implemented
+## Legacy-preserving C3 candidate expansion — measured
 
-Opt-in 30-seed/900-proposal expansion includes both transform-pair orders and preserves historical proposals. Tests establish code invariants; real coverage improvement and external model performance remain unmeasured.
+Preserved legacy candidates and zero observed losses. Internal C3 coverage 13/150 to 17/150; paired change +0.0267 [0.0067, 0.0533]. Joint external ranking improvements remain unresolved; external C3 coverage only 23/150.
 
-Source: [src/casmi/generate/expanded.py](../src/casmi/generate/expanded.py). SHA-256 (UTF-8 / LF): `e40c0abef2875f82b3f4343e7e51f13bafd6801bfe87543dc9f5e9fd6d00d090`.
+Source: [reports/purged_external_study.json](../reports/purged_external_study.json). SHA-256 (UTF-8 / LF): `4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c`.
 
 ## Expanded GNPS original-snapshot novelty feasibility — measured
 
@@ -124,8 +124,8 @@ Authenticated full-training scan leaves the same seven novel molecules among 936
 
 Source: [reports/gnps_expanded_external_audit.json](../reports/gnps_expanded_external_audit.json). SHA-256 (UTF-8 / LF): `2e5664b597a0662a0f55204b7d4b0a5558e32efdfd9637d2edcd7a62c79d124f`.
 
-## Separately registered family-purged external evaluation — pending
+## Separately registered family-purged external evaluation — measured
 
-A new free-CPU experiment removes selected external chemical families and identities from the entire training/reference corpus, rebuilds artifacts, fits fresh weights and seals all models before test. Original-snapshot novelty feasibility remains unsuccessful. Model performance and C3 coverage improvement are not yet established.
+The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication.
 
-Source: [protocols/purged-external-v1.json](../protocols/purged-external-v1.json). SHA-256 (UTF-8 / LF): `0797eab3dc5a375f8e09ab0bc31af64746135a0f2959266792a219d9b33eeab8`.
+Source: [reports/purged_external_study.json](../reports/purged_external_study.json). SHA-256 (UTF-8 / LF): `4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c`.

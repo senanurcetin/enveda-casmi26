@@ -59,3 +59,7 @@ See [the protocol](../studies/frozen-model-revalidation.md) and [verified result
 ## Reproduce the executed public-example content audit
 
 Install PyArrow (tested with Kaggle 23.0.1 and local/CI 24.0.0), then run `scripts/audit_public_overlap.py` on already-authorized train/public inputs. It streams Arrow batches, exports only aggregates and hashes, and refuses to overwrite reports. Alternatively build the internet-disabled CPU bundle with `scripts/build_overlap_notebook.py`; its completed Kaggle readback is checked by `scripts/check_overlap_publication.py`. [Executed counts and methodology](../studies/public-example-overlap.md).
+
+## Completed purged-reference evaluation
+
+Run python scripts/check_purged_external_publication.py to authenticate the completed public source and bounded aggregate. Run python scripts/build_purged_external_report.py to regenerate figures and tables. The registered notebook embeds both Python and JSON protocol/source records; its complete inventory is hashed without execution. CPU RDKit reports equivalent version spellings 2026.3.3 and 2026.03.3. The local hash-locked test runtime and Kaggle execution environment are recorded separately. [Authenticated full report](../../reports/purged_external_review.md).

@@ -1,5 +1,7 @@
 """Protect registered live evidence before any model-result artifact exists."""
 import json
+import copy
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -11,6 +13,34 @@ from scripts.check_purged_external_publication import validate_result
 
 
 class PurgedPublicationTests(unittest.TestCase):
+    def test_actual_completed_artifact_and_publication_digest(self):
+        root = Path(__file__).resolve().parents[1]
+        raw = (root / 'reports/purged_external_study.json').read_bytes()
+        publication = json.loads((root / 'reports/purged_external_publication.json').read_text())
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), publication['aggregate_artifact_sha256'])
+        validate_result(json.loads(raw))
+
+    def test_actual_result_rejects_tampering(self):
+        root = Path(__file__).resolve().parents[1]
+        original = json.loads((root / 'reports/purged_external_study.json').read_text())
+        mutations = [
+            ('source', lambda r: r['source_code_sha256'].clear()),
+            ('purge', lambda r: r['purged_training'].update(retained_external_family_overlap=1)),
+            ('population', lambda r: r['external_population'].update(n_molecules=149)),
+            ('seal', lambda r: r['training_seal']['model_files'].pop('external_fp_fold0.pt')),
+            ('input', lambda r: r['raw_inputs']['original_train.parquet'].update(sha256='0'*64)),
+            ('primary', lambda r: r['primary'].update(delta_coverage=0.5)),
+            ('secondary', lambda r: r['secondary_joint_intervals']['outcomes'].pop(next(iter(r['secondary_joint_intervals']['outcomes'])))),
+            ('privacy', lambda r: r['limitations'].append({'smiles': 'private fixture'})),
+            ('denominator', lambda r: r['models']['external']['expanded']['none']['C2'].update(n=149)),
+            ('runtime', lambda r: r['environment'].update(rdkit='2025.3.3')),
+        ]
+        for name, mutate in mutations:
+            with self.subTest(name=name):
+                result = copy.deepcopy(original)
+                mutate(result)
+                with self.assertRaises(ValueError): validate_result(result)
+
     def test_live_bundle_is_verified_without_regeneration(self):
         notebook = {"cells": [{"cell_type": "code", "source": "print('synthetic evidence fixture')"}]}
         with tempfile.TemporaryDirectory() as temporary:
