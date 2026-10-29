@@ -18,6 +18,8 @@ This separately registered experiment evaluates freshly fitted models after remo
 | Removed spectra | 261,826 |
 | Retained training spectra | 2,277,782 |
 | Removed declared training identities | 20,265 |
+| Undefined-family labels quarantined | 1 |
+| Declared identities blocked by undefined family | 1 |
 | Selected external molecules | 150 |
 | Protected external family annotations | 150 |
 | Retained selected external families | 0 |

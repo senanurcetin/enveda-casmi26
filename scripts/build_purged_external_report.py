@@ -81,6 +81,8 @@ def build(*, tables_only=False):
         f"| Removed spectra | {purge['removed_training_rows']:,} |",
         f"| Retained training spectra | {purge['retained_training_rows']:,} |",
         f"| Removed declared training identities | {purge['removed_training_identities']:,} |",
+        f"| Undefined-family labels quarantined | {purge['family_grouping_quarantine']['unassignable_family_labels_removed']:,} |",
+        f"| Declared identities blocked by undefined family | {purge['family_grouping_quarantine']['unassignable_family_training_identities_removed']:,} |",
         f"| Selected external molecules | {purge['selected_external_molecules']} |",
         f"| Protected external family annotations | {purge['selected_external_families']} |",
         f"| Retained selected external families | {purge['retained_external_family_overlap']} |", "",
