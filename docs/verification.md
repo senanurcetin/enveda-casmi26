@@ -1,10 +1,10 @@
 # Verification record
 
-Reviewed 29 October 2026. Verification distinguishes executable implementation checks from data-dependent research results. The current source, tests and evidence registry are the authoritative maintenance state; dated competition observations remain in the original experiment log.
+Reviewed 30 October 2026. Verification distinguishes executable implementation checks from data-dependent research results. The current source, tests and evidence registry are the authoritative maintenance state; dated competition observations remain in the original experiment log.
 
 ## Local and continuous checks
 
-The last full scientific run passed **371 tests and 159 subtests**, with two Windows symlink-containment skips: 532 JUnit cases, zero failures/errors. The [environment attestation](../reports/research_environment_validation.json) records the JUnit digest, Python 3.12.13 and 50 installed packages matching 69 conditional exact/hash-locked requirements. This is a dated test run, not a test-coverage percentage. The separate dependency-free suite ran 112 tests with the same two skips.
+The last full scientific run passed **380 tests and 159 subtests**, with two Windows symlink-containment skips: 541 JUnit cases, zero failures/errors. The [environment attestation](../reports/research_environment_validation.json) records the JUnit digest, Python 3.12.13 and 50 installed packages matching 69 conditional exact/hash-locked requirements. This is a dated test run, not a test-coverage percentage. The separate dependency-free suite ran 112 tests with the same two skips.
 
 GitHub Actions separates offline evidence/report regeneration, official-metric chemistry regressions and fresh CPU neural/ranker contracts. Invalid rank arrays, altered source/model seals, inconsistent denominators, private row exports, false cache provenance and impossible coverage summaries have dedicated rejection cases. Fixed-seed numerical regressions preserve valid scoring behavior.
 
