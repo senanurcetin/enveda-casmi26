@@ -18,6 +18,11 @@ class LibraryConfig:
     max_ppm: float = 20.0              # reference spectra with worse precursor error are not trusted
     max_refs_per_candidate: int = 40   # cap work per candidate; timsTOF + same adduct first
     clean: CleanConfig = CleanConfig(min_rel_intensity=0.01, top_k_per_window=6, window_da=50, max_peaks=64)
+    similarity: str = "entropy"
+
+    def __post_init__(self):
+        if self.similarity not in {"entropy", "optimal_cosine"}:
+            raise ValueError("Unknown library similarity")
 
 
 class LibraryIndex:
@@ -72,6 +77,10 @@ class LibraryIndex:
         """
         if not query_spectra:
             return 0.0, 0.0, 0
+        similarity = entropy_similarity
+        if self.cfg.similarity == "optimal_cosine":
+            from casmi.spectra.optimal_cosine import optimal_cosine
+            similarity = optimal_cosine
         by_mode = {}
         for index, spectrum in enumerate(query_spectra):
             by_mode.setdefault(spectrum["mode"], []).append(index)
@@ -90,7 +99,7 @@ class LibraryIndex:
             for i in indices:
                 query = query_spectra[i]
                 per_spec[i] = max(
-                    entropy_similarity(
+                    similarity(
                         query["mz_c"], query["it_c"], rm, ri,
                         self.cfg.tol_da, 0.0,
                     )

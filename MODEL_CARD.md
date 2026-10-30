@@ -41,3 +41,7 @@ The separate purged-reference study's primary internal C3 coverage change is +0.
 - Isomers, incorrect adducts, contamination, missing references and generated-structure errors can produce confident-looking incorrect rankings. Negative controls are diagnostics; some simple baselines improve under blank spectra.
 
 These results do not establish state-of-the-art performance, independent laboratory replication, production readiness or suitability for consequential chemical decisions. Source code, datasets, third-party models and the NEXUS identity have separate rights and attribution. [Data card](DATA_CARD.md) · [Dated verification](docs/verification.md).
+
+## Implemented follow-on baseline, awaiting data-backed comparison
+
+An opt-in optimal-assignment cosine D1 baseline is available through `--library-similarity optimal_cosine`; the historical entropy default and every completed study remain unchanged. Exact-assignment, resource-bound and exclusion tests validate its implementation. No new model-performance result, C3 coverage increase or resolution of D3/NP-score uncertainty is claimed. [Method and evidence boundary](docs/guides/evaluation.md#optional-optimal-assignment-cosine-baseline).

@@ -56,6 +56,8 @@ def main():
     ap.add_argument("--max-spectra", type=int, default=None, help="spectra sampled per molecule")
     ap.add_argument("--query-seed", type=int, default=0, help="query/spectrum sampling seed")
     ap.add_argument("--tag", default="d1-baseline")
+    ap.add_argument("--library-similarity", choices=("entropy", "optimal_cosine"), default="entropy",
+                    help="D1 scorer; optimal_cosine is an optional exact-assignment baseline")
     ap.add_argument("--offset-ppm", type=float, default=0.0)
     ap.add_argument("--analog", action="store_true", help="enable D2 analog propagation")
     ap.add_argument("--require-fingerprint-provenance", action="store_true",
@@ -84,6 +86,7 @@ def main():
         ap.error("--analog-selection-policy requires --analog")
     cfg = EngineConfig()
     cfg = replace(cfg, mass_offset_ppm=args.offset_ppm,
+                  library=replace(cfg.library, similarity=args.library_similarity),
                   analog=replace(cfg.analog, reference_policy=args.analog_selection_policy))
     t0 = time.time()
     source_status = None
