@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "experiment": "casmi-unopened-coverage-v1",
+  "registered_commit": "3703ba1",
+  "attempts": [
+    {
+      "version": 1,
+      "status": "PREPARED",
+      "source_sha256": "fd60fd1b3e51001549a7eaebff9eb2a3e086defc0eef58e1dc148802932ba630",
+      "outcomes_inspected": false,
+      "scope": "No claim of completed execution or new model performance"
+    }
+  ]
+}

@@ -52,3 +52,7 @@ The two explanatory publications and source/content audits use CPU. The retrospe
 Frozen model-study builders verify their completed embedded source instead of regenerating it from changing main-branch code. Version 1 of the fresh study was superseded before score inspection after a synthetic generated-cache counterexample; version 2 supplies the authenticated results. [Protocol, amendment and limits](../docs/studies/fresh-training-family-holdout.md).
 
 New execution requires an intentionally prepared, separately declared experiment and available free compute/input permissions. Do not push a modified bundle over a completed evidence record or tune against the finished test. Credentials, licensed inputs, private row outputs and weights stay outside Git. Historical auto-submit helpers are not publication-maintenance commands. [Report ownership](../reports/README.md) · [Reproducibility](../docs/guides/reproducibility.md).
+
+## Separately registered follow-on awaiting results
+
+`audits/unopened-coverage/` contains the [new internal coverage design](../protocols/unopened-coverage-v1.json). Its source and attempt history are separate from all completed notebooks. No new performance result is established by preparing this bundle. The study uses free CPU, disabled internet and no pretrained weights, competition submission or deployment.

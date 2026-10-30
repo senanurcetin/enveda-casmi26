@@ -43,3 +43,7 @@ The authenticated family-purged study removed 261,826 of 2,539,608 training spec
 C3 expansion is implemented and has chemistry, candidate-preservation and feature-context checks. Its completed study measures a positive primary internal coverage change; joint ranking gains remain unresolved. All actual outcomes and authenticated source bindings are preserved in the result report. No result is promoted from synthetic tests or source preparation.
 
 Even a passing external population would establish computational non-overlap against the pinned training snapshot, not independent laboratory authentication. Source annotations, restricted chemistry/instruments, unknown collision energies and shared candidate priors remain limitations. This is a noncommercial research project with no deployment, payment integration, paid compute or competition submission.
+
+## New unopened internal coverage follow-on
+
+The separate [30 October protocol](../../protocols/unopened-coverage-v1.json), registered at `3703ba1` before new outcomes, defines 100 development and 300 new test molecules. All earlier selected populations must be reconstructed against their published hashes before selection; every opened family/metric is protected. It compares fixed 15/300, 30/900 and 60/1800 proposal budgets with prior generated candidates preserved inside each hard cap. C1 compares entropy with the nonlearned optimal cosine reference scorer. No supervised weights are fitted. Execution and outcomes are pending; this does not resolve D3/NP-score effects or provide laboratory replication.

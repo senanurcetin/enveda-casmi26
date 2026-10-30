@@ -4,6 +4,21 @@ from __future__ import annotations
 from .transforms import propose_agg
 
 
+def preserve_budget(previous, proposed, cap):
+    """Keep every earlier generated identity, then fill a hard proposal cap."""
+    if type(cap) is not int or cap < 1:
+        raise ValueError("Positive integer candidate cap required")
+    previous = list(dict.fromkeys(previous))
+    if len(previous) > cap:
+        raise ValueError("Earlier candidates exceed the declared cap")
+    result = dict.fromkeys(previous)
+    for key in proposed:
+        if len(result) >= cap:
+            break
+        result.setdefault(key, None)
+    return list(result)
+
+
 def expanded_proposals(analogs, query_mass, tol_ppm=10.0, max_analogs=30, cap=900, *, legacy_analogs=None):
     if type(max_analogs) is not int or max_analogs < 15 or type(cap) is not int or cap < 300:
         raise ValueError("Expanded policy must preserve the 15-seed / 300-candidate legacy budget")

@@ -9,7 +9,7 @@ from .scaffold_study import family_key, partition, digest
 from casmi.chem.canon import canonical_ik14
 
 
-def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol, *, protected=None, return_protected=False):
+def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protocol, *, protected=None, return_protected=False, return_candidates=False):
     keys = meta.train_ik14.astype(str).to_numpy()
     labels = dict(zip(truth_pool.key, truth_pool.smiles))
     masses = dict(zip(truth_pool.key, truth_pool.mass))
@@ -54,6 +54,9 @@ def prepare_internal(meta, truth_pool, previous_protocol, previous_audit, protoc
     else:
         old_metrics, old_families = set(protected["old_metrics"]), set(protected["old_families"])
     fresh_records = [v for v in records if v["metric"] not in old_metrics and v["family"] not in old_families]
+    if return_candidates:
+        # No partition selection, candidate retrieval or score inspection.
+        return fresh_records, groups, labels, protected
     splits = partition(fresh_records, protocol["internal_counts"], protocol["split_salt"])
     audit = {}
     for name, values in splits.items():
