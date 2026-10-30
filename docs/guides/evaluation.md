@@ -54,3 +54,11 @@ Source, adduct, ionization mode, mass, spectrum-count and instrument slices are 
 ## Separate purged-reference estimand
 
 The [purged-reference experiment](../../reports/purged_external_review.md) uses disjoint internal and public-source external test cohorts. Both fixed generator budgets are measured even when development recommends one. Its primary contrast is paired internal C3 truth coverage, not MRR; all 11 secondary comparisons share joint max-deviation intervals. Molecules are paired within each cohort and resampled independently across cohorts. A positive primary coverage result does not establish a ranking gain. Original-snapshot novelty feasibility and laboratory authentication are separate questions.
+
+## Optional optimal-assignment cosine baseline
+
+`run_validation.py --library-similarity optimal_cosine` selects an exact one-to-one intensity-product assignment for D1, with m/z power zero, intensity power one and the configured absolute tolerance. The standard [matchms formulation](https://matchms.readthedocs.io/en/latest/api/matchms.similarity.CosineHungarian.html) motivates this baseline; the implementation uses [SciPy maximum-weight assignment](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linear_sum_assignment.html). It is independently implemented, not an attested matchms package comparison.
+
+Entropy remains the default. The new D1 baseline retains the same reference exclusions, ionization-mode boundaries, cleaning and candidate set; its scorer is recorded in run configuration. It does not change D2, generate candidates or recover a removed C3 truth. Raw-intensity optimal cosine and the historical square-root/proximity-greedy cosine have different objectives; their values are not interchangeable.
+
+The direct function supports a shared direct/precursor-shifted assignment without counting a peak twice, validates numerical inputs and limits dense assignment size. Library scoring uses direct matching only. All peaks enter normalization, including unmatched peaks. Synthetic exhaustive-oracle and leakage tests establish implementation behavior, not improved MRR or state-of-the-art performance. A new declared, untouched-population comparison is required before claiming a model benefit; finished benchmark populations must not be reused for tuning.

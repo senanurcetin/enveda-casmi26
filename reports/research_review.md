@@ -1,6 +1,6 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-29. Score snapshot: 2026-10-08.
+Reviewed: 2026-10-30. Score snapshot: 2026-10-08.
 
 Noncommercial research: historical scores, executed audits, frozen retrospective controls, fresh internal-family benchmarks and a separately registered purged-reference external evaluation; no competition submission or independent laboratory replication.
 
@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `9ff6828750064db6085fc3f2b9f8000c9bbe24e4e5609351b25452d2b2329cbd`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `aa2df39a86ee3f6df1d2a8f926e13d2fd1ecfc64f5ff9242df295b9a10a01803`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -129,3 +129,9 @@ Source: [reports/gnps_expanded_external_audit.json](../reports/gnps_expanded_ext
 The authenticated family-purged study removed 261,826 of 2,539,608 training spectra and fitted eight fresh learned artifacts. On 150 internal test molecules, expanded C3 truth coverage rose from 13 to 17 (paired change +0.0267, 95% CI [+0.0067, +0.0533]). On 150 external molecules, expanded C2/C3 MRR@25 was 0.4454/0.0466; expanded-minus-legacy ranking effects remain unresolved in the joint 11-contrast intervals. External C3 truth coverage remains only 23/150. Original-snapshot novelty gates remain unsuccessful; this is generalization relative to a rebuilt purged corpus, not independent laboratory replication.
 
 Source: [reports/purged_external_study.json](../reports/purged_external_study.json). SHA-256 (UTF-8 / LF): `4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c`.
+
+## Optional exact-assignment cosine reference baseline — implemented
+
+Bounded one-to-one maximum intensity-product assignment; default D1 entropy remains unchanged. Exhaustive synthetic assignment, normalization and library-exclusion tests validate implementation only. No data-backed performance advantage, new C3 coverage or state-of-the-art claim is established.
+
+Source: [src/casmi/spectra/optimal_cosine.py](../src/casmi/spectra/optimal_cosine.py). SHA-256 (UTF-8 / LF): `f2657a6902c9c10c57b593c4712df7c0470e36de82d67dac6455be0dedbe25af`.
