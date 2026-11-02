@@ -1,6 +1,6 @@
 # Kaggle research publications
 
-Nine owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
+Ten owned publications have completed authenticated source/status readback. They use NEXUS identity and disabled-internet execution; their scientific scopes differ. None is a new competition submission.
 
 | Publication | Bundle | Evidence |
 |---|---|---|
@@ -13,6 +13,7 @@ Nine owned publications have completed authenticated source/status readback. The
 | [GNPS2 External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps2-external-independence) | `audits/gnps-independence/` | Authenticated insufficient population: seven novel molecules; no model scoring |
 | [GNPS Community External Independence](https://www.kaggle.com/code/senanuretin/casmi26-gnps-community-external-independence) | `audits/gnps-expanded-independence/` | Authenticated original-snapshot insufficiency: 7/936 novel molecules; no model scoring |
 | [Purged Family External Validation](https://www.kaggle.com/code/senanuretin/casmi26-purged-family-external-validation) | `audits/purged-external/` | Eight fresh artifacts after full-reference family purge; [all outcomes](../reports/purged_external_review.md) |
+| [Unopened Family Coverage](https://www.kaggle.com/code/senanuretin/casmi26-unopened-family-coverage) | `audits/unopened-coverage/` | Protected new internal families; [budget and C1 comparison](../reports/unopened_coverage_review.md) |
 
 ## Completed separately registered study
 
@@ -52,3 +53,9 @@ The two explanatory publications and source/content audits use CPU. The retrospe
 Frozen model-study builders verify their completed embedded source instead of regenerating it from changing main-branch code. Version 1 of the fresh study was superseded before score inspection after a synthetic generated-cache counterexample; version 2 supplies the authenticated results. [Protocol, amendment and limits](../docs/studies/fresh-training-family-holdout.md).
 
 New execution requires an intentionally prepared, separately declared experiment and available free compute/input permissions. Do not push a modified bundle over a completed evidence record or tune against the finished test. Credentials, licensed inputs, private row outputs and weights stay outside Git. Historical auto-submit helpers are not publication-maintenance commands. [Report ownership](../reports/README.md) · [Reproducibility](../docs/guides/reproducibility.md).
+
+## Completed unopened-family follow-on
+
+The [30 October protocol](../protocols/unopened-coverage-v1.json) was registered at `3703ba1` before outcomes. [Attempt/source history](../reports/unopened_coverage_execution_history.json) and [public readback](../reports/unopened_coverage_publication.json) authenticate completion. It used free CPU, disabled internet, no pretrained weights and no submission/deployment. The primary extended-budget improvement and C1 scorer superiority remain unresolved. [Full report](../reports/unopened_coverage_review.md).
+
+Verify the frozen bundle with `python scripts/build_unopened_coverage_notebook.py`, authenticate with `python scripts/check_unopened_coverage_publication.py`, and regenerate tables/figures with `python scripts/build_unopened_coverage_report.py` (`--tables-only` for deterministic Markdown).

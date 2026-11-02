@@ -1,6 +1,6 @@
 # CASMI26 research review
 
-Reviewed: 2026-10-30. Score snapshot: 2026-10-08.
+Reviewed: 2026-11-02. Score snapshot: 2026-10-08.
 
 Noncommercial research: historical scores, executed audits, frozen retrospective controls, fresh internal-family benchmarks and a separately registered purged-reference external evaluation; no competition submission or independent laboratory replication.
 
@@ -68,7 +68,7 @@ Source: [reports/revalidation_study.json](../reports/revalidation_study.json). S
 
 Completed public-source external-family holdout relative to a rebuilt purged training corpus is reported separately. New laboratory acquisition and independently authenticated identity/measurement replication remain unavailable; shared candidate knowledge limits unseen-chemistry claims.
 
-Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `aa2df39a86ee3f6df1d2a8f926e13d2fd1ecfc64f5ff9242df295b9a10a01803`.
+Source: [MODEL_CARD.md](../MODEL_CARD.md). SHA-256 (UTF-8 / LF): `242ed10cd97c57a038d180325f86fa682abe5c136dddbfab4f26b7ea7066f4f2`.
 
 ## Fresh training and sealed internal query families — measured
 
@@ -86,7 +86,7 @@ Source: [reports/advanced_review.md](../reports/advanced_review.md). SHA-256 (UT
 
 Python 3.12 exact direct/transitive SHA-256 lock with 69 conditional entries; 50 installed Windows packages attested, compatible, and full-suite JUnit evidence recorded. Kaggle exports its separate exact package inventory.
 
-Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `56d4978673cb3d4ab3deba2ae028cd99985b0634d39a113b88b8ce6f8abeb568`.
+Source: [reports/research_environment_validation.json](../reports/research_environment_validation.json). SHA-256 (UTF-8 / LF): `7eaec4986c59532697079e15cef4dfd38bfddc5d5565bcd7acc95864e75807fa`.
 
 ## Candidate coverage and ranking loss accounting — measured
 
@@ -130,8 +130,14 @@ The authenticated family-purged study removed 261,826 of 2,539,608 training spec
 
 Source: [reports/purged_external_study.json](../reports/purged_external_study.json). SHA-256 (UTF-8 / LF): `4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c`.
 
-## Optional exact-assignment cosine reference baseline — implemented
+## Optional exact-assignment cosine reference baseline — measured
 
-Bounded one-to-one maximum intensity-product assignment; default D1 entropy remains unchanged. Exhaustive synthetic assignment, normalization and library-exclusion tests validate implementation only. No data-backed performance advantage, new C3 coverage or state-of-the-art claim is established.
+Completed nonlearned C1 comparison on 300 unopened internal test families: entropy MRR 0.3945 versus optimal cosine 0.3801; joint paired difference -0.0145 [-0.0311, 0.0022]. No superiority or default scorer promotion is established.
 
-Source: [src/casmi/spectra/optimal_cosine.py](../src/casmi/spectra/optimal_cosine.py). SHA-256 (UTF-8 / LF): `f2657a6902c9c10c57b593c4712df7c0470e36de82d67dac6455be0dedbe25af`.
+Source: [reports/unopened_coverage_study.json](../reports/unopened_coverage_study.json). SHA-256 (UTF-8 / LF): `1a09b7ead4bd3902656c8dc0020a27188e6902101ca8adfaf5cdbe6c9c8b824b`.
+
+## New protected-family candidate budget experiment — measured
+
+On 300 previously unopened internal test families, C3 coverage was 31/300 (legacy), 37/300 (expanded) and 40/300 (extended). The primary extended-minus-expanded difference was +0.0100 [0.0000, 0.0233], so a strictly positive benefit is unresolved. The secondary expanded-minus-legacy difference was +0.0200 [0.0033, 0.0367] under joint uncertainty. C1 entropy/optimal-cosine MRR was 0.3945/0.3801; their paired difference -0.0145 [-0.0311, 0.0022] does not establish a scorer advantage. No supervised model was fitted. Shared candidate/reference knowledge remains; no external/laboratory replication.
+
+Source: [reports/unopened_coverage_study.json](../reports/unopened_coverage_study.json). SHA-256 (UTF-8 / LF): `1a09b7ead4bd3902656c8dc0020a27188e6902101ca8adfaf5cdbe6c9c8b824b`.

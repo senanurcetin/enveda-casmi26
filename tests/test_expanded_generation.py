@@ -69,3 +69,9 @@ def test_subset_context_is_recomputed_without_origin_shortcuts():
 def test_reduced_expansion_budgets_are_rejected(kwargs):
     with pytest.raises(ValueError):
         expanded_proposals([], 150, **kwargs)
+
+
+def test_nested_budget_preserves_prior_candidates_under_a_hard_cap():
+    from casmi.generate.expanded import preserve_budget
+    assert preserve_budget(['a', 'b'], ['b', 'c', 'd'], 3) == ['a', 'b', 'c']
+    with pytest.raises(ValueError): preserve_budget(['a', 'b'], ['c'], 1)

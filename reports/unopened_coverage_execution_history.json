@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "experiment": "casmi-unopened-coverage-v1",
+  "registered_commit": "3703ba1",
+  "attempts": [
+    {
+      "version": 1,
+      "status": "COMPLETE",
+      "source_sha256": "fd60fd1b3e51001549a7eaebff9eb2a3e086defc0eef58e1dc148802932ba630",
+      "outcomes_inspected": true,
+      "scope": "Authenticated completed internal-family coverage and C1 baseline study; no supervised fitting or laboratory replication",
+      "checked_at": "2026-11-02T13:27:40.145398+00:00",
+      "source_matches": true,
+      "public": true,
+      "gpu_enabled": false,
+      "internet_enabled": false,
+      "dataset_sources": [
+        "senanuretin/casmi-coconut-b",
+        "senanuretin/casmi-pubchemlite-b",
+        "metric/rdkit-2026-3-3-wheel",
+        "senanuretin/casmi26-gnps-cc0-expanded"
+      ],
+      "implementation_commit": "917ad06",
+      "completed_at": "2026-10-30T18:01:23.098504+00:00",
+      "aggregate_sha256": "1a09b7ead4bd3902656c8dc0020a27188e6902101ca8adfaf5cdbe6c9c8b824b"
+    }
+  ],
+  "url": "https://www.kaggle.com/code/senanuretin/casmi26-unopened-family-coverage"
+}

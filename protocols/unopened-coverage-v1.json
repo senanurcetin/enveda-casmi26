@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "casmi-unopened-coverage-v1",
+  "registered_on": "2026-10-30",
+  "scope": "New internal query-family study of candidate coverage and nonlearned C1 reference scoring; not external or laboratory replication; no fitting of supervised weights.",
+  "seed": 20261030,
+  "split_salt": "NEXUS-CASMI-UNOPENED-20261030-v1",
+  "counts": {
+    "dev": 100,
+    "test": 300
+  },
+  "protection": "Authenticate original input hashes; reconstruct advanced 600/150/250 and purged 300/100/150 partitions and original 150 external family selection with matching published digests before selecting any new queries. Exclude every selected prior family/group/metric and historical V-in family. Union metric-linked eligible family components before selection; drop any component touching a protected family or metric.",
+  "selection": "Hash-order remaining family components by salt, lexical-key representative; first 100 development and next 300 test. Up to five spectra per query using fixed key-derived sampling. No candidate/outcome-based eligibility or replacement.",
+  "policies": {
+    "legacy": {
+      "seeds": 15,
+      "cap": 300,
+      "ordered_pairs": false
+    },
+    "expanded": {
+      "seeds": 30,
+      "cap": 900,
+      "ordered_pairs": true
+    },
+    "extended": {
+      "seeds": 60,
+      "cap": 1800,
+      "ordered_pairs": true
+    }
+  },
+  "candidate_policy": "Same verified pool, fresh D2 index and per-query C3 metric truth reference/candidate exclusion. Keep union of legacy, expanded and extended proposals for extended; preserve prior policy candidates explicitly. No learned scores or NP-score.",
+  "primary": "Test C3 binary truth coverage: extended minus expanded, paired 4000-draw percentile 95% interval; all 300 molecules remain in denominator.",
+  "secondary": [
+    "C3_coverage_expanded_minus_legacy",
+    "C1_MRR_optimal_cosine_minus_entropy"
+  ],
+  "uncertainty": "4000 molecule-paired bootstrap draws; secondary fixed-family max-deviation intervals. Report absolute coverage, C1 MRR/top1/top10/hit25, counts, candidate costs and every loss.",
+  "development": "Recommend extended only if development has at least one coverage gain and zero losses versus expanded. Freeze recommendation and population digests before test. All policies always reported regardless of choice.",
+  "baseline": "C1 D1 entropy versus optimal-assignment raw-intensity cosine at 0.02 Da, common source-library metric exclusions, same mass candidates and same cleaning, mass-error tie breaking, metric-deduplicated top25. This comparison is C1 because a direct-reference scorer is structurally limited under C2/C3 truth-reference removal.",
+  "budget": "Existing free Kaggle CPU only, internet disabled, no pretrained weights, no paid services, no submission/deployment.",
+  "failure_policy": "Preserve sources and failures; fail closed if input/protected population reconstruction or source integrity differs. No sample/budget change after candidate or score inspection. Implementation repair requires a preserved, explicitly documented new attempt.",
+  "unresolved": "Does not resolve learned D3/NP-score incremental effects, prove state-of-the-art superiority or establish laboratory replication."
+}

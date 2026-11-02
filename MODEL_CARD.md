@@ -1,6 +1,6 @@
 # Model card — CASMI26 retrieval and ranking
 
-**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 29 October 2026.
+**Owner:** Senanur Cetin / NEXUS. **Scope:** noncommercial molecular identification research. **Reviewed:** 2 November 2026.
 
 ## Intended use and components
 
@@ -42,6 +42,8 @@ The separate purged-reference study's primary internal C3 coverage change is +0.
 
 These results do not establish state-of-the-art performance, independent laboratory replication, production readiness or suitability for consequential chemical decisions. Source code, datasets, third-party models and the NEXUS identity have separate rights and attribution. [Data card](DATA_CARD.md) · [Dated verification](docs/verification.md).
 
-## Implemented follow-on baseline, awaiting data-backed comparison
+## Completed unopened-family reference comparison
 
-An opt-in optimal-assignment cosine D1 baseline is available through `--library-similarity optimal_cosine`; the historical entropy default and every completed study remain unchanged. Exact-assignment, resource-bound and exclusion tests validate its implementation. No new model-performance result, C3 coverage increase or resolution of D3/NP-score uncertainty is claimed. [Method and evidence boundary](docs/guides/evaluation.md#optional-optimal-assignment-cosine-baseline).
+On 300 previously unopened internal test families, C3 coverage was 31/300 (legacy), 37/300 (expanded) and 40/300 (extended). The primary extended-minus-expanded difference was +0.0100 [0.0000, 0.0233], so a strictly positive benefit is unresolved. The secondary expanded-minus-legacy difference was +0.0200 [0.0033, 0.0367] under joint uncertainty. C1 entropy/optimal-cosine MRR was 0.3945/0.3801; their paired difference -0.0145 [-0.0311, 0.0022] does not establish a scorer advantage. No supervised model was fitted. [All outcomes, costs and source authentication](reports/unopened_coverage_review.md).
+
+The entropic D1 default remains unchanged. Optimal cosine is an optional comparison baseline. Extended coverage leaves 260/300 truths absent, and its primary interval touches zero; no automatic promotion or learned-model improvement follows. D3/NP-score effects, state-of-the-art superiority and independent laboratory replication remain unresolved.
