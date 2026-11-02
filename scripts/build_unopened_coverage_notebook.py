@@ -14,6 +14,13 @@ def build():
  if history.exists():
   record=json.loads(history.read_text())['attempts'][-1]
   if source_hash(json.loads((OUTPUT/'notebook.ipynb').read_text()))!=record['source_sha256']:raise ValueError('Registered attempt source changed')
+  publication=ROOT/'reports/unopened_coverage_publication.json'
+  if publication.exists():
+   from scripts.research_snapshot import snapshot_hashes
+   bound=json.loads(publication.read_text());raw=(ROOT/'reports/unopened_coverage_study.json').read_bytes()
+   if (bound['source_sha256']!=record['source_sha256'] or bound['aggregate_sha256']!=hashlib.sha256(raw).hexdigest()
+       or json.loads(raw)['source_code_sha256']!=snapshot_hashes(OUTPUT/'notebook.ipynb')):
+    raise ValueError('Completed unopened source or aggregate binding changed')
   print('Verified registered unopened study; no regeneration');return
  import nbformat
  scripts=['build_structures.py','build_store.py','build_pool.py','build_fingerprints.py','run_advanced_study.py','run_unopened_coverage_study.py']

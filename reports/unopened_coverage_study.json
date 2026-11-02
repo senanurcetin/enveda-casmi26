@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETE_UNOPENED_INTERNAL_COVERAGE",
+  "checked_at": "2026-10-30T18:01:23.098504+00:00",
+  "protocol": {
+    "schema_version": 1,
+    "id": "casmi-unopened-coverage-v1",
+    "registered_on": "2026-10-30",
+    "scope": "New internal query-family study of candidate coverage and nonlearned C1 reference scoring; not external or laboratory replication; no fitting of supervised weights.",
+    "seed": 20261030,
+    "split_salt": "NEXUS-CASMI-UNOPENED-20261030-v1",
+    "counts": {
+      "dev": 100,
+      "test": 300
+    },
+    "protection": "Authenticate original input hashes; reconstruct advanced 600/150/250 and purged 300/100/150 partitions and original 150 external family selection with matching published digests before selecting any new queries. Exclude every selected prior family/group/metric and historical V-in family. Union metric-linked eligible family components before selection; drop any component touching a protected family or metric.",
+    "selection": "Hash-order remaining family components by salt, lexical-key representative; first 100 development and next 300 test. Up to five spectra per query using fixed key-derived sampling. No candidate/outcome-based eligibility or replacement.",
+    "policies": {
+      "legacy": {
+        "seeds": 15,
+        "cap": 300,
+        "ordered_pairs": false
+      },
+      "expanded": {
+        "seeds": 30,
+        "cap": 900,
+        "ordered_pairs": true
+      },
+      "extended": {
+        "seeds": 60,
+        "cap": 1800,
+        "ordered_pairs": true
+      }
+    },
+    "candidate_policy": "Same verified pool, fresh D2 index and per-query C3 metric truth reference/candidate exclusion. Keep union of legacy, expanded and extended proposals for extended; preserve prior policy candidates explicitly. No learned scores or NP-score.",
+    "primary": "Test C3 binary truth coverage: extended minus expanded, paired 4000-draw percentile 95% interval; all 300 molecules remain in denominator.",
+    "secondary": [
+      "C3_coverage_expanded_minus_legacy",
+      "C1_MRR_optimal_cosine_minus_entropy"
+    ],
+    "uncertainty": "4000 molecule-paired bootstrap draws; secondary fixed-family max-deviation intervals. Report absolute coverage, C1 MRR/top1/top10/hit25, counts, candidate costs and every loss.",
+    "development": "Recommend extended only if development has at least one coverage gain and zero losses versus expanded. Freeze recommendation and population digests before test. All policies always reported regardless of choice.",
+    "baseline": "C1 D1 entropy versus optimal-assignment raw-intensity cosine at 0.02 Da, common source-library metric exclusions, same mass candidates and same cleaning, mass-error tie breaking, metric-deduplicated top25. This comparison is C1 because a direct-reference scorer is structurally limited under C2/C3 truth-reference removal.",
+    "budget": "Existing free Kaggle CPU only, internet disabled, no pretrained weights, no paid services, no submission/deployment.",
+    "failure_policy": "Preserve sources and failures; fail closed if input/protected population reconstruction or source integrity differs. No sample/budget change after candidate or score inspection. Implementation repair requires a preserved, explicitly documented new attempt.",
+    "unresolved": "Does not resolve learned D3/NP-score incremental effects, prove state-of-the-art superiority or establish laboratory replication."
+  },
+  "seal": {
+    "sealed_at": "2026-10-30T17:45:54.830285+00:00",
+    "protocol_sha256": "2c25f42488c376c7c456df84e3c376829af4164e85ebb247f3fca58aa968e04e",
+    "population": {
+      "dev": {
+        "n_molecules": 100,
+        "identity_sha256": "9b5a2c9e3e9ed2e28af3724d4c40d1e7f0a33bec8d02d411ff52cc9297a1def3",
+        "family_sha256": "e66b14c315083f5bbbf79a9e431da3e6b9c0045258638a7b40b92a5a6c58fad6",
+        "metric_sha256": "8813458b5a5fdd76b6ffe2f3d5be7e7cbda87ffa1d490e28c6fef58e58e9ee0a"
+      },
+      "test": {
+        "n_molecules": 300,
+        "identity_sha256": "7c55812c1bd60d7a846c3d6d8cd1ffc2ad9940315562c7eddf080b89c90f6ff8",
+        "family_sha256": "49f58396f9ce42271acce2938abab4a8bf9f36f908c0fd04df84249fed72bfbc",
+        "metric_sha256": "6aa3a91e25e31965faac1a0a2067c8808f46d4e1dee71f0e774b83305beae0fb"
+      }
+    },
+    "protection": {
+      "advanced_partitions_reconstructed": true,
+      "purged_partitions_reconstructed": true,
+      "external_families_reconstructed": true,
+      "protected_family_count": 1837,
+      "protected_metric_count": 1695,
+      "selected_protected_family_overlap": 0,
+      "selected_protected_metric_overlap": 0
+    },
+    "source_manifest_sha256": "85e7613c6ec748a96ea814882a38eaa728e4d0612869cfd40e788da505ccea31",
+    "development": {
+      "gains": 5,
+      "losses": 0,
+      "recommendation": "extended"
+    },
+    "supervised_models_fitted": 0
+  },
+  "seal_sha256": "27ba27a589ffd8a2d62c5af422d66b340417aa405d3d7fc9165488f2bfec8634",
+  "protection": {
+    "advanced_partitions_reconstructed": true,
+    "purged_partitions_reconstructed": true,
+    "external_families_reconstructed": true,
+    "protected_family_count": 1837,
+    "protected_metric_count": 1695,
+    "selected_protected_family_overlap": 0,
+    "selected_protected_metric_overlap": 0
+  },
+  "population": {
+    "dev": {
+      "n_molecules": 100,
+      "identity_sha256": "9b5a2c9e3e9ed2e28af3724d4c40d1e7f0a33bec8d02d411ff52cc9297a1def3",
+      "family_sha256": "e66b14c315083f5bbbf79a9e431da3e6b9c0045258638a7b40b92a5a6c58fad6",
+      "metric_sha256": "8813458b5a5fdd76b6ffe2f3d5be7e7cbda87ffa1d490e28c6fef58e58e9ee0a"
+    },
+    "test": {
+      "n_molecules": 300,
+      "identity_sha256": "7c55812c1bd60d7a846c3d6d8cd1ffc2ad9940315562c7eddf080b89c90f6ff8",
+      "family_sha256": "49f58396f9ce42271acce2938abab4a8bf9f36f908c0fd04df84249fed72bfbc",
+      "metric_sha256": "6aa3a91e25e31965faac1a0a2067c8808f46d4e1dee71f0e774b83305beae0fb"
+    }
+  },
+  "fingerprint_provenance": {
+    "status": "POOL_FINGERPRINTS_VERIFIED",
+    "schema": "casmi-morgan-fingerprint-provenance-v1",
+    "n_structures": 1071863,
+    "pool_rows_sha256": "4c346290e112f2a92a4ae62238d31df491e8259e4a0121ef398138325944d9d8",
+    "fingerprint_bytes_sha256": "b0bba8ed06e19690cb1c6093c225bb4fa4e9bd594132628493dd7dd670d18c32"
+  },
+  "analog_provenance": {
+    "schema": "casmi-d2-fresh-index-v1",
+    "status": "REBUILT_WITHOUT_CACHE",
+    "index_sha256": "6700236d619238ec893c803690b2e240658b835b37bffe64cb17b15c5b7f421f",
+    "n_references": 1062995,
+    "n_nonzero": 34076549,
+    "reference_policy": "legacy",
+    "cache_used": false
+  },
+  "source_manifest": {
+    "schema": "casmi-local-artifact-manifest-v1",
+    "method": "streaming SHA-256 per local input file",
+    "files": [
+      {
+        "path": "pool.parquet",
+        "bytes": 48469329,
+        "sha256": "940d904c1c4ccd9fbb4f4e7dd07e1697c1d8271d76ef61ffb50700e7b4d28438"
+      },
+      {
+        "path": "pool_fp2048.npy",
+        "bytes": 274397056,
+        "sha256": "4104b0c963c90f18451c48185436406c394360b3e576af3f4bd05627f91ce8cb"
+      },
+      {
+        "path": "pool_fp_keys.parquet",
+        "bytes": 16979467,
+        "sha256": "2a7cfabbb2d6b51c1b173661f66fb5f9f8bf10cdb33c6a6099d2cae7fa46c4a3"
+      },
+      {
+        "path": "pool_source_quality.json",
+        "bytes": 992,
+        "sha256": "30ef62c64455afdfc9bdb7612c6dbdd69a45f1581eefad1bd0d2621517649837"
+      },
+      {
+        "path": "store/it.f32",
+        "bytes": 436098548,
+        "sha256": "f1a1bbe0c143761ff06da6d7e028fbb7b50034ef2cada82fb119b3cae0e90187"
+      },
+      {
+        "path": "store/meta.parquet",
+        "bytes": 48766764,
+        "sha256": "7185e15986520d4b57a8309fc0f962f911783800b2660f3d627b3fbb87265453"
+      },
+      {
+        "path": "store/mz.f32",
+        "bytes": 436098548,
+        "sha256": "859c76e6ef623c2b03dad0ebf9c171e719d6fc0bc96b6e26ed79257142406291"
+      },
+      {
+        "path": "store/offsets.i64",
+        "bytes": 20316872,
+        "sha256": "91b67e92f84e85fe40b800abcb4b4dacfdee498ba0e85f29cf6bf143a2f26935"
+      },
+      {
+        "path": "structures.parquet",
+        "bytes": 12571432,
+        "sha256": "22dc7592f604ddd608568319254f88bb21d2a8a8c42e858d2148919b5f9f4aec"
+      }
+    ],
+    "files_digest_sha256": "c363cc91e3ea98f6c691ea9a9b847d51b1f5c22eaa45dac8fdedca179bb2904d",
+    "source_assertion": "local byte identity only; no independent Kaggle/BigQuery validation"
+  },
+  "primary": {
+    "n_molecules": 300,
+    "delta_coverage": 0.01,
+    "ci_low": 0.0,
+    "ci_high": 0.023333333333333334,
+    "gains": 3,
+    "losses": 0,
+    "bootstrap_draws": 4000
+  },
+  "secondary": {
+    "method": "molecule-paired max-deviation bootstrap over all prespecified secondary contrasts",
+    "n_molecules": 300,
+    "n_bootstrap": 4000,
+    "seed": 20261030,
+    "family_size": 2,
+    "joint_radius": 0.016666666666666666,
+    "outcomes": {
+      "C3_coverage_expanded_minus_legacy": {
+        "delta_mrr": 0.02,
+        "ci_low": 0.003333333333333334,
+        "ci_high": 0.03666666666666667
+      },
+      "C1_MRR_optimal_cosine_minus_entropy": {
+        "delta_mrr": -0.01447455648926237,
+        "ci_low": -0.031141223155929036,
+        "ci_high": 0.0021921101774042967
+      }
+    },
+    "limitations": "Approximate fixed-family uncertainty; no correction for domain shift or historical hypothesis selection"
+  },
+  "coverage": {
+    "legacy": {
+      "covered": 31,
+      "n_molecules": 300,
+      "mean_candidates": 123.62333333333333,
+      "max_candidates": 911
+    },
+    "expanded": {
+      "covered": 37,
+      "n_molecules": 300,
+      "mean_candidates": 153.11666666666667,
+      "max_candidates": 1031
+    },
+    "extended": {
+      "covered": 40,
+      "n_molecules": 300,
+      "mean_candidates": 204.74,
+      "max_candidates": 1814
+    }
+  },
+  "C1": {
+    "entropy": {
+      "mrr": 0.3945323226331706,
+      "ci_low": 0.3465092108202019,
+      "ci_high": 0.443738106188175,
+      "top1": 0.32,
+      "top10": 0.5566666666666666,
+      "recall_at_25": 0.6966666666666667,
+      "n": 300
+    },
+    "optimal_cosine": {
+      "mrr": 0.3800577661439083,
+      "ci_low": 0.33248383232088,
+      "ci_high": 0.42813908522935307,
+      "top1": 0.30666666666666664,
+      "top10": 0.55,
+      "recall_at_25": 0.6966666666666667,
+      "n": 300
+    }
+  },
+  "private_details_sha256": "6863512cf0d35eadae9393a1ec7c523f66e187b1aeace24b75a35067ebe044f9",
+  "elapsed_seconds": 3151.362701177597,
+  "environment": {
+    "python": "3.13.15",
+    "rdkit": "2026.03.3"
+  },
+  "limitations": [
+    "New internal query-family cohort; no external or laboratory replication.",
+    "No learned D3/NP-score ablation or state-of-the-art superiority estimate.",
+    "Candidate-coverage improvement does not establish achieved C3 ranking accuracy.",
+    "Historical sources and shared task-defined candidate knowledge remain.",
+    "Both positive and negative outcomes are retained."
+  ],
+  "raw_inputs": {
+    "train.parquet": {
+      "bytes": 3033286496,
+      "sha256": "9423f90ec08b941a9646b535bf0606183e86ff0c5a297978f5a70693d41bcd98"
+    },
+    "coconut.csv": {
+      "bytes": 576946638,
+      "sha256": "6cfaa8685eb9bc44132239ba4544a03d4d3c36b634a0d67a78d55b7b6885bf7f"
+    },
+    "pubchemlite.csv": {
+      "bytes": 224829130,
+      "sha256": "b9bc8960d05561ea50cda2414eef82e19aecc793f49e3c4b79084aba636eecf4"
+    },
+    "gnps_cc0.parquet": {
+      "bytes": 13826158,
+      "sha256": "4bb0db3c41b85fdeef67b4859d46c3d9afa894bdca08652f7a965fda29b8910f"
+    }
+  },
+  "source_code_sha256": {
+    "src/casmi/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/channels/analog.py": "8592dcfc274257db6f4a803cb705ec6be4a5dbba2abddec626eddd01d56b4c19",
+    "src/casmi/channels/bondmodel.py": "1ffb5ce34c7b1a1975277eb9eab76a11e7624ea8740f39e5c2cc19a1340680fb",
+    "src/casmi/channels/fpinfer.py": "58315b7f7288a2988980b19a079ef0eb305897ffcd5094b1dcf5d3b370a71a7b",
+    "src/casmi/channels/fpmodel.py": "1e8a63dcd407f7870918c34fe5dac4f8fbfcbd301d64806d077019e382ad70ea",
+    "src/casmi/channels/fragments.py": "20656968ee6084ed948547a90ca79957a5b3cc6a65002ffb8601a411f0278bc0",
+    "src/casmi/channels/library.py": "36b10572a6f5e6df5ef6cabff70dc86501540b4ef82db7f6aa447cc1f04db625",
+    "src/casmi/channels/prefilter.py": "ac442621394b1d4ad1627f7776cf8f4d704b1a8e3d950f0480168e54d3b22a57",
+    "src/casmi/channels/reference_selection.py": "c043a1ab42126d3b33c5de0870ee1a5922396956a69356a777149ebc9947d88b",
+    "src/casmi/chem/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/chem/canon.py": "917d7002e84a047d8187187b6c2716da5adb013764bf6945e3748e2c63f5ee9e",
+    "src/casmi/chem/keys.py": "2755a82fe24b854df0326c212df3696f0ac6197e46c3acdc5d33f4264e69aed2",
+    "src/casmi/chem/masses.py": "1831039a9dd48ddfd92482b361c3c28353a0fc1fbff98aa72c5273adcb948cf5",
+    "src/casmi/chem/npscore.py": "5fa24e1495bed25dfcd7001bb412e738d32148c5b3cab9dd3f25a28bb99a8945",
+    "src/casmi/config.py": "82de7f77719ef2250402fbfb12e7b790c8ff75a9bdf04ac9abde9a8e09176153",
+    "src/casmi/engine.py": "3ec4a688c2e7b6a5542ecec159d85a2f71a4835174e9fa2e05239ba299f2e984",
+    "src/casmi/generate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/generate/expanded.py": "6c1967d141eb1690005a2457a67314ff9900e041a12733de6096c8b2f2d86b3d",
+    "src/casmi/generate/transforms.py": "e43cca55be73612bdbf81631b888be0c0123650f751fd8465808747574f0ef49",
+    "src/casmi/pool/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/pool/build_safety.py": "2421c9f41d26ab6e17ac20956ef1bfd5552ed28ae7255f13ca8b4fd585a79305",
+    "src/casmi/pool/fingerprint_audit.py": "d0197f06cbe89d54494eed5bf8693f8ab0944668ce006012726b758c6b44c358",
+    "src/casmi/pool/fingerprint_provenance.py": "ec64027e7120b8636408f13d2a617a012c5ddb1f97dae7c475d341f44b8e97fe",
+    "src/casmi/pool/pool.py": "178d16b9ffb9b26052dd28adeff387794db9f5b405fb5a4e347faeefd14ae634",
+    "src/casmi/pool/source_reconciliation.py": "268cf27522e22659fdb0560784ef787c7b25f66dc739a135e5d8d5b97e5fe4c2",
+    "src/casmi/pool/structure_identity.py": "39519cf6128de5a8677e5675ac9f691b8943fb5386337320ff1d05bfdb2c146a",
+    "src/casmi/pool/structure_quality.py": "654d3c57b836d857367c404c6eeb6f9d010ef710c36a3874dafbe2382f31d646",
+    "src/casmi/predict.py": "d5416dc486fbab178da9073d48fa3c8adf6e4b224f11bc1af5c07c6e0cb2a2e1",
+    "src/casmi/rank/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/rank/features.py": "578101099d2519aeb073244576e52368ad2915411bbe92a326496ad134b77dcc",
+    "src/casmi/rank/ranker.py": "8b58478f310016485d8a877ff96f3fbac96278497dc0885ec267d294b11c3665",
+    "src/casmi/spectra/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/spectra/build_safety.py": "b70cab5a2af895061c6786811a2277e899475b7f9eaad29033f2b8990e8e04c0",
+    "src/casmi/spectra/clean.py": "af67f80cbd5e5d6b489ed110be5dd943446a6e38d45a8976365a3c13c07a2bb6",
+    "src/casmi/spectra/optimal_cosine.py": "f2657a6902c9c10c57b593c4712df7c0470e36de82d67dac6455be0dedbe25af",
+    "src/casmi/spectra/similarity.py": "4c63e21f048facdf4a1fbf2e07ec840a078c77b4f1b99f553d77db66cec70b4c",
+    "src/casmi/spectra/store.py": "6b7cd04ac0350ce204a066a82bc250b8e60b552bdfbb95221152399bfdffe13c",
+    "src/casmi/spectra/store_integrity.py": "3664d4c6278bea71c3fa403f017deda8af8dde7de9cb0afbf4c9424835d68243",
+    "src/casmi/submit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/casmi/validate/analog_index_evidence.py": "2dac213fd7629937ea3198cd7cc4c36ee1daab92439e832bbabcbefec0952e3a",
+    "src/casmi/validate/budget_features.py": "8d2af4b739d4fc058a18b0c8c3f9c7619fd7e742396344f2b87bf893a926d788",
+    "src/casmi/validate/cohort_bootstrap.py": "37ee133721adcc9b786ed35dbc8855082fe387159960ca41a4a96379a3c34bb1",
+    "src/casmi/validate/control_alignment.py": "4996027acd3d4c1b79c2d4e3351e325ad6278323c340af36ad0e63a2bd722cfb",
+    "src/casmi/validate/coverage_budget.py": "f3ae268d7cd4ecc2f5448ffde91b847c2cd08941e7b377a6c775bee47f3e7dd8",
+    "src/casmi/validate/error_slices.py": "ad0a7df1c02d2dc867e1a80e027ed8d665fad64b694a1ddb1ae04d0169e8baf1",
+    "src/casmi/validate/external_population.py": "86b87ccf0be9ef2216a512db8913145de477ddf57cd59925b069c866ba308194",
+    "src/casmi/validate/external_purge.py": "d310b43113035631d5997025f32d9d9a5a99bb9d23106d38562806fd060fc0a7",
+    "src/casmi/validate/fingerprint_evidence.py": "1d2d123d68a2f1a8005179c5b95ac5d3437e83a7c9d58df7276e77eb13b5b3da",
+    "src/casmi/validate/knockout.py": "7c9e54a77d9d7d7cef98b0aadcdba5b918427c053af655c7ffe3e6e3ef01d238",
+    "src/casmi/validate/massbank_records.py": "294c7061cd3c325a44e9e58e32cabfc1139dc543f1ad0182545a94ba3aa69a1a",
+    "src/casmi/validate/metric.py": "da51b1ee98461facb6de18a2ad3ff90ca31d5e6d4a991c520ef894d817474ef1",
+    "src/casmi/validate/overlap_audit.py": "23ef2d7108c2a1f7ed93b3a469af0a6dd853c4d8850e270958e134d538f3df05",
+    "src/casmi/validate/paired_bootstrap.py": "42543ed9f11a684794c10aea17b3abe1c5e9cdbc5ec62816486e2be96809246a",
+    "src/casmi/validate/rank_inputs.py": "c6faf51be68b80ba2f50bc5324ab802ffd1ebd9134eb71005d8dcb9123f8de62",
+    "src/casmi/validate/ranked_slots.py": "3dec0248951c1d54ff4a91fafe6173b2e19854739be48041aca4c5ea681b53e0",
+    "src/casmi/validate/run_alignment.py": "bcaed43318285185a8572c7ae2ce2fe53e341814821d9a2bfeaa92ba7f70860e",
+    "src/casmi/validate/scaffold_study.py": "5005a72b5c4c8951dddc24e93f65d3d26683ce3edcf9dd3c3667cf7b95c46afc",
+    "src/casmi/validate/simultaneous_ci.py": "990b45160da2287eb9debfa4c6e2b96bc5bd6e9fe3b27949877bb05c442159da",
+    "src/casmi/validate/source_manifest.py": "d3a37d2b4879c0735e6998c0d40cc011cb4a6a9c5a1e8325be9443c536e262a0",
+    "src/casmi/validate/spectral_controls.py": "12a49aeb2c72899993a178bda6e505ae382d5f0771df4a2af169343466d9828e",
+    "src/casmi/validate/spectrum_overlap.py": "ed06679f55192f44b1f8db3596ec4be8ff279fce2e813544e5464e015b984aec",
+    "src/casmi/validate/unopened_population.py": "a850c42d93a95136ad1cd4a628ec6a29c61920ade68c2063461bfc16fd58e644",
+    "scripts/build_structures.py": "e6a8e08b4146e0a8d77b11f820027afa5de48450d430b353dad961c25646fbe9",
+    "scripts/build_store.py": "e3976223c78d0f926b0668608fff19668c1d75e11f220ed410764114736bd0a3",
+    "scripts/build_pool.py": "49750d7f6c304bd93799f92a297abda6ec78c47ccaca1fee02505a9227ed6434",
+    "scripts/build_fingerprints.py": "7cfd346ba76fcdbb65c8f0e3d726051b4eb09923026f00db0bac51b9c9f49c32",
+    "scripts/run_advanced_study.py": "3ee2028ebe722f68291ed368eb5bbb25fd15605751f52bfc60af42113cb5ca16",
+    "scripts/run_unopened_coverage_study.py": "e7dd423215567701167f8b2f225e6cea624ed22e8192fb926d139072fd64e8ea",
+    "protocols/advanced-internal-v1-amendment.json": "4a0a4f4ad5fa84c0590def9d5d24e92eecc0fe756e71800aacfc4bda25aba505",
+    "protocols/advanced-internal-v1.json": "f2cbbfce99d532958f49b420f70103d537ec216ef68bb67012c1bf239789a46a",
+    "protocols/external-c3-v1-execution.json": "e2b7bcbb742172a75800faf979750aa9d632a12d57cb995fda3573354b1ec453",
+    "protocols/external-c3-v1.json": "2336dcf44f1bd319b1a3c6a7ac772dc01454d2b4ccbd79d16efd7eebcfe85665",
+    "protocols/external-source-v2-audit-correction.json": "1ce19527a62d19557ba838ad2c83e143c4f54afe867c1f95259c709d4acb59ba",
+    "protocols/external-source-v2.json": "2b693db68054206d7e911c43e1c033a89f03beaab952de6b68abc9b097b34322",
+    "protocols/external-source-v3.json": "c7e06f57470e3df618d4b4d37a23729c1fc7fd0d3cde726f727aa31987f5f17a",
+    "protocols/purged-external-v1-execution.json": "aeb1db500d53b480399177d381c7b548ce6f9de8c922fc508ba4ba3f2f521eb5",
+    "protocols/purged-external-v1-source-amendment.json": "73e0bcc63b837395e27a2433b3bef650ba8cb64f96d53ed4610bae3c83bdbdbe",
+    "protocols/purged-external-v1.json": "0797eab3dc5a375f8e09ab0bc31af64746135a0f2959266792a219d9b33eeab8",
+    "protocols/unopened-coverage-v1.json": "2c25f42488c376c7c456df84e3c376829af4164e85ebb247f3fca58aa968e04e",
+    "reports/advanced_study.json": "9f6ebf28dccf433dc4a8077f907535d11d775ac5e4700ca0760fc9b18f2c8ee9",
+    "reports/purged_external_study.json": "4a42c640699cb120f60f74f27de6301052a949091716fedff3e3bf99382bc59c",
+    "reports/gnps_expanded_source_preparation.json": "e0f253552362b91a65b6051bd3dddbc979d2a54646ecb1f081229c87cc0e32ca"
+  },
+  "execution": {
+    "registered_commit": "3703ba1",
+    "dataset_sources": [
+      "senanuretin/casmi-coconut-b",
+      "senanuretin/casmi-pubchemlite-b",
+      "metric/rdkit-2026-3-3-wheel",
+      "senanuretin/casmi26-gnps-cc0-expanded"
+    ],
+    "competition_source": "enveda-CASMI26-molecule-id-mass-spectra",
+    "gpu_enabled": false,
+    "internet_enabled": false,
+    "supervised_models_fitted": 0,
+    "submitted_predictions": false
+  },
+  "installed_packages": {
+    "numpy": "2.1.3",
+    "pandas": "2.3.3",
+    "scipy": "1.16.3",
+    "pyarrow": "23.0.1",
+    "rdkit": "2026.3.3",
+    "numba": "0.61.2"
+  }
+}

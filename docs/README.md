@@ -23,6 +23,7 @@ CASMI26 is a noncommercial molecular-identification research project by Senanur 
 | Fresh training on separated query families | [Predeclared design](studies/fresh-training-family-holdout.md) | [Results, ablations and slices](../reports/advanced_review.md) |
 | Candidate versus ranking loss | Post hoc accounting on the frozen internal study | [Coverage diagnosis](../reports/candidate_loss_review.md) |
 | Original-snapshot external-source feasibility | [Registered source gates](studies/external-source-validation.md) | [MassBank](../reports/external_audit.json), [GNPS2](../reports/gnps_external_audit.json), [expanded GNPS](../reports/gnps_expanded_external_audit.json) |
+| Unopened internal coverage and C1 references | [Registered follow-on](../protocols/unopened-coverage-v1.json) | [All outcomes and uncertainty](../reports/unopened_coverage_review.md) |
 | Separate purged-reference external evaluation | [Full-reference purge and fresh fitting](studies/external-source-validation.md#separate-family-purged-experiment) | [All outcomes, intervals and figures](../reports/purged_external_review.md) |
 
 ## Source and maintenance policy

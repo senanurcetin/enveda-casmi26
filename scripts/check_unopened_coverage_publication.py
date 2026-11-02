@@ -7,7 +7,9 @@ sys.path[:0]=[str(ROOT),str(ROOT/'src')]
 from scripts.build_unopened_coverage_notebook import KERNEL,DATASETS,REGISTERED_COMMIT
 from scripts.check_kaggle_publications import source_hash
 from scripts.research_snapshot import snapshot_hashes
-from casmi.validate.scaffold_study import digest
+from casmi.validate.source_manifest import required_validation_inputs, _canonical_files_digest
+def digest(value):
+ return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':'),default=str).encode()).hexdigest()
 
 def require(value,message):
  if not value:raise ValueError(message)
@@ -40,13 +42,18 @@ def validate(result):
  for cell in result['C1'].values():
   require(cell['n']==n and all(math.isfinite(cell[k]) and 0<=cell[k]<=1 for k in ['mrr','ci_low','ci_high','top1','top10','recall_at_25']),'Invalid C1 summary')
   require(cell['top1']<=cell['top10']<=cell['recall_at_25'] and cell['top1']<=cell['mrr']<=cell['recall_at_25'],'Impossible C1 metric')
+  require(cell['ci_low']<=cell['ci_high'],'Reversed C1 uncertainty interval')
  joint=result['secondary'];require(set(joint['outcomes'])==set(protocol['secondary']) and joint['family_size']==2 and joint['n_molecules']==n and joint['n_bootstrap']==4000,'Secondary family differs')
+ require(joint['seed']==protocol['seed'] and math.isfinite(joint['joint_radius']) and joint['joint_radius']>=0,'Invalid joint resampling contract')
  effects={'C3_coverage_expanded_minus_legacy':(coverage['expanded']['covered']-coverage['legacy']['covered'])/n,'C1_MRR_optimal_cosine_minus_entropy':result['C1']['optimal_cosine']['mrr']-result['C1']['entropy']['mrr']}
  for name,value in effects.items():
   cell=joint['outcomes'][name];require(math.isclose(cell['delta_mrr'],value,abs_tol=1e-12) and math.isclose(cell['ci_low'],value-joint['joint_radius'],abs_tol=1e-12) and math.isclose(cell['ci_high'],value+joint['joint_radius'],abs_tol=1e-12),'Secondary absolute/paired inconsistency')
  dev=seal['development'];require(dev['losses']==0 and dev['recommendation']==('extended' if dev['gains']>0 else 'expanded'),'Development choice differs')
  require(result['analog_provenance']['cache_used'] is False and result['fingerprint_provenance']['status']=='POOL_FINGERPRINTS_VERIFIED','Invalid reference provenance')
  require(digest(result['source_manifest'])==seal['source_manifest_sha256'],'Static source manifest seal differs')
+ manifest=result['source_manifest'];required=set(required_validation_inputs(pool_tag='',analog=True))|{'structures.parquet','pool_source_quality.json'}
+ require(len(manifest['files'])==len(required) and {r['path'] for r in manifest['files']}==required
+     and manifest['files_digest_sha256']==_canonical_files_digest(manifest['files']),'Static reference inventory incomplete')
  require(result['execution']=={'registered_commit':REGISTERED_COMMIT,'dataset_sources':DATASETS,'competition_source':'enveda-CASMI26-molecule-id-mass-spectra','gpu_enabled':False,'internet_enabled':False,'supervised_models_fitted':0,'submitted_predictions':False},'Execution attachments/policy differ')
  original=json.loads((ROOT/'reports/advanced_study.json').read_text())
  for name in ['train.parquet','coconut.csv','pubchemlite.csv']:require(result['raw_inputs'][name]==original['raw_inputs'][name],'Pinned input mismatch')

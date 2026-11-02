@@ -23,6 +23,7 @@ The work examines simulation-induced shortcuts, candidate coverage versus decoy 
 | Fresh-training internal benchmark | 600/150/250 train/development/test query families; all 26 learned artifacts sealed before test features | [Design](docs/studies/fresh-training-family-holdout.md), [results](reports/advanced_review.md) |
 | Candidate/ranking loss diagnosis | C3 lacks the true candidate for 224/250 queries; fixed-list oracle MRR ceiling is 0.1040 | [Descriptive decomposition](reports/candidate_loss_review.md) |
 | External-source feasibility | MassBank leaves 0/491 novel molecules; expanded GNPS leaves 7/936, below the declared minimum of 30 | [Source gates and separate completed study](docs/studies/external-source-validation.md) |
+| Unopened-family budget/reference comparison | 100 development / 300 new test molecules; C3 coverage 31/37/40, with unresolved primary extended-budget gain | [Results and paired intervals](reports/unopened_coverage_review.md) |
 | Separate purged-reference experiment | 150 external test molecules after a full-reference family purge; expanded external C2/C3 MRR 0.4454/0.0466 | [All outcomes and 11 joint contrasts](reports/purged_external_review.md) |
 
 In the separate purged-reference study, internal C3 truth coverage increased from 13/150 to 17/150: paired change +0.0267, 95% CI [+0.0067, +0.0533]. Expanded-minus-legacy ranking gains remain unresolved. External C3 coverage is only 23/150. These findings concern a rebuilt purged corpus; original-snapshot novelty feasibility remains unsuccessful.
