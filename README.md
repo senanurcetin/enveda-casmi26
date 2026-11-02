@@ -84,6 +84,10 @@ sql/              optional read-only warehouse analysis templates
 tests/            scientific, numerical and provenance regression checks
 ```
 
+## Reuse and licensing status
+
+This public research repository does **not** currently include a top-level `LICENSE` file. Public visibility and noncommercial research purpose do not grant a general right to copy, redistribute or relicense code, generated figures, spectra, pretrained weights or third-party methods. Seek the owner's explicit permission before reuse; dataset and upstream-method terms apply independently. No license choice or redistribution permission is created by this documentation note.
+
 ## Scientific limits and use
 
 The fresh benchmark separates selected supervised query families on existing internal sources. Shared task-defined candidate/reference knowledge, source concentration and the fixed external NP-score prior limit unseen-chemistry claims. The separate external experiment uses existing public spectra after full-reference purging. It does not establish new laboratory acquisition, independent laboratory replication or a final private competition score. Population/training differences prevent a causal before/after comparison with historical v16.
