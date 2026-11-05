@@ -1,11 +1,29 @@
 """NEXUS analytics asset and SQL renderer integrity smoke tests."""
 import json
 import unittest
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 from scripts.render_bigquery_sql import render
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+class SiteLinks(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.ids = set()
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        if attributes.get("id"):
+            self.ids.add(attributes["id"])
+        if tag in {"a", "link", "img", "script"}:
+            address = attributes.get("href") or attributes.get("src")
+            if address:
+                self.links.append(address)
 
 
 class AnalyticsAssetTests(unittest.TestCase):
@@ -47,6 +65,24 @@ class AnalyticsAssetTests(unittest.TestCase):
         self.assertIn("NOT LIVE DATA", page)
         self.assertTrue(logo.strip().startswith("<svg"))
         self.assertIn("#00E0FF", logo)
+
+
+    def test_static_site_links_resolve_without_network(self):
+        site = ROOT / "site/index.html"
+        parser = SiteLinks()
+        parser.feed(site.read_text(encoding="utf-8"))
+        self.assertIn("#overview", parser.links)
+        for address in parser.links:
+            parts = urlsplit(address)
+            if parts.scheme or parts.netloc:
+                continue
+            with self.subTest(address=address):
+                if parts.path:
+                    target = (site.parent / unquote(parts.path)).resolve()
+                    self.assertTrue(target.is_relative_to(ROOT))
+                    self.assertTrue(target.exists())
+                elif parts.fragment:
+                    self.assertIn(unquote(parts.fragment), parser.ids)
 
 
 if __name__ == "__main__":

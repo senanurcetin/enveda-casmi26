@@ -13,6 +13,7 @@ CASMI26 is a noncommercial molecular-identification research project by Senanur 
 | Model attribution and intended use | [Model card](../MODEL_CARD.md) |
 | Dataset access, information boundaries and licensing | [Data card](../DATA_CARD.md) |
 | Executed checks and their scope | [Verification](verification.md) |
+| Static research interface and linked evidence | [Research site](../site/index.html) |
 
 ## Completed studies
 
