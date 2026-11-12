@@ -99,4 +99,4 @@ See also [verification](docs/verification.md), [contribution guidance](CONTRIBUT
 
 ## License
 
-No license is granted. The repository has no `LICENSE` file, so all rights are reserved; ask the owner before reusing code, figures or weights. Competition spectra, other licensed source records, private per-query records, credentials and model weights are not redistributed, and source datasets and upstream methods keep their own terms ([data card](DATA_CARD.md)).
+The repository's own code, figures and documentation are released under the MIT License ([LICENSE](LICENSE)). Competition spectra, other licensed source records, private per-query records, credentials and model weights are not redistributed and are not covered by it; source datasets and upstream methods keep their own terms ([data card](DATA_CARD.md)).
